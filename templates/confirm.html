@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'confirm.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a id="title" class="nav-link" href="{% url 'book' '0' %}">カレンダー予約<span id='titleuesita'></span></a>
+            </li>
+            <li class="nav-item">
+                <a id="date" class="nav-link" href="{% url 'booked_list' %}">予約確認<span id='dateuesita'></span></a>
+            </li>
+            <li class="nav-item">
+                <a id="title_main" class="nav-link" href="{% url 'access' %}">アクセス<span
+                        id='title_mainuesita'></span></a>
+            </li>
+        </ul>
+    </div>
+    <br>
+    <h3>{{ date }}　<span><br class="br-get">予約したい時間のプランを選択してください．</span></h3>
+    {% for time, item, plan, error_booked in object_plan_error_list %}
+    {% if item.plan != '0' %}
+    <div class="alert alert-warning" role="alert">
+        <h3 class="plan_name">
+            {{ item.plan }}
+            {% if error_booked != 0 %}
+            <span class="badge badge-danger">予約済</span>
+            {% endif %}
+        </h3>
+        <div class="row">
+            <div class="col-5">
+                <img src="{{ plan.image.url }}">
+            </div>
+            <div class="col-7">
+                <p class="hidden">{{ plan.memo }}</p>
+                <p>
+                    時間：<span style="color: red;">{{ item.time }}</span><br>
+                    料金：{{ plan.price }}円<br>
+                    場所：{{ item.location }}<br>
+                    予約人数：{{ item.number_of_people }} / {{ plan.max_book }}<br>
+                    {% if error_booked == 0 %}
+                    {% if item.number_of_people == plan.max_book %}
+                    <span style="color: red;">予約がいっぱいです．</span>
+                    {% endif %}
+                    {% endif %}
+                </p>
+                <div class="bottom">
+                    <span style="color: red;">{{ error }}</span>
+                    {% if error_booked == 0 %}
+                    {% if item.number_of_people != plan.max_book %}
+                    <a href="get_yoga/{{ item.pk }}" class="btn btn-danger btn-md" role="button"
+                        aria-pressed="true" onclick="get_book()">予約</a>
+                    {% endif %}
+                    {% else %}
+                    <a href="#" class="btn btn-primary btn-md" role="button" aria-pressed="true" onclick="var ok=confirm('この予約をキャンセルしますか？');
+                        if (ok) location.href='cancel_yoga/{{ item.pk }}/0'; return false;">キャンセル</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+    function get_book() {
+        alert('ご予約が完了致しました．キャンセルする場合はお早めにお願い致します．');
+    }
+</script>
+
+{% endblock content %}

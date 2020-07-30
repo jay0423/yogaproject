@@ -1,0 +1,45 @@
+.logout {
+    color: #000;
+    float: right;
+    padding: 10px;
+    text-decoration: underline;
+}
+
+.header_logo {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+}
+
+.navbar-brand {
+    padding: 0;
+    font-size: 25px;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+@media (max-width: 768px) {
+    .hidden_admin {
+        display: none;
+    }
+}
+
+@media (max-width: 599px) {
+    .header_logo {
+        width: 25px;
+        height: 25px;
+    }
+    span {
+        font-size: 14px;
+    }
+    .navbar-brand {
+        font-size: 18px;
+    }
+    .navbar-collapse {
+        font-size: 14px;
+    }
+    .logout {
+        font-size: 12px;
+        padding-top: 2px;
+    }
+}

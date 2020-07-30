@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'users.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header_admin.html' %}
+{% endblock header %}
+
+{% block content %}
+
+<div class="container">
+
+    <table width="100%">
+        <thead style="background-color: rgb(194, 243, 194);">
+            <th>氏名</th>
+            <th>ユーザー名</th>
+            <th>メールアドレス</th>
+        </thead>
+
+        {% for user in users_list %}
+        <tr>
+            <th>{{ user.last_name }}　{{ user.first_name }}</th>
+            <th>{{ user.username }}</th>
+            <th>{{ user.email }}</th>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock content %}

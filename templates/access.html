@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'access.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock header %}
+
+{% block content %}
+
+<div class="container">
+    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a id="title" class="nav-link" href="{% url 'book' '0' %}">カレンダー予約<span id='titleuesita'></span></a>
+            </li>
+            <li class="nav-item">
+                <a id="date" class="nav-link" href="{% url 'booked_list' %}">予約確認<span id='dateuesita'></span></a>
+            </li>
+            <li class="nav-item">
+                <a id="title_main" class="nav-link" href="{% url 'access' %}"
+                    style="background-color: rgb(248, 160, 150);">アクセス<span id='title_mainuesita'></span></a>
+            </li>
+            <!-- <li class="nav-item">
+                <a id="title_main" class="nav-link" href="{% url 'logout' %}">ログアウト<span id='title_mainuesita'></span></a>
+            </li> -->
+        </ul>
+    </div>
+    <br>
+
+    <div class="alert alert-warning setting" role="alert">
+        <h3>ヨガスタジオ</h3>
+        <hr style="border-color: green;">
+        <p>
+            <span class="badge badge-success">住所</span><br class="br-get">
+            さいたま市浦和区木崎5-13-4　<br class="br-get">小林宅(2階)<br>
+            <span class="badge badge-success">最寄り駅</span><br class="br-get">
+            北浦和駅(東口)<br>
+            <span class="badge badge-success">バス乗車</span><br class="br-get">
+            北浦和東口（クイーンズ伊勢丹前）<br class="br-get">【岩02】岩槻行き・宮下行き・東新井団地行き<br>
+            <span class="badge badge-success">バス下車</span><br class="br-get">
+            山崎
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d404.0493555591865!2d139.66390621672645!3d35.88834418055742!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018c04423cadd0d%3A0x110d02c82e70bb11!2s5-ch%C5%8Dme-13-4%20Kizaki%2C%20Urawa-ku%2C%20Saitama%2C%20330-0042!5e0!3m2!1sen!2sjp!4v1595988934022!5m2!1sen!2sjp"
+            width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </div>
+    <div class="alert alert-warning setting" role="alert">
+        <h3>SECOM会場</h3>
+        <hr style="border-color: green;">
+        <p>
+            <span class="badge badge-success">住所</span><br class="br-get">
+            さいたま市浦和区常磐9-31-17　<br class="br-get">北隣館荘司ビル1F<br>
+            <span class="badge badge-success">最寄り駅</span><br class="br-get">
+            北浦和駅(西口)<br>
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1616.5438394714429!2d139.64288169894604!3d35.87136813548371!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018c1c94f2536b7%3A0x9ddb053ee25cffbc!2s9-ch%C5%8Dme-31-17%20Tokiwa%2C%20Urawa-ku%2C%20Saitama%2C%20330-0061!5e0!3m2!1sen!2sjp!4v1595989202978!5m2!1sen!2sjp"
+            width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </div>
+    <div class="alert alert-warning setting" role="alert">
+        <h3>蔵のcafe</h3>
+        <hr style="border-color: green;">
+        <p>
+            <span class="badge badge-success">住所</span><br class="br-get">
+            さいたま市緑区三室630<br>
+            <span class="badge badge-success">最寄り駅</span><br class="br-get">
+            北浦和駅(東口)<br>
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d330.07616022560256!2d139.67257311963277!3d35.8919627347122!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018c158eacca81d%3A0x74d59bf1b145ffc8!2z44Ki44Ot44Oe44Or44K344Kn!5e0!3m2!1sen!2sjp!4v1595989415684!5m2!1sen!2sjp"
+            width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </div>
+</div>
+
+{% endblock content %}

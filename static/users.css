@@ -1,0 +1,31 @@
+.container {
+    padding-top: 30px;
+}
+
+table {
+    background-color: #fff;
+    color: #000;
+}
+
+thead {
+    text-align: center;
+}
+
+tr th {
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    padding: 2px;
+    width: 14.25%;
+    vertical-align: top;
+}
+
+@media (max-width: 576px) {
+    table {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 350px) {}
