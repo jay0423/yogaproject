@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'detail_admin.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header_admin.html' %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <a class="move" href="{% url 'detail' date %}">詳細画面へ</a>
+
+    <div class="alert alert-warning" role="alert">
+        <form action="" method="POST">{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="更新">
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

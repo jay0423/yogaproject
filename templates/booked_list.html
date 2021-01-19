@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'booked_list.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <a class="move" href="{% url 'book' 0 %}">カレンダー画面へ</a>
+    {% if check == 0 %}
+    <div class="alert alert-warning" role="alert">
+    <p>現在ご予約しているプランはございません．</p>
+    </div>
+    {% endif %}
+    {% for item, plan in object_list %}
+    <div class="alert alert-warning" role="alert">
+        <div class="row">
+            <div class="col-4">
+                <p class="date">{{ item.date|date:"Y-m-d" }}</p>
+                <h3>{{ item.plan }}</h3>
+            </div>
+            <div class="col-8">
+                <p>
+                    時間：{{ item.time }}時<br>
+                    料金：{{ plan.price }}円<br>
+                    場所：{{ plan.location }}
+                </p>
+                <a href="#" class="bottom btn btn-primary btn-md" role="button"
+                    aria-pressed="true" onclick="var ok=confirm('この予約をキャンセルしますか？');
+                    if (ok) location.href='confirm/{{ item.date }}/cancel_yoga/{{ item.pk }}/1'; return false;">キャンセル</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

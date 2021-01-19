@@ -2,6 +2,12 @@
     padding-top: 50px;
 }
 
+.move {
+    color: #000;
+    float: right;
+    padding: 10px;
+}
+
 .this-month {
     display: block;
     text-align: center;
@@ -41,13 +47,32 @@ th {
     margin-bottom: 5px;
 }
 
+a {
+    transition: .5s;
+    color: black;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
 .yoga {
     font-family: Arial, Helvetica, sans-serif;
     color: #000;
     background-color: violet;
     text-align: center;
     margin-bottom: 0;
+    transition: 0.5s;
 }
+
+.alert {
+    border: 1px solid #eee;
+    background-color: #fff;
+}
+
+/* .isuyoga:hover, .yoga:hover, .others:hover {
+    opacity: 0.8;
+} */
 
 .isuyoga {
     font-family: Arial, Helvetica, sans-serif;
@@ -55,6 +80,18 @@ th {
     background-color: rgb(169, 102, 233);
     text-align: center;
     margin-bottom: 0;
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.others {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    background-color: rgb(209, 183, 233);
+    text-align: center;
+    margin-bottom: 0;
+    text-decoration: none;
+    transition: 0.5s;
 }
 
 @media (max-width: 599px) {

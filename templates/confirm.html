@@ -12,75 +12,44 @@
 {% block content %}
 <div class="container">
     <a class="move" href="{% url 'book' 0 %}">カレンダー画面へ</a>
-    {% if objects.plan != '0' %}
+    
+    <h3>{{ date }}</h3>
+    {% for item, plan, error_booked in object_plan_error_list %}
+    {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
         <h3>
-            {{ objects.plan }}
-            {% if error_booked1 != 0 %}
-            <span class="badge badge-danger">{{ error_booked1 }}</span>
+            {{ item.plan }}
+            {% if error_booked != 0 %}
+            <span class="badge badge-danger">予約済</span>
             {% endif %}
         </h3>
         <div class="row">
             <div class="col-5">
-                <img src="{% static 'yoga1.jpeg' %}">
+                <img src="{{ plan.image.url }}">
             </div>
             <div class="col-7">
-                <p class="hidden">「ヨガ」とはサンスクリット語で「つながり」を意味しています。 心と体、魂が繋がっている状態のことを表します。
-                </p>
+                <p class="hidden">{{ plan.memo }}</p>
                 <p>
-                    単発の集団ヨガです.<br>
-                    時間：10～12時<br>
-                    場所：体育館
+                    料金：{{ plan.price }}円<br>
+                    時間：{{ item.time }}時<br>
+                    場所：{{ plan.location }}
                 </p>
                 <div class="bottom">
                     <span style="color: red;">{{ error }}</span>
-                    <span><span class="hidden2">予約</span>人数 {{ objects.number_of_people_1 }} / 7</span>
-                    {% if error_booked1 == 0 %}
-                    <a href="get_yoga1" class="btn btn-danger btn-md active" role="button" aria-pressed="true">予約</a>
+                    <span><span class="hidden2">予約</span>人数 {{ item.number_of_people }} / {{ plan.max_book }}</span>
+                    {% if error_booked == 0 %}
+                    <a href="get_yoga/{{ item.pk }}" class="btn btn-danger btn-md" role="button" aria-pressed="true">予約</a>
                     {% else %}
-                    <a href="cancel_yoga1" class="btn btn-primary btn-md active" role="button"
-                        aria-pressed="true">キャンセル</a>
+                    <a href="#" class="btn btn-primary btn-md" role="button"
+                        aria-pressed="true" onclick="var ok=confirm('この予約をキャンセルしますか？');
+                        if (ok) location.href='cancel_yoga/{{ item.pk }}/0'; return false;">キャンセル</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
     {% endif %}
-
-    {% if objects.plan2 != '0' %}
-    <div class="alert alert-warning" role="alert">
-        <h3>
-            {{ objects.plan2 }}
-            {% if error_booked2 != 0 %}
-            <span class="badge badge-danger">{{ error_booked2 }}</span>
-            {% endif %}
-        </h3>
-        <div class="row">
-            <div class="col-5">
-                <img src="{% static 'yoga2.jpg' %}">
-            </div>
-            <div class="col-7">
-                <p class="hidden">「ヨガ」とはサンスクリット語で「つながり」を意味しています。 心と体、魂が繋がっている状態のことを表します。
-                </p>
-                <p>
-                    単発の椅子ヨガです.<br>
-                    時間：13～15時<br>
-                    場所：体育館2
-                </p>
-                <div class="bottom">
-                    <span style="color: red;">{{ error2 }}</span>
-                    <span><span class="hidden2">予約</span>人数 {{ objects.number_of_people_2 }} / 7</span>
-                    {% if error_booked2 == 0 %}
-                    <a href="get_yoga2" class="btn btn-danger btn-md active" role="button" aria-pressed="true">予約</a>
-                    {% else %}
-                    <a href="cancel_yoga2" class="btn btn-primary btn-md active" role="button"
-                        aria-pressed="true">キャンセル</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+    {% endfor %}
 </div>
 
 {% endblock content %}

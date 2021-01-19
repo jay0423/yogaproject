@@ -1,0 +1,118 @@
+.container {
+    padding-top: 0;
+}
+
+.move {
+    color: #000;
+    float: right;
+    padding: 10px;
+}
+
+.this-month {
+    display: block;
+    text-align: center;
+}
+
+.next-month {
+    color: #000;
+    margin-bottom: 0;
+    font-size: 25px;
+}
+
+table {
+    background-color: #fff;
+    color: #000;
+}
+
+thead {
+    text-align: center;
+}
+
+tr th {
+    border: 1px solid #ddd;
+}
+
+.box {
+    height: 83px;
+}
+
+th {
+    padding: 2px;
+    width: 14.25%;
+    vertical-align: top;
+}
+
+.c {
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+a {
+    transition: .5s;
+    color: black;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.yoga {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    background-color: violet;
+    text-align: center;
+    margin-bottom: 0;
+    transition: 0.5s;
+}
+
+.alert {
+    border: 1px solid #eee;
+    background-color: #fff;
+}
+
+.isuyoga {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    background-color: rgb(169, 102, 233);
+    text-align: center;
+    margin-bottom: 0;
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.others {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    background-color: rgb(209, 183, 233);
+    text-align: center;
+    margin-bottom: 0;
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.plans {
+    width: 100%;
+}
+
+.times {
+    width: 30%;
+}
+
+@media (max-width: 599px) {
+    table {
+        font-size: 12px;
+    }
+    .box {
+        height: 65px;
+    }
+    .this-month {
+        font-size: 20px;
+        margin-bottom: 7px;
+    }
+    .next-month {
+        font-size: 12px;
+    }
+    .note {
+        font-size: 12px;
+    }
+}

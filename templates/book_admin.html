@@ -2,33 +2,26 @@
 {% load static %}
 
 {% block customcss %}
-<link rel="stylesheet" type="text/css" href="{% static 'book.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'book_admin.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'header.css' %}">
 {% endblock customcss %}
 
 {% block header %}
-<nav class="navbar navbar-light sticky-top" style="background-color: #fff; border-bottom: 1px solid #eee;">
-    <a class="navbar-brand" href="#">Mona Yoga</a>
-    <span style="color: #000;">管理者画面</span>
-</nav>
-<a class="logout" href="{% url 'logout' %}">ログアウト</a>
+{% include 'header_admin.html' %}
 {% endblock header %}
 
 {% block content %}
 <div class="container">
+    <br>
     <div class="row">
         <div class="col-3" style="text-align: left;">
-            {% if month != '0' %}
-            <a class="next-month" href="0">◀前月</a>
-            {% endif %}
+            <a href="" class="next-month" onclick="pre_month()">◀前月</a>
         </div>
         <div class="col-6">
             <h3 class="this-month">{{ month2 }}月</h3>
         </div>
         <div class="col-3" style="text-align: right;">
-            {% if month != '100' %}
-            <a class="next-month" href="100">次月▶</a>
-            {% endif %}
+            <a href="" class="next-month" onclick="next_month()">次月▶</a>
         </div>
     </div>
     <table width="100%">
@@ -41,117 +34,120 @@
             <th>土</th>
             <!-- <th>日</th> -->
         </thead>
+        {% for calendar_list in calendar_list_all %}
         <tr class="box">
-            {% for c, object in calendar_list1 %}
+            {% for c, object, plans in calendar_list %}
             <th>
-                <p class="c">{{ c }}</p>
-                {% if object != ' ' %}
-                <a href="{% url 'confirm' object.pk %}">
-                    {% if object.plan != '0' %}
-                    <p class="yoga">{{ object.plan }}</p>
+                <p class="c">
+                    {{ c }}
+                    {% if c != ' ' %}
+                    <input type="checkbox" class="checks" value="{{ c }}">
                     {% endif %}
-                    {% if object.plan2 != '0' %}
-                    <p class="isuyoga">{{ object.plan2 }}</p>
+                </p>
+                {% if object != '' %}
+                <a href="{% url 'detail' object.date %}">
+                    {% for plan in plans %}
+                    {% if plan == 'ヨガ' %}
+                    <p class="yoga">{{ plan }}</p>
+                    {% elif plan == '椅子ヨガ' %}
+                    <p class="isuyoga">{{ plan }}</p>
+                    {% else %}
+                    <p class="others">{{ plan }}</p>
                     {% endif %}
+                    {% endfor %}
                 </a>
                 {% endif %}
             </th>
             {% endfor %}
         </tr>
-        <tr class="box">
-            {% for c, object in calendar_list2 %}
-            <th>
-                <p class="c">{{ c }}</p>
-                {% if object != ' ' %}
-                <a href="{% url 'confirm' object.pk %}">
-                    {% if object.plan != '0' %}
-                    <p class="yoga">{{ object.plan }}</p>
-                    {% endif %}
-                    {% if object.plan2 != '0' %}
-                    <p class="isuyoga">{{ object.plan2 }}</p>
-                    {% endif %}
-                </a>
-                {% endif %}
-            </th>
-            {% endfor %}
-        </tr>
-        <tr class="box">
-            {% for c, object in calendar_list3 %}
-            <th>
-                <p class="c">{{ c }}</p>
-                {% if object != ' ' %}
-                <a href="{% url 'confirm' object.pk %}">
-                    {% if object.plan != '0' %}
-                    <p class="yoga">{{ object.plan }}</p>
-                    {% endif %}
-                    {% if object.plan2 != '0' %}
-                    <p class="isuyoga">{{ object.plan2 }}</p>
-                    {% endif %}
-                </a>
-                {% endif %}
-            </th>
-            {% endfor %}
-        </tr>
-        <tr class="box">
-            {% for c, object in calendar_list4 %}
-            <th>
-                <p class="c">{{ c }}</p>
-                {% if object != ' ' %}
-                <a href="{% url 'confirm' object.pk %}">
-                    {% if object.plan != '0' %}
-                    <p class="yoga">{{ object.plan }}</p>
-                    {% endif %}
-                    {% if object.plan2 != '0' %}
-                    <p class="isuyoga">{{ object.plan2 }}</p>
-                    {% endif %}
-                </a>
-                {% endif %}
-            </th>
-            {% endfor %}
-        </tr>
-        {% if calendar_list5 != 0 %}
-        <tr class="box">
-            {% for c, object in calendar_list5 %}
-            <th>
-                <p class="c">{{ c }}</p>
-                {% if object != ' ' %}
-                <a href="{% url 'confirm' object.pk %}">
-                    {% if object.plan != '0' %}
-                    <p class="yoga">{{ object.plan }}</p>
-                    {% endif %}
-                    {% if object.plan2 != '0' %}
-                    <p class="isuyoga">{{ object.plan2 }}</p>
-                    {% endif %}
-                </a>
-                {% endif %}
-            </th>
-            {% endfor %}
-        </tr>
-        {% endif %}
-        {% if calendar_list6 != 0 %}
-        <tr class="box">
-            {% for c, object in calendar_list6 %}
-            <th>
-                <p class="c">{{ c }}</p>
-                {% if object != ' ' %}
-                <a href="{% url 'confirm' object.pk %}">
-                    {% if object.plan != '0' %}
-                    <p class="yoga">{{ object.plan }}</p>
-                    {% endif %}
-                    {% if object.plan2 != '0' %}
-                    <p class="isuyoga">{{ object.plan2 }}</p>
-                    {% endif %}
-                </a>
-                {% endif %}
-            </th>
-            {% endfor %}
-        </tr>
-        {% endif %}
+        {% endfor %}
     </table>
+
+    <br>
+    <div class="alert alert-warning" role="alert">
+        <form action="" method="POST" name="form1">{% csrf_token %}
+            <template id="totalcheckbox">{{ total_checkbox }}</template>
+            <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取得">
+            <input type="text" placeholder="" id="checked" name="select_days">
+            <br><br>
+            <div class="input-group mb-3 plans" id="plan_hidden" style="display: none;">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">プラン</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01" name="select_plan" onchange="change_select()">
+                    <option value="0" selected>選択してください．</option>
+                    {% for model in setting_plan_model %}
+                    <option value="{{ model.name }}">{{ model.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="for_hidden" style="display: none;">
+                <div class="input-group mb-3 times">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">時間</span>
+                    </div>
+                    <input type="number" class="form-control" placeholder="" value="10" name="time1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">～</span>
+                    </div>
+                    <input type="number" class="form-control" placeholder="" value="11" name="time2">
+                </div>
+                <input class="btn btn-secondary btn-sm" type="submit" value="完了" onclick="get_plan()">
+            </div>
+        </form>
+    </div>
 
 </div>
 
 <script>
+    // チェックボックス選択された日にちを取得
+    function check_click() {
+        var checks = document.getElementsByClassName('checks');
+        var str = '';
+        var total = document.getElementById('totalcheckbox').innerHTML
+
+        for (i = 0; i < total; i++) {
+            if (checks[i].checked === true) {
+                str += checks[i].value + " ";
+                // checks[i].checked = false;
+            }
+        }
+        document.getElementById('checked').value = str;
+        // 取得したときのプランの表示
+        if (str !== '') {
+            document.getElementById("plan_hidden").style.display = "flex";
+        } else {
+            document.getElementById("plan_hidden").style.display = "none";
+            document.getElementById("for_hidden").style.display = "none";
+        }
+    }
+
+    // 選択した際の表示
+    function change_select() {
+        const select_plan = document.form1.select_plan;
+        const num = select_plan.selectedIndex;
+        const str = select_plan.options[num].value;
+        if (str !== "0") {
+            document.getElementById("for_hidden").style.display = "block";
+        } else {
+            document.getElementById("for_hidden").style.display = "none";
+        }
+    }
+
+    function pre_month() {
+        var queryString = String(window.location);
+        var url_number = Number(queryString.slice(queryString.lastIndexOf('/') + 1));
+        url_number -=  100
+        window.history.pushState(null, null, url_number);
+        location.reload();
+    }
+    function next_month() {
+        var queryString = String(window.location);
+        var url_number = Number(queryString.slice(queryString.lastIndexOf('/') + 1));
+        url_number +=  100
+        window.history.pushState(null, null, url_number);
+        location.reload();
+    }
 
 </script>
 {% endblock content %}
