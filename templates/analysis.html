@@ -16,13 +16,13 @@
     <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a id="callendar" class="nav-link" href="{% url 'users' %}">登録者情報<span id='titleuesita'></span></a>
+                <a id="callendar" class="nav-link" href="{% url 'users' %}">登録者情報</a>
             </li>
             <li class="nav-item" style="background-color: rgb(248, 160, 150);">
-                <a id="booked_list" class="nav-link" href="{% url 'analysis' %}">売上・他<span id='dateuesita'></span></a>
+                <a id="booked_list" class="nav-link" href="{% url 'analysis' %}">売上・他</a>
             </li>
             <li class="nav-item">
-                <a id="access" class="nav-link" href="{% url 'table' %}">テーブル<span id='title_mainuesita'></span></a>
+                <a id="access" class="nav-link" href="{% url 'table' %}">テーブル</a>
             </li>
         </ul>
         <input hidden id="location" value="{{ location }}">
@@ -30,7 +30,7 @@
 
     <form action="" method="POST" name="form1">{% csrf_token %}
         <div class="alert alert-warning" role="alert">
-            <p>集計する期間を選択してください．<span style="color: red;">{{ error1 }}</span></p>
+            <p>集計する期間を選択してください．<span style="color: red;"><br>{{ error1 }}</span></p>
             <div class="input-group mb-3 plans" id="plan_hidden">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">期間</label>

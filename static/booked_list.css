@@ -21,6 +21,10 @@ p {
     font-weight: bolder;
 }
 
+.alert {
+    border: 1px solid #555;
+}
+
 @media (max-width: 576px) {}
 
 @media (max-width: 480px) {

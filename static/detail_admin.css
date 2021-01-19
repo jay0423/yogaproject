@@ -67,6 +67,17 @@
         display: none;
     }
     .order_top .nav-link {
-        font-size: 13px;
+        font-size: 14px;
+    }
+    h3 {
+        font-size: 16px;
+        padding: 2px 0px 0px 0px;
+    }
+    .badge {
+        font-size: 11px;
+        margin: 0;
+    }
+    .plan_name {
+        overflow: hidden;
     }
 }

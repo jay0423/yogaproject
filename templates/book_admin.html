@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block customcss %}
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'header.css' %}"> -->
 <link rel="stylesheet" type="text/css" href="{% static 'book_admin.css' %}">
 {% endblock customcss %}
 
@@ -49,27 +48,12 @@
                 {% if object != '' %}
                 <a href="{% url 'detail' month object.date %}">
                     {% for plan in plans %}
-                    {% if plan.plan == 'ヨガ' %}
-                    <p class="yoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'お茶会' %}
-                    <p class="ochakai">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '蔵のカフェ' %}
-                    <p class="kura">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'キッズ' %}
-                    <p class="kids">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '産後ヨガ' %}
-                    <p class="sango">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '朝ヨガ' %}
-                    <p class="asa">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'リラックスヨガ' %}
-                    <p class="relax">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'パワーヨガ' %}
-                    <p class="power">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% else %}
-                    <p class="others">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% endif %}
+                    <div class="when_big">
+                        <p class="yoga_set yoga{{ plan.plan_num }}">{{ plan.plan}} <span class="hidden">{{ plan.time }}</span></p>
+                    </div>
+                    <div class="when_small">
+                        <p class="yoga_set yoga{{ plan.plan_num }}">{{ plan.short_plan_name}} <span class="hidden">{{ plan.time }}</span></p>
+                    </div>
                     {% endfor %}
                 </a>
                 {% endif %}

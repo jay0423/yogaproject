@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import signupfunc,loginfunc, logoutfunc, bookfunc, confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func, access_func, info_func
-from .views import book_adminfunc, YogaCreate, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, users_detail, users_update, signup_admin_func, notefunc, analysis_func, table_func, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
+from .views import book_adminfunc, YogaCreate, yoga_create_plan_num, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, users_detail, users_update, signup_admin_func, notefunc, analysis_func, table_func, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
 
 urlpatterns = [
     path('signup/', signupfunc, name='signup'),
@@ -21,6 +21,7 @@ urlpatterns = [
     path('setting_plan/', SettingPlanList.as_view(), name='setting_plan'),
     path('setting_plan/<int:pk>/detail', SettingPlanUpdate.as_view(), name='setting_plan_update'),
     path('create/', YogaCreate.as_view(), name='create'),
+    path('create/plan_num', yoga_create_plan_num, name='yoga_create_plan_num'),
     path('setting_plan/<int:pk>/delete', YogaPlanDelete.as_view(), name='yoga_plan_delete'),
     path('users', users_detail, name='users'), 
     path('users/update/<username>', users_update, name='users_update'), 

@@ -12,12 +12,14 @@
 {% block content %}
 <div class="container">
     <a class="move" href="{% url 'setting_plan' %}">プラン一覧へ</a>
-    
+
     <div class="alert alert-warning" role="alert">
         <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
             {{form.as_p}}
             <br><br>
-            <input class="btn btn-secondary btn-sm" type="submit" value="作成する" style="margin-bottom: 10px;">
+            <div class="bottom">
+                <input class="btn btn-primary btn-sm" type="submit" value="作 成" style="margin-bottom: 10px;">
+            </div>
         </form>
     </div>
 </div>

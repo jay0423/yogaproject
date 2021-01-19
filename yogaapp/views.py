@@ -33,6 +33,7 @@ def signupfunc(request):
 
 
 def loginfunc(request):
+    item = NoteModel.objects.get(num=0)
     if request.method == "POST":
         username = request.POST['username']
         password = 'password'
@@ -44,9 +45,11 @@ def loginfunc(request):
             else:
                 return redirect('book', 0)
         else:
-            return render(request, 'login.html', {'error': 'このユーザーは登録されていません'})
-            
-    item = NoteModel.objects.get(num=0)
+            context = {
+                'memo': item.memo,
+                'error': 'このユーザーは登録されていません．'
+            }
+            return render(request, 'login.html', context)
     context = {
         'memo': item.memo
     }
@@ -90,7 +93,12 @@ def bookfunc(request, month):
             c_list += c.split()
     #プランの取得
     month3 = '0' + str(month2) if len(str(month2)) == 1 else str(month2) #1ケタの月の先頭に0を足す
-    object_list = list(PlanModel.objects.filter(month=str(year) + "-" + month3))
+    object_list = list(PlanModel.objects.filter(month=str(year) + "-" + month3).order_by('time'))
+    today = datetime.datetime.today()
+    today = datetime.datetime(today.year, today.month, today.day)
+    #日にちの過ぎているものを削除
+    object_list = [item for item in object_list if (datetime.datetime(int(str(item.date).split('-')[0]), int(str(item.date).split('-')[1]), int(str(item.date).split('-')[2])) - today).days >= 0]
+    #プランリストの作成
     c_list_plan = [] #オブジェクトリスト
     plan_list = []
     for c in c_list:
@@ -98,68 +106,35 @@ def bookfunc(request, month):
         for item in object_list:
             if str(item.date.day) == c and true_or_false == True:
                 c_list_plan.append(item)
-                plan_list.append([item.plan])
+                plan_list.append([item])
                 true_or_false = False
             elif str(item.date.day) == c and true_or_false == False: #同じ日付がある時
                 a = plan_list[-1]
-                a.append(item.plan)
-                a = list(set(a)) #重複の削除
-                a.sort()
+                a2 = [p.plan for p in a]
+                if item.plan not in a2:
+                    a.append(item)
                 plan_list.pop(-1)
                 plan_list.append(a)
         if true_or_false:
             c_list_plan.append('')
             plan_list.append('')
-    plan_list_short = []
-    short_dict = {
-        'ヨガ': 'ヨガ', 
-        '椅子ヨガ': '椅子', 
-        'お茶会': 'お茶', 
-        '蔵のカフェ': '蔵', 
-        'キッズヨガ': 'キッ', 
-        '産後ヨガ': '産後',
-        '朝ヨガ': '朝',
-        'リラックスヨガ': 'リラ',
-        'パワーヨガ': 'パワ'
-        }
     #プランが存在しているプランのみ取得
-    p_list_exist = []
-    for plan in plan_list:
-        if plan != '':
-            p_list = []
-            for p in plan:
-                try:
-                    p_list.append(short_dict[p])
-                    if p not in p_list_exist:
-                        p_list_exist.append(p)
-                except:
-                    p_list.append(p)
-            plan_list_short.append(p_list)
-        else:
-            plan_list_short.append(plan)
-    #日にちが過ぎているリストの削除
-    today = datetime.datetime.today()
-    today = datetime.datetime(today.year, today.month, today.day)
-    object_list = []
-    for item in c_list_plan:
-        if item != '':
-            date_list = str(item.date).split('-')
-            if (datetime.datetime(int(date_list[0]), int(date_list[1]), int(date_list[2])) - today).days < 0:
-                object_list.append('')
-            else:
-                object_list.append(item)
-        else:
-            object_list.append('')    
+    plan_exist_list = set(item.plan for item in object_list)
+    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
+    setting_plan_model_exist = []
+    for item in setting_plan_model:
+        if item.name in plan_exist_list:
+            setting_plan_model_exist.append(item) 
 ################月曜日と日曜日を非表示にする場合################
     monday = NoteModel.objects.get(num=0).monday
     if monday == 0:
         calendar_list_all = [
-            zip(c_list[1:6], object_list[1:6], plan_list[1:6], plan_list_short[1:6]),
-            zip(c_list[8:13], object_list[8:13], plan_list[8:13], plan_list_short[8:13]),
-            zip(c_list[15:20], object_list[15:20], plan_list[15:20], plan_list_short[15:20]),
-            zip(c_list[22:27], object_list[22:27], plan_list[22:27], plan_list_short[22:27]),
-            zip(c_list[29:34], object_list[29:34], plan_list[29:34], plan_list_short[29:34]),
-            zip(c_list[36:41], object_list[36:41], plan_list[36:41], plan_list_short[36:41])
+            zip(c_list[1:6], c_list_plan[1:6], plan_list[1:6]),
+            zip(c_list[8:13], c_list_plan[8:13], plan_list[8:13]),
+            zip(c_list[15:20], c_list_plan[15:20], plan_list[15:20]),
+            zip(c_list[22:27], c_list_plan[22:27], plan_list[22:27]),
+            zip(c_list[29:34], c_list_plan[29:34], plan_list[29:34]),
+            zip(c_list[36:41], c_list_plan[36:41], plan_list[36:41])
             ]
         if c_list[1:6].count(' ') == 5: #1行少ない時用
             calendar_list_all.pop(0)
@@ -170,12 +145,12 @@ def bookfunc(request, month):
     ################月曜日を非表示にしない場合################
     elif monday == 1:
         calendar_list_all = [
-            zip(c_list[0:6], object_list[0:6], plan_list[0:6], plan_list_short[0:6]),
-            zip(c_list[7:13], object_list[7:13], plan_list[7:13], plan_list_short[7:13]),
-            zip(c_list[14:20], object_list[14:20], plan_list[14:20], plan_list_short[14:20]),
-            zip(c_list[21:27], object_list[21:27], plan_list[21:27], plan_list_short[21:27]),
-            zip(c_list[28:34], object_list[28:34], plan_list[28:34], plan_list_short[28:34]),
-            zip(c_list[35:41], object_list[35:41], plan_list[35:41], plan_list_short[35:41])
+            zip(c_list[0:6], c_list_plan[0:6], plan_list[0:6]),
+            zip(c_list[7:13], c_list_plan[7:13], plan_list[7:13]),
+            zip(c_list[14:20], c_list_plan[14:20], plan_list[14:20]),
+            zip(c_list[21:27], c_list_plan[21:27], plan_list[21:27]),
+            zip(c_list[28:34], c_list_plan[28:34], plan_list[28:34]),
+            zip(c_list[35:41], c_list_plan[35:41], plan_list[35:41])
             ]
         if c_list[0:6].count(' ') == 6: #1行少ない時用
             calendar_list_all.pop(0)
@@ -201,9 +176,8 @@ def bookfunc(request, month):
         'pre_month': pre_month,
         'next_month': next_month,
         'calendar_list_all': calendar_list_all,
-        'location': 'callendar',
         'monday': monday,
-        'p_list_exist': p_list_exist,
+        'setting_plan_model_exist': setting_plan_model_exist
     }
     return render(request, 'book.html', context)
 
@@ -293,6 +267,9 @@ def cancel_yoga_func(request, month, date, pk, mark):
     objects.save()
     #ユーザー別で予約したプランの削除
     objects = BookModel.objects.filter(user=username)[0]
+    #キャンセル回数のカウント
+    objects.time_of_cancel = objects.time_of_cancel + 1
+    #
     plan_list = objects.plan.split()
     try:
         plan_list.remove(str(pk))
@@ -343,7 +320,6 @@ def booked_list_func(request):
     context = {
         'object_list': zip(object_list, plan_model_list, weekday_list),
         'check': 0 if object_list == [] else 1,
-        'location': 'booked_list'
     }
     return render(request, 'booked_list.html', context)
 
@@ -374,12 +350,12 @@ def clean_plan(username):
 #アクセス
 @login_required
 def access_func(request):
-    return render(request, 'access.html', {'location': 'access'})
+    return render(request, 'access.html')
 
 #インフォメーション
 @login_required
 def info_func(request):
-    return render(request, 'info.html', {'location': 'info'})
+    return render(request, 'info.html')
 
 
 ############################################################
@@ -418,7 +394,7 @@ def book_adminfunc(request, month):
             c_list += c.split()
     #プランの取得
     month3 = '0' + str(month2) if len(str(month2)) == 1 else str(month2) #1ケタの月の先頭に0を足す
-    object_list = list(PlanModel.objects.filter(month=str(year) + "-" + month3))
+    object_list = list(PlanModel.objects.filter(month=str(year) + "-" + month3).order_by('time'))
     #デフォルト入力の必要性を確認
     if len(object_list) == 0:
         default_needs = True
@@ -517,8 +493,7 @@ def book_adminfunc(request, month):
     #############################################################
     
     #予定入力設定
-    setting_plan_model = SettingPlanModel.objects.all()
-    setting_plan_model = sorted(setting_plan_model, key = lambda x: x.plan_num)
+    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
     if request.method == "POST":
         default = int(request.POST["default_or_not"])
         if default == 0:
@@ -526,6 +501,7 @@ def book_adminfunc(request, month):
             days = request.POST["select_days"]
             select_plan = request.POST["select_plan"]
             plan = list(setting_plan_model)[int(select_plan)].name
+            short_plan_name = setting_plan_model.get(name=plan).short_plan_name
             time1 = request.POST["time1"]
             time1_5 = request.POST["time1-5"]
             time2 = request.POST["time2"]
@@ -541,7 +517,7 @@ def book_adminfunc(request, month):
             #新規作成
             add_plans = []
             for day in days_list:
-                plans = PlanModel(date=year_month + "-" + day, month=year_month, plan=plan, time=time, plan_num=plan_num, location=location, max_book=max_book)
+                plans = PlanModel(date=year_month + "-" + day, month=year_month, plan=plan, short_plan_name=short_plan_name, time=time, plan_num=plan_num, location=location, max_book=max_book)
                 add_plans.append(plans)
             PlanModel.objects.bulk_create(add_plans)
             return redirect('book_admin', month)
@@ -561,12 +537,13 @@ def book_adminfunc(request, month):
                 for item in list(weekday_default_model.filter(weekday=weekday3)):
                     #データの収集
                     plan = item.plan
+                    short_plan_name =setting_plan_model.get(name=plan).short_plan_name
                     time = item.time
                     plan_num = item.plan_num
                     location = item.location
                     max_book = item.max_book
                     #保存タプルの作成
-                    plans = PlanModel(date=year_month + "-" + c, month=year_month, plan=plan, time=time, plan_num=plan_num, location=location, max_book=max_book)
+                    plans = PlanModel(date=year_month + "-" + c, month=year_month, plan=plan, short_plan_name=short_plan_name, time=time, plan_num=plan_num, location=location, max_book=max_book)
                     add_plans.append(plans)
             PlanModel.objects.bulk_create(add_plans)
                 
@@ -590,7 +567,7 @@ def book_adminfunc(request, month):
 #詳細確認
 @login_required
 def detail_admin_func(request, month, date):
-    object_list = list(PlanModel.objects.filter(date=date))
+    object_list = list(PlanModel.objects.filter(date=date).order_by('time'))
     plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
     username = request.user.get_username()
     #予約者の抽出
@@ -642,6 +619,7 @@ def plan_update(request, month, date, pk):
             booked_people_name_list = item.booked_people_name.split()
             if cancel_name in booked_people_name_list:
                 index_num = booked_people_name_list.index(cancel_name)
+                cancel_people = booked_people_list[index_num] #633行目以降用
                 booked_people_list.pop(index_num)
                 booked_people_name_list.pop(index_num)
                 booked_people_str = ''
@@ -654,6 +632,18 @@ def plan_update(request, month, date, pk):
                 item.booked_people_name = booked_people_name_str
                 item.number_of_people = len(booked_people_list)
                 item.save()
+                #ブックモデルの予約番号の削除
+                try: #anonimous用
+                    book_model = BookModel.objects.get(user=cancel_people)
+                    book_model_plan = book_model.plan.split()
+                    book_model_plan.remove(str(pk))
+                    book_model_plan_2 = ''
+                    for plan in book_model_plan:
+                        book_model_plan_2 += plan + ' '
+                    book_model.plan = book_model_plan_2
+                    book_model.save()
+                except:
+                    pass
         add_booked_people = last_name + first_name
         if add_booked_people != '': #予約追加の人がいるとき
             if add_booked_people not in item.booked_people_name.split():
@@ -664,7 +654,10 @@ def plan_update(request, month, date, pk):
                     booked_people += ' ' + booked_user[0].username + ' '
                     try:
                         book_model = BookModel.objects.get(user=booked_user[0].username)
-                        book_model_plan = book_model.plan
+                        if book_model.plan == None:
+                            book_model_plan = ''
+                        else:
+                            book_model_plan = book_model.plan
                         book_model_plan += ' ' + str(pk) + ' '
                         book_model.plan = book_model_plan
                         book_model.save()
@@ -736,12 +729,14 @@ class SettingPlanList(ListView):
     template_name = 'setting_plan_detail.html'
     model = SettingPlanModel
 
+    def get_queryset(self):
+        return super().get_queryset().order_by('plan_num')
 
 #プラン設定の編集
 class SettingPlanUpdate(UpdateView):
     template_name = 'setting_plan_update.html'
     model = SettingPlanModel
-    fields = ('price', 'location', 'max_book', 'memo', 'image')
+    fields = ('short_plan_name', 'price', 'location', 'max_book', 'memo', 'image')
     success_url = reverse_lazy('setting_plan')
 
 
@@ -751,17 +746,17 @@ class YogaCreate(CreateView):
     template_name = 'create.html'
     model = SettingPlanModel
     form_class = CreateSettingPlanForm
+    success_url = reverse_lazy('yoga_create_plan_num')
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            setting_plan_model = SettingPlanModel.objects.all()
-            plan_num_max = max([item.plan_num for item in setting_plan_model])
-            obj = form.save(commit=False)
-            obj.plan_num = plan_num_max + 1
-            obj.save()
-            return redirect('setting_plan')
-    
+@login_required
+def yoga_create_plan_num(request):
+    item = SettingPlanModel.objects.get(plan_num=0)
+    setting_plan_model = SettingPlanModel.objects.all()
+    plan_num_max = max([item.plan_num for item in setting_plan_model])
+    item.plan_num = plan_num_max + 1
+    item.save()
+    return redirect('setting_plan')
+
                             
 #プランの削除
 class YogaPlanDelete(DeleteView):
@@ -773,9 +768,23 @@ class YogaPlanDelete(DeleteView):
 #登録者情報
 @login_required
 def users_detail(request):
-    users_list = User.objects.all()
+    from django_pandas.io import read_frame
+    users_list = User.objects.all().order_by('last_name')
+    cancel_list = BookModel.objects.all()
+    user_df = read_frame(users_list, fieldnames=["last_name", "first_name", "username", "email"])
+    user_df["name"] = user_df["last_name"] + user_df["first_name"]
+    user2_df = read_frame(cancel_list, fieldnames=["user", "plan", "time_of_cancel"])
+    user2_df.index = user2_df["user"]
+    user2_df = user2_df.drop("user", axis=1)
+    #キャンセル回数を探す
+    def find_time_of_cancel(x):
+        try:
+            return user2_df.at[x, "time_of_cancel"]
+        except:
+            return 0
+    user_df["time_of_cancel"] = user_df["username"].map(find_time_of_cancel)
     context = {
-        'users_list': users_list,
+        'df': user_df,
     }
     return render(request, 'users.html', context)
 
@@ -815,6 +824,7 @@ def make_users_csv():
     columns = ['username', 'first_name', 'last_name', 'email']
     df = read_frame(model, fieldnames=columns)
     #csvファイルで吐き出し
+    # df.to_csv('/var/www/yogaproject/static/users.csv', encoding='utf_8_sig')
     df.to_csv('static/users.csv', encoding='utf_8_sig')
     return None
     
@@ -1084,6 +1094,7 @@ def table_func(request):
         df_to_csv.loc[:, 'booked_people'] = df_to_csv.loc[:, 'booked_people'].map(lambda x: x.replace(' ', ''))
         df_to_csv.loc[:, 'booked_people_name'] = df_to_csv.loc[:, 'booked_people_name'].map(lambda x: x.replace(' ', ''))
         #csvファイルで吐き出し
+        # df_to_csv.to_csv('/var/www/yogaproject/static/table.csv', encoding='utf_8_sig')
         df_to_csv.to_csv('static/table.csv', encoding='utf_8_sig')
         context = {
             'post': True,
@@ -1151,7 +1162,7 @@ def notefunc(request):
 #設定
 @login_required
 def calendar_dafault_func(request):
-    weekday_default_model = WeekdayDefaultModel.objects.all()
+    weekday_default_model = WeekdayDefaultModel.objects.all().order_by('time')
     monday_plan_list = list(weekday_default_model.filter(weekday='monday'))
     tuesday_plan_list = list(weekday_default_model.filter(weekday='tuesday'))
     wednesday_plan_list = list(weekday_default_model.filter(weekday='wednesday'))
@@ -1180,8 +1191,7 @@ def calendar_dafault_func(request):
     total_checkbox = len(plan_list)
     plan_list = zip(weekday_get_list ,plan_list)
     #予定入力設定
-    setting_plan_model = SettingPlanModel.objects.all()
-    setting_plan_model = sorted(setting_plan_model, key = lambda x: x.plan_num)
+    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
     if request.method == "POST":
         #formの値の取得
         weekday_str = request.POST["select_days"]
@@ -1223,23 +1233,14 @@ def calendar_dafault_func(request):
 @login_required
 def weekday_detail_func(request, weekday):
     weekday_dict = {'monday': '月曜日', 'tuesday': '火曜日', 'wednesday': '水曜日', 'thursday': '木曜日', 'friday': '金曜日', 'saturday': '土曜日'}
-    weekday_default_model = list(WeekdayDefaultModel.objects.filter(weekday=weekday))
+    weekday_default_model = list(WeekdayDefaultModel.objects.filter(weekday=weekday).order_by('time'))
     setting_plan_model = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in weekday_default_model)
     username = request.user.get_username()
-    
-    #並び替えの処理
-    time_list = [item.time for item in weekday_default_model]
-    try:
-        object_plan_list = sorted(zip(time_list, weekday_default_model, setting_plan_model))
-        error = ''
-    except:
-        object_plan_list = zip(time_list, weekday_default_model, setting_plan_model)
-        error = '時間が重複しています．'
+    object_plan_list = zip(weekday_default_model, setting_plan_model)
     context = {
         'weekday': weekday,
         'weekday_j': weekday_dict[weekday],
         'object_plan_list': object_plan_list,
-        'error': error,
     }
     return render(request, 'weekday_detail.html', context)
  

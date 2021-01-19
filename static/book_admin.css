@@ -41,58 +41,102 @@ th {
     margin-bottom: 5px;
 }
 
-.yoga {
+.yoga1 {
     background-color: rgba(55, 167, 55, 0.7);
 }
 
-.isuyoga {
+.yoga2 {
     background-color: rgba(10, 161, 149, 0.7);
 }
 
-.ochakai {
+.yoga3 {
     background-color: rgba(153, 205, 50, 0.7);
 }
 
-.kura {
+.yoga4 {
     background-color: rgba(134, 241, 248, 0.7);
 }
 
-.kids {
+.yoga5 {
     background-color: rgba(214, 248, 134, 0.7);
 }
 
-.sango {
+.yoga6 {
     background-color: rgba(188, 166, 250, 0.7);
 }
 
-.asa {
+.yoga7 {
     background-color: rgba(250, 166, 246, 0.7);
 }
 
-.relax {
+.yoga8 {
     background-color: rgba(250, 221, 166, 0.7);
 }
 
-.power {
+.yoga9 {
     background-color: rgba(250, 166, 166, 0.7);
 }
 
-.others {
+.yoga10 {
     background-color: rgba(145, 210, 248, 0.7);
 }
 
-.yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
+.yoga11 {
+    background-color: rgba(2, 167, 2, 0.7);
+}
+
+.yoga12 {
+    background-color: rgba(60, 156, 148, 0.7);
+}
+
+.yoga13 {
+    background-color: rgba(142, 207, 10, 0.7);
+}
+
+.yoga14 {
+    background-color: rgba(46, 236, 250, 0.7);
+}
+
+.yoga15 {
+    background-color: rgba(188, 253, 34, 0.7);
+}
+
+.yoga16 {
+    background-color: rgba(114, 64, 252, 0.7);
+}
+
+.yoga17 {
+    background-color: rgba(247, 89, 239, 0.7);
+}
+
+.yoga18 {
+    background-color: rgba(250, 189, 76, 0.7);
+}
+
+.yoga19 {
+    background-color: rgba(250, 166, 166, 0.7);
+}
+
+.yoga20 {
+    background-color: rgba(80, 190, 253, 0.7);
+}
+
+.yoga_set {
     font-family: Arial, Helvetica, sans-serif;
     color: #000;
     text-align: left;
     padding: 2px 6px;
     margin-bottom: 0;
-    border: 1px solid #fff;
     text-decoration: none;
     transition: 0.5s;
     font-weight: normal;
     font-size: 16px;
+    border-bottom: solid 1px #fff;
     overflow: hidden;
+}
+
+.when_small {
+    display: none;
 }
 
 .hidden {
@@ -106,7 +150,7 @@ th {
 }
 
 @media (max-width: 1200px) {
-    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
+    .yoga_set {
         font-size: 14px;
     }
 }
@@ -115,14 +159,14 @@ th {
     .hidden {
         display: none;
     }
-    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
+    .yoga_set {
         text-align: center;
         padding: 2px 0px;
     }
 }
 
 @media (max-width: 768px) {
-    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
+    .yoga_set {
         padding: 0;
     }
     .setting select, .setting input, .input-group-text {
@@ -148,9 +192,18 @@ th {
         font-size: 16px;
         padding: 1px 4px;
     }
-    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
+    .yoga_set {
         padding: 0.5px 0;
         font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .when_big {
+        display: none;
+    }
+    .when_small {
+        display: block;
     }
 }
 

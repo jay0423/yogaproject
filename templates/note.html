@@ -15,10 +15,12 @@
     <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span id='titleuesita'></span></a>
+                <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span
+                        id='titleuesita'></span></a>
             </li>
             <li class="nav-item">
-                <a id="access" class="nav-link" href="{% url 'calendar_default' %}">曜日別プラン<span id='title_mainuesita'></span></a>
+                <a id="access" class="nav-link" href="{% url 'calendar_default' %}">曜日別プラン<span
+                        id='title_mainuesita'></span></a>
             </li>
             <li class="nav-item" style="background-color: rgb(248, 160, 150);">
                 <a id="booked_list" class="nav-link" href="{% url 'note' %}">表示設定<span id='dateuesita'></span></a>
@@ -57,12 +59,23 @@
             </p>
             <input id="monday" hidden value="10" name="monday">
             {% if item.monday == 0 %}
-            <input class="btn btn-primary btn-sm" type="submit" id="off" value="表示に変更" style="margin-bottom: 10px;" onclick="hidden_off()">
+            <input class="btn btn-primary btn-sm" type="submit" id="off" value="表示に変更" style="margin-bottom: 10px;"
+                onclick="hidden_off()">
             {% else %}
-            <input class="btn btn-primary btn-sm" type="submit"  id="on" value="非表示に変更" style="margin-bottom: 10px;" onclick="hidden_on()">
+            <input class="btn btn-primary btn-sm" type="submit" id="on" value="非表示に変更" style="margin-bottom: 10px;"
+                onclick="hidden_on()">
             {% endif %}
         </div>
     </form>
+
+    <br>
+    <div class="alert alert-warning" role="alert">
+        <h3>マニュアルのpdfファイル</h3>
+        <hr style="border-color: green;">
+        <p>以下のリンクからマニュアルをダウンロード，閲覧することができます．</p>
+        <a class="download" href="{% static 'manual.pdf' %}" download="manual.pdf"
+            style="color: blue; text-decoration: underline;">マニュアルをダウンロード</a>
+    </div>
 
 </div>
 
@@ -75,7 +88,7 @@
         document.getElementById('monday').value = 1;
         alert("設定を表示に変更しました．");
     }
-    
+
     function hidden_on() {
         document.getElementById('monday').value = 0;
         alert("設定を非表示に変更しました．");

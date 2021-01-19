@@ -12,14 +12,16 @@
 
 {% block content %}
 <div class="container">
-    
+
     <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span id='titleuesita'></span></a>
+                <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span
+                        id='titleuesita'></span></a>
             </li>
             <li class="nav-item" style="background-color: rgb(248, 160, 150);">
-                <a id="access" class="nav-link" href="{% url 'calendar_default' %}">曜日別プラン<span id='title_mainuesita'></span></a>
+                <a id="access" class="nav-link" href="{% url 'calendar_default' %}">曜日別プラン<span
+                        id='title_mainuesita'></span></a>
             </li>
             <li class="nav-item">
                 <a id="booked_list" class="nav-link" href="{% url 'note' %}">表示設定<span id='dateuesita'></span></a>
@@ -57,27 +59,7 @@
             <th>
                 <a href="{% url 'weekday_detail' weekday %}">
                     {% for plan in plans %}
-                    {% if plan.plan == 'ヨガ' %}
-                    <p class="yoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'お茶会' %}
-                    <p class="ochakai">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '蔵のカフェ' %}
-                    <p class="kura">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'キッズ' %}
-                    <p class="kids">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '産後ヨガ' %}
-                    <p class="sango">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '朝ヨガ' %}
-                    <p class="asa">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'リラックスヨガ' %}
-                    <p class="relax">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'パワーヨガ' %}
-                    <p class="power">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% else %}
-                    <p class="others">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% endif %}
+                    <p class="yoga_set yoga{{ plan.plan_num }}">{{ plan.plan}}<span class="hidden">{{ plan.time }}</span></p>
                     {% endfor %}
                 </a>
             </th>
@@ -93,7 +75,8 @@
                 <div class="input-group-prepend">
                     <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取得">
                 </div>
-                <input type="" class="form-control" placeholder="" id="checked" name="select_days" readonly style="background-color: #fff;">
+                <input type="" class="form-control" placeholder="" id="checked" name="select_days" readonly
+                    style="background-color: #fff;">
             </div>
             <br>
             <div class="input-group mb-3 plans" id="plan_hidden" style="display: none;">

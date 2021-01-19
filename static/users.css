@@ -125,12 +125,14 @@ th, td {
     }
     .download {
         margin-top: 4px;
-        font-size: 16px;
+        font-size: 14px;
     }
     .input-rank {
         width: 30%;
     }
-    
+    th a, td a {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -168,7 +170,7 @@ th, td {
 
 @media (max-width: 350px) {
     .order_top .nav-link {
-        font-size: 12px;
+        font-size: 14px;
     }
     .input-group-text {
         font-size: 14px;

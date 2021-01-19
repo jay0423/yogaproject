@@ -16,14 +16,13 @@
     <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
         <ul class="nav nav-pills">
             <li class="nav-item" style="background-color: rgb(248, 160, 150);">
-                <a id="callendar" class="nav-link" href="{% url 'users' %}">登録者情報<span id='titleuesita'></span></a>
+                <a id="callendar" class="nav-link" href="{% url 'users' %}">登録者情報</a>
             </li>
             <li class="nav-item">
-                <a id="booked_list" class="nav-link" href="{% url 'analysis' %}">売上・他<span
-                        id='dateuesita'></span></a>
+                <a id="booked_list" class="nav-link" href="{% url 'analysis' %}">売上・他</a>
             </li>
             <li class="nav-item">
-                <a id="access" class="nav-link" href="{% url 'table' %}">テーブル<span id='title_mainuesita'></span></a>
+                <a id="access" class="nav-link" href="{% url 'table' %}">テーブル</a>
             </li>
         </ul>
         <input hidden id="location" value="{{ location }}">
@@ -38,13 +37,15 @@
                     <th>氏名</th>
                     <th>ユーザー名</th>
                     <th>連絡先</th>
+                    <th>キャンセル</th>
                 </thead>
 
-                {% for user in users_list %}
+                {% for index, row in df.iterrows %}
                 <tr class="scroll_box">
-                    <th>{{ user.last_name }}{{ user.first_name }}</th>
-                    <th><a href="{% url 'users_update' user.username %}" style="color: blue;">{{ user.username }}</a></th>
-                    <th>{{ user.email }}</th>
+                    <td>{{ row.name }}</td>
+                    <td><a href="{% url 'users_update' row.username %}" style="color: blue;">{{ row.username }}</a></td>
+                    <td>{{ row.email }}</td>
+                    <td>{{ row.time_of_cancel }}</td>
                 </tr>
                 {% endfor %}
 

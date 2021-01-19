@@ -14,8 +14,7 @@
 <div class="container">
     <a id="title" class="move" href="{% url 'calendar_default' %}">デフォルト画面へ</a>
     <h3 class="date">{{ weekday_j }}</h3>
-    <span style="color: red;">{{ error }}</span>
-    {% for time, item, plan in object_plan_list %}
+    {% for item, plan in object_plan_list %}
     {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
         <h3 class="plan_name">

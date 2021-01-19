@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'nav-link.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'access.css' %}">
 {% endblock customcss %}
 
@@ -12,7 +13,23 @@
 {% block content %}
 
 <div class="container">
-    {% include 'nav-link.html' %}
+
+    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 20px;">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a id="callendar" class="nav-link" href="{% url 'book' '0' %}">予約画面</a>
+            </li>
+            <li class="nav-item">
+                <a id="booked_list" class="nav-link" href="{% url 'booked_list' %}">予約確認</a>
+            </li>
+            <li class="nav-item">
+                <a id="access" class="nav-link" href="{% url 'access' %}" style="background-color: rgb(248, 160, 150);">アクセス</a>
+            </li>
+            <li class="nav-item">
+                <a id="info" class="nav-link" href="{% url 'info' %}">情報</a>
+            </li>
+        </ul>
+    </div>
 
     <div class="alert alert-warning setting" role="alert">
         <h3>monaスタジオ</h3>

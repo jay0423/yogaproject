@@ -21,6 +21,12 @@
 
 @media (max-width: 350px) {
     .nav-link {
-        font-size: 12px;
+        font-size: 14px!important;
+    }
+}
+
+@media (max-width: 300px) {
+    .nav-link {
+        font-size: 12px!important;
     }
 }
