@@ -11,7 +11,7 @@
 
 {% block content %}
 <div class="container">
-    <a id="title" class="move" href="{% url 'book' '0' %}">カレンダー予約画面へ<span id='titleuesita'></span></a>
+    <a id="title" class="move" href="{% url 'book' month0 %}" style="color: #007bff;">カレンダー予約画面へ<span id='titleuesita'></span></a>
     <div class="date">{{ month }}月{{ day }}日（{{weekday}}）　<span><br class="br-get">予約したい時間のプランを選択して下さい</span></div>
     {% for time, item, plan, error_booked in object_plan_error_list %}
     {% if item.plan != '0' %}

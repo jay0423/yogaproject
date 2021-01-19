@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="container">
-    <a class="move" href="{% url 'detail' item.date %}">詳細画面へ</a>
+    <a class="move" href="{% url 'detail' month_num item.date %}">詳細画面へ</a>
 
     <h3 class="date">編集画面｜20{{ item.date|date:"y-m-d" }}｜{{ item.plan }}</h3>
 

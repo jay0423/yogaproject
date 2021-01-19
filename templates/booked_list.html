@@ -13,7 +13,7 @@
 <div class="container">
     {% include 'nav-link.html' %}
     <h3>予約済プラン</h3>
-    <p class="hope">ご予約の取消は１日前までにお願い致します．</p>
+    <p class="hope">ご予約の取消は１日前までにお願い致します.</p>
     {% if check == 0 %}
     <div class="alert alert-warning" role="alert">
         <p>現在ご予約しているプランはございません．</p>
@@ -30,7 +30,7 @@
             場所：{{ plan.location }}
             <a href="#" class="btn btn-danger btn-md" role="button" aria-pressed="true"
                 onclick="var ok=confirm('この予約を取消しますか？');
-                    if (ok) location.href='confirm/{{ item.date }}/cancel_yoga/{{ item.pk }}/1'; return false;">取 消</a>
+                    if (ok) location.href='book/0/confirm/{{ item.date }}/cancel_yoga/{{ item.pk }}/1'; return false;">取 消</a>
         </p>
     </div>
     {% endfor %}

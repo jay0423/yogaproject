@@ -42,73 +42,63 @@ th {
 }
 
 .yoga {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(55, 167, 55, 0.7);
-    text-align: left;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
 }
 
 .isuyoga {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(10, 161, 149, 0.7);
-    text-align: left;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
 }
 
 .ochakai {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(153, 205, 50, 0.7);
-    text-align: left;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
 }
 
 .kura {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(134, 241, 248, 0.7);
-    text-align: left;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
+}
+
+.kids {
+    background-color: rgba(214, 248, 134, 0.7);
+}
+
+.sango {
+    background-color: rgba(188, 166, 250, 0.7);
+}
+
+.asa {
+    background-color: rgba(250, 166, 246, 0.7);
+}
+
+.relax {
+    background-color: rgba(250, 221, 166, 0.7);
+}
+
+.power {
+    background-color: rgba(250, 166, 166, 0.7);
 }
 
 .others {
+    background-color: rgba(145, 210, 248, 0.7);
+}
+
+.yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
     font-family: Arial, Helvetica, sans-serif;
     color: #000;
-    background-color: rgba(145, 210, 248, 0.7);
     text-align: left;
     padding: 2px 6px;
     margin-bottom: 0;
-    border: 1px solid #ddd;
+    border: 1px solid #fff;
     text-decoration: none;
     transition: 0.5s;
     font-weight: normal;
+    font-size: 16px;
+    overflow: hidden;
 }
 
 .hidden {
     color: #000;
     float: right;
+    font-size: 14px;
 }
 
 .max_book {
@@ -116,8 +106,8 @@ th {
 }
 
 @media (max-width: 1200px) {
-    .yoga, .isuyoga, .ochakai, .kura, .others {
-        font-size: 16px;
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
+        font-size: 14px;
     }
 }
 
@@ -125,14 +115,14 @@ th {
     .hidden {
         display: none;
     }
-    .yoga, .isuyoga, .ochakai, .kura, .others {
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
         text-align: center;
         padding: 2px 0px;
     }
 }
 
 @media (max-width: 768px) {
-    .yoga, .isuyoga, .ochakai, .kura, .others {
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
         padding: 0;
     }
     .setting select, .setting input, .input-group-text {
@@ -158,7 +148,7 @@ th {
         font-size: 16px;
         padding: 1px 4px;
     }
-    .yoga, .isuyoga, .ochakai, .kura, .others {
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
         padding: 0.5px 0;
         font-size: 12px;
     }

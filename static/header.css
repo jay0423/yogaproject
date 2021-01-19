@@ -28,8 +28,8 @@
     span {
         font-size: 16px;
     }
-    .navbar-brand span {
-        font-size: 22px;
+    .navbar-brand {
+        font-size: 21px;
     }
     .navbar-collapse {
         font-size: 16px;

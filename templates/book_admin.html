@@ -47,7 +47,7 @@
                     {% endif %}
                 </p>
                 {% if object != '' %}
-                <a href="{% url 'detail' object.date %}">
+                <a href="{% url 'detail' month object.date %}">
                     {% for plan in plans %}
                     {% if plan.plan == 'ヨガ' %}
                     <p class="yoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
@@ -57,6 +57,16 @@
                     <p class="ochakai">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% elif plan.plan == '蔵のカフェ' %}
                     <p class="kura">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% elif plan.plan == 'キッズ' %}
+                    <p class="kids">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% elif plan.plan == '産後ヨガ' %}
+                    <p class="sango">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% elif plan.plan == '朝ヨガ' %}
+                    <p class="asa">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% elif plan.plan == 'リラックスヨガ' %}
+                    <p class="relax">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% elif plan.plan == 'パワーヨガ' %}
+                    <p class="power">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% else %}
                     <p class="others">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% endif %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'detail_admin.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header_admin.html' %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <a class="move" href="{% url 'users' %}">登録者情報一覧へ</a>
+    <h3>登録者情報｜編集</h3>
+    <div class="alert alert-warning" role="alert">
+        <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <p>
+                <label for="id_username">ユーザー名：</label>
+                <input type="text" name="username" value="{{ object.username }}" maxlength="150" required
+                    id="id_username">
+            </p>
+            <p>
+                <label for="id_last_name">姓　　　　：</label>
+                <input type="text" name="last_name" value="{{ object.last_name }}" maxlength="30" id="id_last_name">
+            </p>
+            <p>
+                <label for="id_first_name">名前　　　：</label>
+                <input type="text" name="first_name" value="{{ object.first_name }}" maxlength="30" id="id_first_name">
+            </p>
+            <p>
+                <label for="id_email">連絡先　　：</label>
+                <input type="text" name="email" value="{{ object.email }}" maxlength="254" id="id_email">
+            </p>
+            <br>
+            <div class="bottom">
+                <!-- <input class="btn btn-secondary btn-sm" type="submit" value="削 除"> -->
+                <input class="btn btn-primary btn-sm" type="submit" value="更 新">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

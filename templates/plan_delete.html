@@ -27,8 +27,8 @@
         <br>
         <form action="" method="POST">{% csrf_token %}
             <div class="bottom">
-                <a class="btn btn-secondary btn-sm" href="{% url 'detail' date %}">キャンセル</a>
-                <input type="submit" value="削除完了" class="btn btn-secondary btn-sm">
+                <a class="btn btn-secondary btn-sm" href="{% url 'detail' month_num date %}">キャンセル</a>
+                <input type="submit" value="削除完了" class="btn btn-danger btn-sm">
             </div>
         </form>
     </div>

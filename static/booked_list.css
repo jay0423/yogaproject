@@ -16,6 +16,11 @@ p {
     margin-bottom: 7px;
 }
 
+.hope {
+    color: rgb(252, 29, 29);
+    font-weight: bolder;
+}
+
 @media (max-width: 576px) {}
 
 @media (max-width: 480px) {

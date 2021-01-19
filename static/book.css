@@ -43,68 +43,55 @@ th {
 }
 
 .yoga {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(55, 167, 55, 0.7);
-    text-align: center;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
 }
 
 .isuyoga {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(10, 161, 149, 0.7);
-    text-align: center;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
 }
 
 .ochakai {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(153, 205, 50, 0.7);
-    text-align: center;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
 }
 
 .kura {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
     background-color: rgba(134, 241, 248, 0.7);
-    text-align: center;
-    padding: 2px 6px;
-    margin-bottom: 0;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    transition: 0.5s;
-    font-weight: normal;
+}
+
+.kids {
+    background-color: rgba(214, 248, 134, 0.7);
+}
+
+.sango {
+    background-color: rgba(188, 166, 250, 0.7);
+}
+
+.asa {
+    background-color: rgba(250, 166, 246, 0.7);
+}
+
+.relax {
+    background-color: rgba(250, 221, 166, 0.7);
+}
+
+.power {
+    background-color: rgba(250, 166, 166, 0.7);
 }
 
 .others {
+    background-color: rgba(145, 210, 248, 0.7);
+}
+
+.yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
     font-family: Arial, Helvetica, sans-serif;
     color: #000;
-    background-color: rgba(145, 210, 248, 0.7);
     text-align: center;
     padding: 2px 6px;
     margin-bottom: 0;
-    border: 1px solid #ddd;
     text-decoration: none;
     transition: 0.5s;
     font-weight: normal;
+    border-bottom: solid 1px #fff;
 }
 
 .when_small {
@@ -118,17 +105,21 @@ th {
 }
 
 .note-3 {
-    padding: 0 22.5px 0 22.5px;
+    padding: 0 22px 0 22px;
+}
+
+.note-4 {
+    padding: 0 8px 0 8px;
 }
 
 @media (max-width: 992px) {
-    .yoga, .isuyoga, .ochakai, .kura, .others {
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
         padding: 0;
     }
 }
 
 @media (max-width: 768px) {
-    .yoga, .isuyoga, .ochakai, .kura, .others {
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
         font-size: 14px;
     }
 }
@@ -171,7 +162,7 @@ th {
     .next-month {
         font-size: 14px;
     }
-    .yoga, .isuyoga, .ochakai, .kura, .others {
+    .yoga, .isuyoga, .ochakai, .kura, .kids, .sango, .asa, .relax, .power, .others {
         font-size: 12px;
     }
 }

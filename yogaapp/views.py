@@ -11,11 +11,11 @@ from django.urls import reverse_lazy, reverse
 
 def signupfunc(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['username'].replace('　', '').replace(' ', '')
         password = 'password'
-        last_name = request.POST['lastname']
-        first_name = request.POST['firstname']
-        email = request.POST['email']
+        last_name = request.POST['lastname'].replace('　', '').replace(' ', '')
+        first_name = request.POST['firstname'].replace('　', '').replace(' ', '')
+        email = request.POST['email'].replace('　', '').replace(' ', '')
         try:
             user = User.objects.create_user(username, '', password)
             user.is_active = True
@@ -110,15 +110,28 @@ def bookfunc(request, month):
         if true_or_false:
             c_list_plan.append('')
             plan_list.append('')
-    
     plan_list_short = []
-    short_dict = {'ヨガ': 'ヨガ', '椅子ヨガ': '椅子', 'お茶会': 'お茶', '蔵のカフェ': '蔵', 'キッズヨガ': 'キッズ'}
+    short_dict = {
+        'ヨガ': 'ヨガ', 
+        '椅子ヨガ': '椅子', 
+        'お茶会': 'お茶', 
+        '蔵のカフェ': '蔵', 
+        'キッズヨガ': 'キッ', 
+        '産後ヨガ': '産後',
+        '朝ヨガ': '朝',
+        'リラックスヨガ': 'リラ',
+        'パワーヨガ': 'パワ'
+        }
+    #プランが存在しているプランのみ取得
+    p_list_exist = []
     for plan in plan_list:
         if plan != '':
             p_list = []
             for p in plan:
                 try:
                     p_list.append(short_dict[p])
+                    if p not in p_list_exist:
+                        p_list_exist.append(p)
                 except:
                     p_list.append(p)
             plan_list_short.append(p_list)
@@ -190,13 +203,14 @@ def bookfunc(request, month):
         'calendar_list_all': calendar_list_all,
         'location': 'callendar',
         'monday': monday,
+        'p_list_exist': p_list_exist,
     }
     return render(request, 'book.html', context)
 
 
 #予約確定画面
 @login_required
-def confirmfunc(request, date):
+def confirmfunc(request, month, date):
     weekday_d = {0:'月', 1:'火', 2:'水', 3:'木', 4:'金', 5:'土', 6:'日'}
     weekday = weekday_d[datetime.datetime.strptime(date, '%Y-%m-%d').weekday()]
     object_list = list(PlanModel.objects.filter(date=date))
@@ -217,6 +231,7 @@ def confirmfunc(request, date):
     except:
         object_plan_error_list = zip(time_list, object_list, plan_model_list, error_booked)
     context = {
+        'month0': month,
         'month': date[5:7],
         'day': date[8:],
         'object_plan_error_list': object_plan_error_list,
@@ -226,13 +241,14 @@ def confirmfunc(request, date):
 
 
 #planの予約者数
-def get_yoga_func(request, date, pk):
+@login_required
+def get_yoga_func(request, month, date, pk):
     objects = PlanModel.objects.get(pk=pk)
     item = SettingPlanModel.objects.get(plan_num=objects.plan_num)
     username = request.user.get_username()
     name = User.objects.get(username=username).last_name + User.objects.get(username=username).first_name
     if username in objects.booked_people.split(): #予約者の重複を無くすための処理
-        return redirect('book', '0')
+        return redirect('book', month)
     else:
         objects.booked_people += username + ' ' 
         objects.booked_people_name += name + ' '
@@ -251,11 +267,12 @@ def get_yoga_func(request, date, pk):
             except:
                 user_plan.plan = str(pk)
         user_plan.save()
-    return redirect('confirm', date)
+    return redirect('confirm', month, date)
 
 
 #planのキャンセル
-def cancel_yoga_func(request, date, pk, mark):
+@login_required
+def cancel_yoga_func(request, month, date, pk, mark):
     objects = PlanModel.objects.get(pk=pk)
     username = request.user.get_username()
     name = User.objects.get(username=username).last_name + User.objects.get(username=username).first_name
@@ -287,7 +304,7 @@ def cancel_yoga_func(request, date, pk, mark):
     objects.plan = plan_str
     objects.save()
     if mark == '0':
-        return redirect('confirm', date)
+        return redirect('confirm', month, date)
     elif mark == "1":
         return redirect('booked_list')
 
@@ -554,7 +571,6 @@ def book_adminfunc(request, month):
             PlanModel.objects.bulk_create(add_plans)
                 
             return redirect('book_admin', month)
-
     context = {
         'default_needs': default_needs,
         'month': month,
@@ -573,7 +589,7 @@ def book_adminfunc(request, month):
 
 #詳細確認
 @login_required
-def detail_admin_func(request, date):
+def detail_admin_func(request, month, date):
     object_list = list(PlanModel.objects.filter(date=date))
     plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
     username = request.user.get_username()
@@ -595,6 +611,7 @@ def detail_admin_func(request, date):
         object_plan_name_list = zip(time_list, object_list, plan_model_list, booked_people_name_list)
         error = '時間が重複しています．'
     context = {
+        'month_num': month,
         'date': date,
         'object_plan_name_list': object_plan_name_list,
         'error': error,
@@ -604,7 +621,7 @@ def detail_admin_func(request, date):
  
 #プランの編集
 @login_required
-def plan_update(request, date, pk):
+def plan_update(request, month, date, pk):
     item = PlanModel.objects.get(pk=pk)
     setting_plan_model = SettingPlanModel.objects.all()
     #表示処理
@@ -665,6 +682,7 @@ def plan_update(request, date, pk):
                 item.save()
             else:
                 context = {
+                    'month_num': month,
                     'item': item,
                     'booked_people_name_list': enumerate(booked_people_name_list),
                     'people_num': len(booked_people_name_list),
@@ -680,8 +698,9 @@ def plan_update(request, date, pk):
         item.location = location
         item.max_book = max_book
         item.save()
-        return redirect('detail', item.date)
+        return redirect('detail', month, item.date)
     context = {
+        'month_num': month,
         'item': item,
         'booked_people_name_list': enumerate(booked_people_name_list),
         'people_num': len(booked_people_name_list),
@@ -704,11 +723,12 @@ class PlanDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         item = PlanModel.objects.get(pk=self.kwargs['pk'])
         context['date'] = self.kwargs['date']
+        context['month_num'] = self.kwargs['month']
         context['plan'] = SettingPlanModel.objects.get(plan_num=item.plan_num)
         return context
     
     def get_success_url(self):
-        return reverse('detail', kwargs={'date': self.object.date})
+        return reverse('detail', kwargs={'month': self.kwargs['month'], 'date': self.object.date})
     
     
 #プラン一覧
@@ -753,12 +773,51 @@ class YogaPlanDelete(DeleteView):
 #登録者情報
 @login_required
 def users_detail(request):
-    users_list = list(User.objects.all())
+    users_list = User.objects.all()
     context = {
         'users_list': users_list,
     }
     return render(request, 'users.html', context)
 
+
+#登録者情報の編集
+@login_required
+def users_update(request, username):
+    object = User.objects.get(username=username)
+    if request.method == "POST": 
+        new_username = request.POST['username']
+        new_lastname = request.POST['last_name']
+        new_firstname = request.POST['first_name']
+        new_email = request.POST['email']
+        #更新
+        object.username = new_username
+        object.last_name = new_lastname
+        object.first_name = new_firstname
+        object.email = new_email
+        object.save()
+        make_users_csv()
+        #ユーザー名が変更されるとき
+        if username != new_username:
+            user = BookModel.objects.get(user=username)
+            user.user = new_username
+            user.save()
+        return redirect('users')
+        
+    context = {
+        'object': object,
+    }
+    return render(request, 'users_update.html', context)
+
+#usersのcsvの作成
+def make_users_csv():
+    from django_pandas.io import read_frame
+    model = User.objects.all()
+    columns = ['username', 'first_name', 'last_name', 'email']
+    df = read_frame(model, fieldnames=columns)
+    #csvファイルで吐き出し
+    df.to_csv('static/users.csv', encoding='utf_8_sig')
+    return None
+    
 
 #売上やピボットテーブル
 @login_required
@@ -1049,11 +1108,11 @@ def table_func(request):
 @login_required
 def signup_admin_func(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['username'].replace('　', '').replace(' ', '')
         password = 'password'
-        last_name = request.POST['lastname']
-        first_name = request.POST['firstname']
-        email = request.POST['email']
+        last_name = request.POST['lastname'].replace('　', '').replace(' ', '')
+        first_name = request.POST['firstname'].replace('　', '').replace(' ', '')
+        email = request.POST['email'].replace('　', '').replace(' ', '')
         try:
             user = User.objects.create_user(username, '', password)
             user.is_active = True
@@ -1064,9 +1123,10 @@ def signup_admin_func(request):
             user_plan = BookModel.objects.create()
             user_plan.user = username
             user_plan.save()
+            make_users_csv()
             return redirect('signup_admin')
         except:
-            return render(request, 'signup.html', {'error': 'このユーザーは登録されています'})
+            return render(request, 'signup_admin.html', {'error': 'このユーザーは登録されています'})
     return render(request, 'signup_admin.html')
 
 
