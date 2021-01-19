@@ -10,30 +10,11 @@
 {% endblock header %}
 
 {% block content %}
-
-<!-- <a class="btn btn-sm move" href="{% url 'booked_list' %}">予約確認画面へ</a> -->
 <div class="container">
-    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a id="title" class="nav-link" href="{% url 'book' '0' %}" style="background-color: rgb(248, 160, 150);">カレンダー予約<span id='titleuesita'></span></a>
-            </li>
-            <li class="nav-item">
-                <a id="date" class="nav-link" href="{% url 'booked_list' %}">予約確認<span id='dateuesita'></span></a>
-            </li>
-            <li class="nav-item">
-                <a id="title_main" class="nav-link" href="{% url 'access' %}">アクセス<span id='title_mainuesita'></span></a>
-            </li>
-            <!-- <li class="nav-item">
-                <a id="title_main" class="nav-link" href="{% url 'logout' %}">ログアウト<span id='title_mainuesita'></span></a>
-            </li> -->
-        </ul>
-    </div>
-    <br>
     <div class="row">
         <div class="col-3" style="text-align: left;">
             {% if month != '0' %}
-            <a class="next-month" href="0">◀{{ pre_month }}月</a>
+            <a class="next-month" href="0">◀前月</a>
             {% endif %}
         </div>
         <div class="col-6">
@@ -41,12 +22,12 @@
         </div>
         <div class="col-3" style="text-align: right;">
             {% if month != '100' %}
-            <a class="next-month" href="100">{{ next_month }}月▶</a>
+            <a class="next-month" href="100">次月▶</a>
             {% endif %}
         </div>
     </div>
     <table width="100%">
-        <thead style="background-color: rgb(194, 243, 194);">
+        <thead>
             <!-- <th>月</th> -->
             <th>火</th>
             <th>水</th>
@@ -55,37 +36,115 @@
             <th>土</th>
             <!-- <th>日</th> -->
         </thead>
-        {% for calendar_list in calendar_list_all %}
         <tr class="box">
-            {% for c, object, plans in calendar_list %}
+            {% for c, object in calendar_list1 %}
             <th>
                 <p class="c">{{ c }}</p>
-                {% if object != '' %}
-                <a href="{% url 'confirm' object.date %}">
-                    {% for plan in plans %}
-                    {% if plan == 'ヨガ' %}
-                    <p class=" yoga">{{ plan }}</p>
-                    {% elif plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan }}</p>
-                    {% elif plan == 'お茶会' %}
-                    <p class="ochakai">{{ plan }}</p>
-                    {% else %}
-                    <p class="others">{{ plan }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
                     {% endif %}
-                    {% endfor %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
                 </a>
                 {% endif %}
             </th>
             {% endfor %}
         </tr>
-        {% endfor %}
+        <tr class="box">
+            {% for c, object in calendar_list2 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        <tr class="box">
+            {% for c, object in calendar_list3 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        <tr class="box">
+            {% for c, object in calendar_list4 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% if calendar_list5 != 0 %}
+        <tr class="box">
+            {% for c, object in calendar_list5 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% if calendar_list6 != 0 %}
+        <tr class="box">
+            {% for c, object in calendar_list6 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% endif %}
     </table>
 
-    <a class="logout" href="{% url 'logout' %}">ログアウト</a>
-    <p class="note" style="padding-top: 10px;">
-        *定休日：月曜日，日曜日<br>
-        予約したい日にちをタッチして下さい．
-    </p>
+    <p class="note" style="padding-top: 10px;">*定休日：月曜日，日曜日</p>
 </div>
 
 <script>

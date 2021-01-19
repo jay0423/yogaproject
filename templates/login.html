@@ -7,9 +7,9 @@
 
 {% block content %}
 <form class="form-signin" method="POST" action="">{% csrf_token %}
-    <h1 class="monayoga">monaヨガ</h1>
-    <br><br><br>
-    <!-- <h5>ログイン</h5> -->
+    <div>yukika yoga</div>
+    <br><br><br><br>
+    <h4>ログイン</h4>
     {% if error %}
     {{ error }}
     {% endif %}
@@ -19,9 +19,8 @@
     </div>
     <div class="signup-button">
         <button class="btn btn-md btn-secondary disable" type="reset" style="width: 49%;">クリア</button>
-        <button class="btn btn-md btn-primary disable" id="signup-button" type="submit" style="width: 49%;">ログイン</button>
+        <button class="btn btn-md btn-secondary disable" id="signup-button" type="submit" style="width: 49%;">ログイン</button>
     </div>
-    <br>
-    <p class="mt-5 mb-3 text-muted">&copy; 2020/07 MonaYoga</p>
+    <p class="mt-5 mb-3 text-muted">&copy; 2020 yukikayoga</p>
 </form>
 {% endblock content %}

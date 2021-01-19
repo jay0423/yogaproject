@@ -2,30 +2,37 @@
 {% load static %}
 
 {% block customcss %}
-<link rel="stylesheet" type="text/css" href="{% static 'book_admin.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'book.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'header.css' %}">
 {% endblock customcss %}
 
 {% block header %}
-{% include 'header_admin.html' %}
+<nav class="navbar navbar-light sticky-top" style="background-color: #fff; border-bottom: 1px solid #eee;">
+    <a class="navbar-brand" href="#">Mona Yoga</a>
+    <span style="color: #000;">管理者画面</span>
+</nav>
+<a class="logout" href="{% url 'logout' %}">ログアウト</a>
 {% endblock header %}
 
 {% block content %}
 <div class="container">
-    <br>
     <div class="row">
         <div class="col-3" style="text-align: left;">
-            <a href="" class="next-month" onclick="pre_month()">◀{{ pre_month }}月</a>
+            {% if month != '0' %}
+            <a class="next-month" href="0">◀前月</a>
+            {% endif %}
         </div>
         <div class="col-6">
-            <h3 class="this-month">{{ year }}年{{ month2 }}月</h3>
+            <h3 class="this-month">{{ month2 }}月</h3>
         </div>
         <div class="col-3" style="text-align: right;">
-            <a href="" class="next-month" onclick="next_month()">{{ next_month }}月▶</a>
+            {% if month != '100' %}
+            <a class="next-month" href="100">次月▶</a>
+            {% endif %}
         </div>
     </div>
     <table width="100%">
-        <thead style="background-color: rgb(194, 243, 194);">
+        <thead>
             <!-- <th>月</th> -->
             <th>火</th>
             <th>水</th>
@@ -34,191 +41,117 @@
             <th>土</th>
             <!-- <th>日</th> -->
         </thead>
-        {% for calendar_list in calendar_list_all %}
         <tr class="box">
-            {% for c, object, plans in calendar_list %}
+            {% for c, object in calendar_list1 %}
             <th>
-                <p class="c">
-                    {{ c }}
-                    {% if c != ' ' %}
-                    <input type="checkbox" class="checks" value="{{ c }}">
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
                     {% endif %}
-                </p>
-                {% if object != '' %}
-                <a href="{% url 'detail' object.date %}">
-                    {% for plan in plans %}
-                    {% if plan.plan == 'ヨガ' %}
-                    <p class="yoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% elif plan.plan == 'お茶会' %}
-                    <p class="ochakai">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
-                    {% else %}
-                    <p class="others">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
                     {% endif %}
-                    {% endfor %}
                 </a>
                 {% endif %}
             </th>
             {% endfor %}
         </tr>
-        {% endfor %}
+        <tr class="box">
+            {% for c, object in calendar_list2 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        <tr class="box">
+            {% for c, object in calendar_list3 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        <tr class="box">
+            {% for c, object in calendar_list4 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% if calendar_list5 != 0 %}
+        <tr class="box">
+            {% for c, object in calendar_list5 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% if calendar_list6 != 0 %}
+        <tr class="box">
+            {% for c, object in calendar_list6 %}
+            <th>
+                <p class="c">{{ c }}</p>
+                {% if object != ' ' %}
+                <a href="{% url 'confirm' object.pk %}">
+                    {% if object.plan != '0' %}
+                    <p class="yoga">{{ object.plan }}</p>
+                    {% endif %}
+                    {% if object.plan2 != '0' %}
+                    <p class="isuyoga">{{ object.plan2 }}</p>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% endif %}
     </table>
-
-    <br>
-    <div class="alert alert-warning setting" role="alert">
-        <form action="" method="POST" name="form1">{% csrf_token %}
-            <template id="totalcheckbox">{{ total_checkbox }}</template>
-            <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取得">
-            <input type="text" placeholder="" id="checked" name="select_days">
-            <br><br>
-            <div class="input-group mb-3 plans" id="plan_hidden" style="display: none;">
-                <div class="input-group-prepend">
-                    <label class="input-group-text" for="inputGroupSelect01">プラン</label>
-                </div>
-                <select class="custom-select" id="inputGroupSelect01" name="select_plan" onchange="change_select()">
-                    <option value="100" selected>選択してください．</option>
-                    {% for i, model in setting_plan_model %}
-                    <option value="{{ i }}">{{ model.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div id="for_hidden" style="display: none;">
-                <div class="input-group mb-3 times">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">時間</span>
-                    </div>
-                    <select class="custom-select" id="inputGroupSelectTime1" name="time1" onchange="change_time()">
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10" selected>10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                    </select>
-                    <div class="input-group-prepend hidden_times">
-                        <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">時</span>
-                    </div>
-                    <select class="custom-select" id="inputGroupSelect04" name="time1-5">
-                        <option value="00" selected>00</option>
-                        <option value="30">30</option>
-                    </select>
-                    <div class="input-group-prepend hidden_times">
-                        <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
-                    </div>
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">～</span>
-                    </div>
-                    <select class="custom-select" id="inputGroupSelectTime2" name="time2">
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11" selected>11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                    </select>
-                    <div class="input-group-prepend hidden_times">
-                        <span class="input-group-text" id="basic-addon2" style="background-color: #fff;">時</span>
-                    </div>
-                    <select class="custom-select" id="inputGroupSelect06" name="time2-5">
-                        <option value="00" selected>00</option>
-                        <option value="30">30</option>
-                    </select>
-                    <div class="input-group-prepend hidden_times">
-                        <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
-                    </div>
-                </div>
-                <div id="for_hidden2" style="display: none;">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="inputGroupSelect01">場所</label>
-                    </div>
-                    <select class="custom-select" id="inputGroupSelect02" name="select_plan2">
-                        {% for model in setting_plan_model2 %}
-                        <option value="{{ model.location }}">{{ model.location }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <br>
-                <input class="btn btn-secondary btn-sm" type="submit" value="完了">
-        </form>
-    </div>
-</div>
 
 </div>
 
 <script>
-    // チェックボックス選択された日にちを取得
-    function check_click() {
-        var checks = document.getElementsByClassName('checks');
-        var str = '';
-        var total = document.getElementById('totalcheckbox').innerHTML
-
-        for (i = 0; i < total; i++) {
-            if (checks[i].checked === true) {
-                str += checks[i].value + " ";
-                // checks[i].checked = false;
-            }
-        }
-        document.getElementById('checked').value = str;
-        // 取得したときのプランの表示
-        if (str !== '') {
-            document.getElementById("plan_hidden").style.display = "flex";
-            document.getElementById("for_hidden2").style.display = "flex";
-        } else {
-            document.getElementById("plan_hidden").style.display = "none";
-            document.getElementById("for_hidden").style.display = "none";
-            document.getElementById("for_hidden2").style.display = "none";
-        }
-    }
-
-    // 選択した際の表示
-    function change_select() {
-        const select_plan = document.form1.select_plan;
-        const num = select_plan.selectedIndex;
-        const str = select_plan.options[num].value;
-        if (str !== "100") {
-            document.getElementById("for_hidden").style.display = "block";
-        } else {
-            document.getElementById("for_hidden").style.display = "none";
-        }
-        // プラン別に場所を選択させる
-        document.getElementById('inputGroupSelect02').options[Number(str)].selected = true;
-    }
-
-    function pre_month() {
-        var queryString = String(window.location);
-        var url_number = Number(queryString.slice(queryString.lastIndexOf('/') + 1));
-        url_number -= 100
-        window.history.pushState(null, null, url_number);
-        location.reload();
-    }
-    function next_month() {
-        var queryString = String(window.location);
-        var url_number = Number(queryString.slice(queryString.lastIndexOf('/') + 1));
-        url_number += 100
-        window.history.pushState(null, null, url_number);
-        location.reload();
-    }
-
-    // 時間が変更したとき
-    function change_time() {
-        var from_time = document.getElementById('inputGroupSelectTime1').value;
-        document.getElementById('inputGroupSelectTime2').options[Number(from_time)-7].selected = true;
-    }
 
 </script>
 {% endblock content %}

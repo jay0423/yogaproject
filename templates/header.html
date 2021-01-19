@@ -2,11 +2,12 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'header.css' %}">
 
-<nav class="navbar navbar-light sticky-top" style="background-color: rgb(194, 243, 194); border-bottom: 1px solid #eee;">
-    <a class="navbar-brand"><img class="header_logo" src="{% static 'logo.png' %}">monaヨガ</a>
+<nav class="navbar navbar-light sticky-top" style="background-color: #fff; border-bottom: 1px solid #eee;">
+    <a class="navbar-brand" href="#">Mona Yoga</a>
     {% if user.first_name != "" %}
     <span style="color: #000;">{{ user.last_name }}{{ user.first_name }} 様</span>
     {% else %}
     <span style="color: #000;">{{ user.username }} 様</span>
     {% endif %}
 </nav>
+<a class="logout" href="{% url 'logout' %}">ログアウト</a>

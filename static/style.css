@@ -24,12 +24,8 @@ body {
     align-items: center;
     padding-top: 40px;
     padding-bottom: 40px;
-    background-color: rgb(247, 244, 244);
-    color: #000;
-}
-
-.monayoga {
-    text-align: center;
+    background-color: #1f2023;
+    color: hsla(0, 0%, 100%, .56);
 }
 
 .move-link {

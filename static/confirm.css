@@ -1,35 +1,11 @@
 .container {
-    margin-top: 10px;
-}
-
-.nav-item {
-    width: calc(100% / 3);
-    background-color: #fff;
-    border-radius: 0.25rem;
-}
-
-.nav-link {
-    padding: 4px;
-    border-left: 1px solid #ddd;
-    color: #000;
-    text-align: center;
-    border-radius: 0 !important;
+    margin-top: 50px;
 }
 
 .move {
     color: #000;
     display: block;
-    margin-left: 10px;
-    margin-bottom: 30px;
-    text-decoration: underline;
-}
-
-h3 {
-    margin-left: 10px;
-}
-
-.plan_name {
-    margin-bottom: 30px;
+    margin: 10px;
 }
 
 .badge {
@@ -48,8 +24,7 @@ img {
     position: absolute;
     bottom: 0;
     right: 0;
-    font-size: 14px;
-    padding-right: 20px;
+    padding-right: 15px;
 }
 
 .bottom a {
@@ -61,71 +36,22 @@ img {
     background-color: #fff;
 }
 
-.br-get {
-    display: none;
-}
-
-@media (max-width: 992px) {
-    img {
-        height: 200px;
-    }
-    .plan_name {
-        margin-bottom: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    img {
-        height: 140px;
-    }
-    .plan_name {
-        margin-bottom: 20px;
-        margin-left: 0;
-    }
-    .hidden {
-        display: none;
-    }
-}
-
-@media (max-width: 576px) {
-    img {
-        height: 130px;
-    }
-    h3 {
-        margin: 0;
-        font-size: 22px;
-        padding: 2px 5px;
-    }
-    .nav-link {
-        font-size: 12px;
-        padding: 1px;
-    }
-    .br-get {
-        display: block;
-    }
-}
-
-@media (max-width: 480px) {
-    img {
-        height: 105px;
-    }
-    .plan_name {
-        margin-bottom: 10px;
-    }
+@media (max-width: 769px) {
     p, span {
-        font-size: 14px;
+        font-size: 12px;
     }
     .container {
-        margin-top: 10px;
+        margin-top: 30px;
     }
     .move {
-        margin-left: 3px;
-        margin-bottom: 15px;
         font-size: 12px;
     }
     .badge {
         font-size: 10px;
         margin-top: 2px;
+    }
+    img {
+        height: 105px;
     }
     .bottom {
         position: absolute;
@@ -137,9 +63,11 @@ img {
         margin-left: 5px;
     }
     h3 {
-        margin: 0;
         font-size: 16px;
         padding: 2px 5px;
+    }
+    .hidden {
+        display: none;
     }
     .alert {
         padding: 8px;
@@ -155,7 +83,7 @@ img {
     img {
         height: 85px;
     }
-    p, span {
-        font-size: 12px;
+    .hidden2 {
+        display: none;
     }
 }
