@@ -11,14 +11,78 @@
 
 {% block content %}
 <div class="container">
-    <a class="move" href="{% url 'detail' date %}">詳細画面へ</a>
+    <a class="move" href="{% url 'detail' item.date %}">詳細画面へ</a>
 
+    <h3 class="date">20{{ item.date|date:"y-m-d" }}</h3>
     <div class="alert alert-warning" role="alert">
         <form action="" method="POST">{% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="更新">
+            <h2>{{ item.plan }}</h2>
+            <p style="color: red;">{{ error }}</p>
+            <div class="input-group mb-3 times">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">キャンセルする予約者</span>
+                </div>
+                {% for i, booked_people_name in booked_people_name_list %}
+                <pre> </pre>
+                <input class="btn btn-success btn-sm" id="name{{ i }}" type="button" value="{{ booked_people_name }}"
+                    onclick="get_num(this)">
+                {% endfor %}
+            </div>
+            <input hidden id="hidden_num" value="{{ people_num }}">
+            <input hidden id="cancel_name" name="cancel_name">
+
+            <div class="input-group mb-3 times">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">追加の予約者</span>
+                </div>
+                <input type="text" class="form-control time1" placeholder="氏名入力" id="timechange"
+                    name="add_booked_people">
+            </div>
+
+            <div class="input-group mb-3 times">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">時間</span>
+                </div>
+                <input type="number" class="form-control time1" placeholder="" id="timechange" value="{{ first_time }}" name="time1">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">～</span>
+                </div>
+                <input type="number" class="form-control" placeholder="" id="timechange2" value="{{ last_time }}" name="time2">
+
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">場所</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01" name="location">
+                    <option value="{{ item.location }}" selected>{{ item.location }}</option>
+                    {% for model in setting_plan_model %}
+                    <option value="{{ model.location }}">{{ model.location }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input class="btn btn-primary btn-md" type="submit" value="更新">
         </form>
     </div>
 </div>
+
+<script>
+    function get_num(ele) {
+        var id_value = ele.id;
+        if (document.getElementById('cancel_name').value === ele.value) {
+            clear_name();
+        } else {
+            clear_name();
+            document.getElementById('cancel_name').value = ele.value;
+            document.getElementById(id_value).style.background = "rgb(2, 59, 2)";
+        }
+    }
+
+    function clear_name() {
+        var max_num = Number(document.getElementById('hidden_num').value);
+        for (let i = 0; i < max_num; i++) {
+            document.getElementById('cancel_name').value = '';
+            document.getElementById('name%'.replace('%', i)).style.background = "#28a745";
+        }
+    }
+</script>
 
 {% endblock content %}

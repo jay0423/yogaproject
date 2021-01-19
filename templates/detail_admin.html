@@ -13,23 +13,30 @@
 <div class="container">
 
     <h3 class="date">{{ date }}</h3>
-    {% for item, plan, name in object_plan_name_list %}
+    <p style="color: red;">{{ error }}</p>
+    {% for time, item, plan, name in object_plan_name_list %}
     {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
         <h3>
             {{ item.plan }}
         </h3>
         <p>
-            料金：{{ plan.price }}円　時間：{{ item.time }}時　場所：{{ plan.location }}<br>
-            予約最大人数：{{ plan.max_book }}<br>予約者：{{ name }}
+            料金：{{ plan.price }}円　時間：{{ item.time }}時　場所：{{ item.location }}<br>
+            予約人数：{{ item.number_of_people }} / {{ plan.max_book }}<br>
+            予約者：{{ name }}
         </p>
         <div class="bottom">
-            <a href="{% url 'plan_update' item.date item.pk %}" class="btn btn-secondary btn-sm">編集</a>
+            {% if name == '' %}
             <a href="{% url 'plan_delete' item.date item.pk %}" class="btn btn-secondary btn-sm">削除</a>
+            {% endif %}
+            <a href="{% url 'plan_update' item.date item.pk %}" class="btn btn-secondary btn-sm">編集</a>
         </div>
     </div>
     {% endif %}
     {% endfor %}
 </div>
+
+<script>
+</script>
 
 {% endblock content %}

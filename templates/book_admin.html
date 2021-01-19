@@ -25,7 +25,7 @@
         </div>
     </div>
     <table width="100%">
-        <thead>
+        <thead style="background-color: salmon;">
             <!-- <th>月</th> -->
             <th>火</th>
             <th>水</th>
@@ -47,12 +47,18 @@
                 {% if object != '' %}
                 <a href="{% url 'detail' object.date %}">
                     {% for plan in plans %}
-                    {% if plan == 'ヨガ' %}
-                    <p class="yoga">{{ plan }}</p>
-                    {% elif plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan }}</p>
+                    {% if plan.plan == 'ヨガ' %}
+                    <p class="yoga">{{ plan.plan }} <span class="hidden"
+                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
+                    {% elif plan.plan == '椅子ヨガ' %}
+                    <p class="isuyoga">{{ plan.plan }} <span class="hidden"
+                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
+                    {% elif plan.plan == 'お茶会' %}
+                    <p class="ochakai">{{ plan.plan }} <span class="hidden"
+                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
                     {% else %}
-                    <p class="others">{{ plan }}</p>
+                    <p class="others">{{ plan.plan }} <span class="hidden"
+                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
                     {% endif %}
                     {% endfor %}
                 </a>
@@ -75,9 +81,9 @@
                     <label class="input-group-text" for="inputGroupSelect01">プラン</label>
                 </div>
                 <select class="custom-select" id="inputGroupSelect01" name="select_plan" onchange="change_select()">
-                    <option value="0" selected>選択してください．</option>
-                    {% for model in setting_plan_model %}
-                    <option value="{{ model.name }}">{{ model.name }}</option>
+                    <option value="100" selected>選択してください．</option>
+                    {% for i, model in setting_plan_model %}
+                    <option value="{{ i }}">{{ model.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -86,16 +92,95 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">時間</span>
                     </div>
-                    <input type="number" class="form-control" placeholder="" value="10" name="time1">
+                    <select class="custom-select" id="inputGroupSelect03" name="select_plan_time1">
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10" selected>10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">時</span>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect04" name="select_plan_time1-5">
+                        <option value="0" selected>00</option>
+                        <option value="30">30</option>
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
+                    </div>
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">～</span>
                     </div>
-                    <input type="number" class="form-control" placeholder="" value="11" name="time2">
+                    <select class="custom-select" id="inputGroupSelect05" name="select_plan_time2">
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11" selected>11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon2" style="background-color: #fff;">時</span>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect06" name="select_plan_time2-5">
+                        <option value="0" selected>00</option>
+                        <option value="30">30</option>
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
+                    </div>
+                    <!-- <input type="number" class="form-control time1" placeholder="" id="timechange" value="10"
+                        name="time1" onchange="change_time()">
+                    <div class="input-group-prepend"> -->
+                    <!-- <span class="input-group-text" id="basic-addon2">時</span>
+                    <input type="number" class="form-control time1-5" placeholder="" id="timechange" value="0"
+                        name="time1-5">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">分</span>
+                    </div>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">～</span>
+                    </div>
+                    <input type="number" class="form-control" placeholder="" id="timechange2" value="11" name="time2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon2">時</span>
+                    </div>
+                    <input type="number" class="form-control time2-5" placeholder="" id="timechange" value="0"
+                        name="time2-5">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">分</span>
+                    </div> -->
                 </div>
-                <input class="btn btn-secondary btn-sm" type="submit" value="完了" onclick="get_plan()">
-            </div>
+                <div id="for_hidden2" style="display: none;">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect01">場所</label>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect02" name="select_plan2">
+                        {% for model in setting_plan_model2 %}
+                        <option value="{{ model.location }}">{{ model.location }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input class="btn btn-secondary btn-sm" type="submit" value="完了">
         </form>
     </div>
+</div>
 
 </div>
 
@@ -116,9 +201,11 @@
         // 取得したときのプランの表示
         if (str !== '') {
             document.getElementById("plan_hidden").style.display = "flex";
+            document.getElementById("for_hidden2").style.display = "flex";
         } else {
             document.getElementById("plan_hidden").style.display = "none";
             document.getElementById("for_hidden").style.display = "none";
+            document.getElementById("for_hidden2").style.display = "none";
         }
     }
 
@@ -127,26 +214,34 @@
         const select_plan = document.form1.select_plan;
         const num = select_plan.selectedIndex;
         const str = select_plan.options[num].value;
-        if (str !== "0") {
+        if (str !== "100") {
             document.getElementById("for_hidden").style.display = "block";
         } else {
             document.getElementById("for_hidden").style.display = "none";
         }
+        // プラン別に場所を選択させる
+        document.getElementById('inputGroupSelect02').options[Number(str)].selected = true;
     }
 
     function pre_month() {
         var queryString = String(window.location);
         var url_number = Number(queryString.slice(queryString.lastIndexOf('/') + 1));
-        url_number -=  100
+        url_number -= 100
         window.history.pushState(null, null, url_number);
         location.reload();
     }
     function next_month() {
         var queryString = String(window.location);
         var url_number = Number(queryString.slice(queryString.lastIndexOf('/') + 1));
-        url_number +=  100
+        url_number += 100
         window.history.pushState(null, null, url_number);
         location.reload();
+    }
+
+    // 時間が変更したとき
+    function change_time() {
+        var from_time = document.getElementById('timechange').value;
+        document.getElementById('timechange2').value = Number(from_time) + 1;
     }
 
 </script>

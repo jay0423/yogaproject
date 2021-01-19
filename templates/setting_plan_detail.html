@@ -12,7 +12,7 @@
 {% block content %}
 <div class="container">
 
-    <h3 class="date">{{ date }}</h3>
+    <h3 class="date">プラン一覧</h3>
     {% for item in object_list %}
     {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
@@ -27,7 +27,7 @@
         </p>
         <div class="bottom">
             <a href="{% url 'setting_plan_update' item.pk %}" class="btn btn-secondary btn-sm">編集</a>
-            <a href="{% url 'yoga_plan_delete' item.pk %}" class="btn btn-secondary btn-sm">削除</a>
+            <!-- <a href="{% url 'yoga_plan_delete' item.pk %}" class="btn btn-secondary btn-sm">削除</a> -->
         </div>
     </div>
     {% endif %}

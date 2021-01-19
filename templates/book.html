@@ -50,6 +50,8 @@
                     <p class="yoga">{{ plan }}</p>
                     {% elif plan == '椅子ヨガ' %}
                     <p class="isuyoga">{{ plan }}</p>
+                    {% elif plan == 'お茶会' %}
+                    <p class="ochakai">{{ plan }}</p>
                     {% else %}
                     <p class="others">{{ plan }}</p>
                     {% endif %}
@@ -63,7 +65,10 @@
     </table>
 
     <a class="logout" href="{% url 'logout' %}">ログアウト</a>
-    <p class="note" style="padding-top: 10px;">*定休日：月曜日，日曜日</p>
+    <p class="note" style="padding-top: 10px;">
+        *定休日：月曜日，日曜日<br>
+        予約したい日にちをタッチして下さい．
+    </p>
 </div>
 
 <script>

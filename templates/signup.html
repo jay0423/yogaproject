@@ -7,8 +7,8 @@
 
 {% block content %}
 <form class="form-signin" method="POST" action="">{% csrf_token %}
-    <div>Mona Yoga</div>
-    <br><br><br><br>
+    <h1 class="monayoga">Mona Yoga</h1>
+    <br><br><br>
     <h4>サインアップ</h4>
     {% if error %}
     {{ error }}
@@ -70,11 +70,11 @@
     <br>
     <div class="signup-button">
         <button class="btn btn-md btn-secondary disable" type="reset" style="width: 49%;">クリア</button>
-        <button class="btn btn-md btn-secondary disable" id="signup-button" type="submit"
+        <button class="btn btn-md btn-primary disable" id="signup-button" type="submit"
             style="width: 49%;">サインアップ</button>
     </div>
     <a class="move-link" href="{% url 'login' %}">ログインへ</a>
-    <p class="mt-5 mb-3 text-muted">&copy; 2020 株式会社ケイルート</p>
+    <p class="mt-5 mb-3 text-muted">&copy; 2020/07 MonaYoga</p>
 </form>
 
 <script type='text/javascript'>

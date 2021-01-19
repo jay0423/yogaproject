@@ -14,7 +14,7 @@
     <a class="move" href="{% url 'book' 0 %}">カレンダー画面へ</a>
     
     <h3>{{ date }}</h3>
-    {% for item, plan, error_booked in object_plan_error_list %}
+    {% for time, item, plan, error_booked in object_plan_error_list %}
     {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
         <h3>
@@ -32,7 +32,7 @@
                 <p>
                     料金：{{ plan.price }}円<br>
                     時間：{{ item.time }}時<br>
-                    場所：{{ plan.location }}
+                    場所：{{ item.location }}
                 </p>
                 <div class="bottom">
                     <span style="color: red;">{{ error }}</span>

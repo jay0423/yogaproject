@@ -21,10 +21,13 @@ def signupfunc(request):
             user.first_name = first_name
             user.last_name = last_name
             user.save()
+            user_plan = BookModel.objects.create()
+            user_plan.user = username
+            user_plan.save()
             return redirect('login')
         except:
             return render(request, 'signup.html', {'error': 'このユーザーは登録されています'})
-    return render(request, 'signup.html', {'some': 100})
+    return render(request, 'signup.html')
 
 
 def loginfunc(request):
@@ -130,16 +133,6 @@ def bookfunc(request, month):
     return render(request, 'book.html', context)
 
 
-#model内fieldの自動作成
-def make_plan_auto(c_list, year, month2):
-        c_list = [c for c in c_list if c != ' ']
-        for c in c_list:
-            new_plan = PlanModel.objects.create()
-            new_plan.date = str(year) + '-' + str(month2) + '-' + str(c)
-            new_plan.month = month2
-            new_plan.save()
-
-
 #予約確定画面
 @login_required
 def confirmfunc(request, date):
@@ -154,9 +147,15 @@ def confirmfunc(request, date):
             error_booked.append(1) #予約済
         else:
             error_booked.append(0)
+     #並び替え処理       
+    time_list = [item.time for item in object_list]
+    try: #同じ時間がある時バグが生じる
+        object_plan_error_list = sorted(zip(time_list, object_list, plan_model_list, error_booked))
+    except:
+        pass
     context = {
         'date': date,
-        'object_plan_error_list': zip(object_list, plan_model_list, error_booked),
+        'object_plan_error_list': object_plan_error_list,
     }
     return render(request, 'confirm.html', context)
 
@@ -164,8 +163,10 @@ def confirmfunc(request, date):
 #planの予約者数
 def get_yoga_func(request, date, pk):
     objects = PlanModel.objects.get(pk=pk)
+    item = SettingPlanModel.objects.get(plan_num=objects.plan_num)
     username = request.user.get_username()
-    if objects.number_of_people == 7:
+    name = User.objects.get(username=username).last_name + User.objects.get(username=username).first_name
+    if objects.number_of_people >= item.max_book:
         context = {
             'objects': objects,        
             'error': '予約人数がいっぱいです　',
@@ -175,6 +176,7 @@ def get_yoga_func(request, date, pk):
         return redirect('book', '0')
     else:
         objects.booked_people += username + ' ' 
+        objects.booked_people_name += name + ' '
         booked_people_list = objects.booked_people.split()
         objects.number_of_people = len(booked_people_list)
         objects.save()
@@ -197,14 +199,21 @@ def get_yoga_func(request, date, pk):
 def cancel_yoga_func(request, date, pk, mark):
     objects = PlanModel.objects.get(pk=pk)
     username = request.user.get_username()
+    name = User.objects.get(username=username).last_name + User.objects.get(username=username).first_name
     booked_people_list = objects.booked_people.split()
+    booked_people_name_list = objects.booked_people_name.split()
     #プランで予約した人の削除
     booked_people_list.remove(username)
+    booked_people_name_list.remove(name)
     objects.number_of_people = len(booked_people_list) #予約人数を減らす
     booked_people_str = ''
+    booked_people_name_str = ''
     for booked_people in booked_people_list:
         booked_people_str += booked_people + ' '
+    for booked_people_name in booked_people_name_list:
+        booked_people_name_str += booked_people_name + ' '
     objects.booked_people = booked_people_str
+    objects.booked_people_name = booked_people_name_str
     objects.save()
     #ユーザー別で予約したプランの削除
     objects = BookModel.objects.filter(user=username)[0]
@@ -228,6 +237,7 @@ def cancel_yoga_func(request, date, pk, mark):
 @login_required
 def booked_list_func(request):
     username = request.user.get_username()
+    clean_plan(username)
     today = datetime.datetime.today()
     today = datetime.datetime(today.year, today.month, today.day)
     if list(BookModel.objects.filter(user=username)) == []:
@@ -247,7 +257,7 @@ def booked_list_func(request):
         if (datetime.datetime(int(date_list_2[0]), int(date_list_2[1]), int(date_list_2[2])) - today).days >= 0:
             object_list.append(PlanModel.objects.get(pk=pk))
             date_list.append(PlanModel.objects.get(pk=pk).date)
-    object_list = [item for _, item in sorted(zip(date_list, object_list))]
+    object_list = sorted(object_list, key = lambda x: (x.date, x.time))
     #予約したプランのプラン設定の取得
     plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
     context = {
@@ -255,6 +265,29 @@ def booked_list_func(request):
         'check': 0 if object_list == [] else 1,
     }
     return render(request, 'booked_list.html', context)
+
+#ユーザー別のプランpkの掃除
+def clean_plan(username):
+    today = datetime.datetime.today()
+    today = datetime.datetime(today.year, today.month, today.day)
+    book_model = BookModel.objects.get(user=username)
+    pk_list = book_model.plan.split()
+    new_pk_list = []
+    for i in range(len(pk_list)):
+        PK = int(pk_list[i])
+        try:
+            DATE = PlanModel.objects.get(pk=PK).date
+            booked_people = PlanModel.objects.get(pk=PK).booked_people.split() #プランモデルの方に名前が入っているかの確認
+            if (datetime.datetime(DATE.year, DATE.month, DATE.day) - today).days >= 0 and username in booked_people:
+                new_pk_list.append(str(PK))
+        except: #指定pkプランが削除されていた場合のバグ回避
+            pass
+    #記録
+    pk_str = ''
+    for p in new_pk_list:
+        pk_str += p + ' '
+    book_model.plan = pk_str
+    book_model.save()
 
 
 ############################################################
@@ -282,23 +315,40 @@ def book_adminfunc(request, month):
     object_list = list(PlanModel.objects.filter(month=str(year) + "-" + str(month2)))
     c_list_plan = [] #オブジェクトリスト
     plan_list = []
+    time_list = []
     for c in c_list:
         true_or_false = True
         for item in object_list:
             if str(item.date.day) == c and true_or_false == True:
                 c_list_plan.append(item)
-                plan_list.append([item.plan])
+                plan_list.append([item])
+                time_list.append([item.time])
                 true_or_false = False
             elif str(item.date.day) == c and true_or_false == False: #同じ日付がある時
                 a = plan_list[-1]
-                a.append(item.plan)
-                # a = list(set(a)) #重複の削除
-                # a.sort()
+                a.append(item)
+                b = time_list[-1]
+                b.append(item.time)
                 plan_list.pop(-1)
                 plan_list.append(a)
+                time_list.pop(-1)
+                time_list.append(b)
         if true_or_false:
             c_list_plan.append('')
             plan_list.append('')
+            time_list.append('')
+    #並び替えの処理
+    new_plan_list = []
+    for time, plan in zip(time_list, plan_list):
+        if len(time) >= 2:
+            try:
+                plan = [item for _, item in sorted(zip(time, plan))]
+            except:
+                pass
+            new_plan_list.append(plan)
+        else:
+            new_plan_list.append(plan)
+    plan_list = new_plan_list.copy()
     object_list = c_list_plan.copy()
     #checkboxの総数を算出する
     total_checkbox = 0
@@ -332,9 +382,11 @@ def book_adminfunc(request, month):
     if request.method == "POST":
         #formの値の取得
         days = request.POST["select_days"]
-        plan = request.POST["select_plan"]
+        select_plan = request.POST["select_plan"]
+        plan = list(setting_plan_model)[int(select_plan)].name
         time1 = request.POST["time1"]
         time2 = request.POST["time2"]
+        location = request.POST["select_plan2"]
         #整理
         year_month = str(year) + "-" + str(month2)
         days_list = days.split()
@@ -348,6 +400,7 @@ def book_adminfunc(request, month):
             create_plan.plan = plan
             create_plan.time = time
             create_plan.plan_num = plan_num
+            create_plan.location = location
             create_plan.save()
         return redirect('book_admin', month)
     
@@ -356,7 +409,8 @@ def book_adminfunc(request, month):
         'month2': month2,
         'calendar_list_all': calendar_list_all,
         'total_checkbox': total_checkbox,
-        'setting_plan_model': setting_plan_model,
+        'setting_plan_model': enumerate(setting_plan_model),
+        'setting_plan_model2': setting_plan_model,
     }
     return render(request, 'book_admin.html', context)
 
@@ -368,36 +422,96 @@ def detail_admin_func(request, date):
     plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
     username = request.user.get_username()
     #予約者の抽出
-    booked_people_list = []
+    booked_people_name_list = []
     for item in object_list:
-        booked_people_str = item.booked_people
-        booked_people_str2 = ""
-        for booked_people in booked_people_str.split():
-            name = User.objects.get(username=booked_people).last_name + User.objects.get(username=booked_people).first_name #名前の取得
-            booked_people_str2 += '　' + name + ','
-        booked_people_str2 = booked_people_str2[1:-1] #無駄な文字の削除
-        booked_people_list.append(booked_people_str2)
+        booked_people_name_str = item.booked_people_name
+        booked_people_name_str2 = ""
+        for booked_people_name in booked_people_name_str.split():
+            booked_people_name_str2 += '　' + booked_people_name + ','
+        booked_people_name_str2 = booked_people_name_str2[1:-1] #無駄な文字の削除
+        booked_people_name_list.append(booked_people_name_str2)
+    #並び替えの処理
+    time_list = [item.time for item in object_list]
+    try:
+        object_plan_name_list = sorted(zip(time_list, object_list, plan_model_list, booked_people_name_list))
+        error = ''
+    except:
+        object_plan_name_list = zip(time_list, object_list, plan_model_list, booked_people_name_list)
+        error = '時間が重複しています．'
     context = {
         'date': date,
-        'object_plan_name_list': zip(object_list, plan_model_list, booked_people_list),
+        'object_plan_name_list': object_plan_name_list,
+        'error': error,
     }
     return render(request, 'detail_admin.html', context)
  
-    
-#編集
-class PlanUpdate(UpdateView):
-    template_name = 'plan_update.html'
-    model = PlanModel
-    fields = ('plan', 'number_of_people', 'booked_people', 'time')
+ 
+#プランの編集
+def plan_update(request, date, pk):
+    item = PlanModel.objects.get(pk=pk)
+    setting_plan_model = SettingPlanModel.objects.all()
+    #表示処理
+    booked_people_name_list = item.booked_people_name.split()
+    if request.method == "POST": #入力された時の処理
+        add_booked_people = request.POST['add_booked_people'].replace('　', '').replace(' ', '') #空白削除
+        cancel_name = request.POST['cancel_name']
+        time1 = request.POST["time1"]
+        time2 = request.POST["time2"]
+        time = time1 + "～" + time2
+        location = request.POST['location']
+        if cancel_name != '': #キャンセルする人がいるとき
+            booked_people_list = item.booked_people.split()
+            booked_people_name_list = item.booked_people_name.split()
+            if cancel_name in booked_people_name_list:
+                index_num = booked_people_name_list.index(cancel_name)
+                booked_people_list.pop(index_num)
+                booked_people_name_list.pop(index_num)
+                booked_people_str = ''
+                booked_people_name_str = ''
+                for booked_people in booked_people_list:
+                    booked_people_str += booked_people + ' '
+                for booked_people_name in booked_people_name_list:
+                    booked_people_name_str += booked_people_name + ' '
+                item.booked_people = booked_people_str
+                item.booked_people_name = booked_people_name_str
+                item.number_of_people = len(booked_people_list)
+                item.save()
+        if add_booked_people != '': #予約追加の人がいるとき
+            if add_booked_people not in item.booked_people_name.split():
+                booked_people = item.booked_people
+                booked_people += ' ' + 'anonumous' + ' ' #anonumousは電話予約された場合の人
+                booked_people_name = item.booked_people_name
+                booked_people_name += ' ' + add_booked_people + ' '
+                #記録
+                item.number_of_people = len(booked_people.split())
+                item.booked_people = booked_people
+                item.booked_people_name = booked_people_name
+                item.save()
+            else:
+                context = {
+                    'item': item,
+                    'booked_people_name_list': enumerate(booked_people_name_list),
+                    'people_num': len(booked_people_name_list),
+                    'first_time': int(item.time[:item.time.index('～')]), #始めの時間
+                    'last_time': int(item.time[item.time.index('～') + 1:]), #終わりの時間
+                    'setting_plan_model': setting_plan_model,
+                    'error': '入力された追加の予約者は既に予約されています．',
+                }
+                return render(request, 'plan_update.html', context)
+        item.time = time
+        item.location = location
+        item.save()
+        return redirect('detail', item.date)
+    context = {
+        'item': item,
+        'booked_people_name_list': enumerate(booked_people_name_list),
+        'people_num': len(booked_people_name_list),
+        'first_time': int(item.time[:item.time.index('～')]), #始めの時間
+        'last_time': int(item.time[item.time.index('～') + 1:]), #終わりの時間
+        'setting_plan_model': setting_plan_model,
+    }
+    return render(request, 'plan_update.html', context)
 
-    def get_success_url(self):
-        date = self.kwargs.get('date')
-        return reverse('detail', kwargs={'date': self.kwargs['date']})
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['date'] = self.kwargs['date']
-        return context
 
 #カレンダーの予冷の削除
 class PlanDelete(DeleteView):

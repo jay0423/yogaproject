@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import signupfunc,loginfunc, logoutfunc, bookfunc, confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func
-from .views import book_adminfunc, YogaCreate, detail_admin_func, PlanUpdate, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete
+from .views import book_adminfunc, YogaCreate, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete
 
 urlpatterns = [
     path('signup/', signupfunc, name='signup'),
@@ -14,7 +14,7 @@ urlpatterns = [
     #管理者用
     path('book_admin/<month>', book_adminfunc, name='book_admin'),
     path('detail/<date>/', detail_admin_func, name='detail'),
-    path('detail/<date>/update/<int:pk>', PlanUpdate.as_view(), name='plan_update'),
+    path('detail/<date>/update/<int:pk>', plan_update, name='plan_update'),
     path('detail/<date>/delete/<int:pk>', PlanDelete.as_view(), name='plan_delete'),
     path('setting_plan/', SettingPlanList.as_view(), name='setting_plan'),
     path('setting_plan/<int:pk>/detail', SettingPlanUpdate.as_view(), name='setting_plan_update'),
