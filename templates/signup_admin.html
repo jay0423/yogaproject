@@ -12,21 +12,6 @@
 {% block content %}
 <div class="container">
     
-    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span id='titleuesita'></span></a>
-            </li>
-            <li class="nav-item">
-                <a id="booked_list" class="nav-link" href="{% url 'note' %}">お知らせ<span id='dateuesita'></span></a>
-            </li>
-            <li class="nav-item" style="background-color: rgb(248, 160, 150);">
-                <a id="access" class="nav-link" href="{% url 'signup_admin' %}">サインアップ<span id='title_mainuesita'></span></a>
-            </li>
-        </ul>
-        <input hidden id="location" value="{{ location }}">
-    </div>
-
     <br>
     <form class="form-signin" method="POST" action="">{% csrf_token %}
         <h3>管理者用サインアップ</h3>

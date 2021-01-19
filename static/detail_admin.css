@@ -66,4 +66,7 @@
     .hidden2 {
         display: none;
     }
+    .order_top .nav-link {
+        font-size: 13px;
+    }
 }

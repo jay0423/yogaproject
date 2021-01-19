@@ -7,11 +7,35 @@ form .max_book {
     width: 50%;
 }
 
+#select_get .btn {
+    width: 250px;
+}
+
+.get {
+    display: none;
+}
+
+.btn-success {
+    background-color: #fff;
+    color: #000;
+}
+
+#get_book .input-group, #get_place .input-group {
+    width: 60%;
+}
+
+#get_number .input-group {
+    width: 200px;
+}
+
 @media (max-width: 992px) {}
 
 @media (max-width: 768px) {
     .setting select, .setting input, .input-group-text {
         padding: 6px;
+    }
+    #get_book .input-group, #get_place .input-group {
+        width: 70%;
     }
 }
 
@@ -24,6 +48,9 @@ form .max_book {
         margin: 3px 0;
         padding: 1px;
     }
+    #get_book .input-group, #get_place .input-group {
+        width: 80%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -33,16 +60,28 @@ form .max_book {
     .max_book {
         width: 30%;
     }
+    #get_book .input-group, #get_place .input-group {
+        width: 100%;
+    }
 }
 
 @media (max-width: 450px) {
     .hidden_times {
         display: none;
     }
+    #select_get .btn {
+        width: 75%;
+    }
+    #select_get {
+        text-align: center;
+    }
 }
 
 @media (max-width: 350px) {
     .setting select, .setting input, .input-group-text {
         font-size: 14px;
+    }
+    #select_get .btn {
+        width: 95%;
     }
 }

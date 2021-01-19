@@ -26,7 +26,9 @@
     </div>
     <table width="100%">
         <thead style="background-color: rgb(194, 243, 194);">
-            <!-- <th>月</th> -->
+            {% if monday == 1 %}
+            <th>月</th>
+            {% endif %}
             <th>火</th>
             <th>水</th>
             <th>木</th>
@@ -53,6 +55,8 @@
                     <p class="isuyoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% elif plan.plan == 'お茶会' %}
                     <p class="ochakai">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
+                    {% elif plan.plan == '蔵のカフェ' %}
+                    <p class="kura">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% else %}
                     <p class="others">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% endif %}
@@ -68,12 +72,21 @@
     <br>
     <div class="alert alert-warning setting" role="alert">
         <form action="" method="POST" name="form1">{% csrf_token %}
+
+            <input hidden type="number" id="default_or_not" value="0" name="default_or_not">
+            {% if default_needs %}
+            <p>
+                <input type="submit" class="btn btn-primary btn-sm" onclick="default_click()" value="デフォルト入力">
+            </p>
+            {% endif %}
+
             <template id="totalcheckbox">{{ total_checkbox }}</template>
             <div class="input-group flex-nowrap">
                 <div class="input-group-prepend">
-                    <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取得">
+                    <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取 得">
                 </div>
-                <input type="" class="form-control" placeholder="" id="checked" name="select_days" readonly style="background-color: #fff;">
+                <input type="" class="form-control" placeholder="" id="checked" name="select_days" readonly
+                    style="background-color: #fff;">
             </div>
             <br>
             <div class="input-group mb-3 plans" id="plan_hidden" style="display: none;">
@@ -176,6 +189,10 @@
 
 
 <script>
+    function default_click() {
+        document.getElementById('default_or_not').value = 1;
+    }
+
     // チェックボックス選択された日にちを取得
     function check_click() {
         var checks = document.getElementsByClassName('checks');

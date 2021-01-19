@@ -12,7 +12,7 @@
 {% block content %}
 <div class="container">
     <a class="move" href="{% url 'setting_plan' %}">プラン一覧へ</a>
-    <h3>編集</h3>
+    <h3>{{ object.name }}｜編集</h3>
     <div class="alert alert-warning" role="alert">
         <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
             {{ form.as_p }}

@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import signupfunc,loginfunc, logoutfunc, bookfunc, confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func, access_func, info_func
-from .views import book_adminfunc, YogaCreate, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, users_detail, signup_admin_func, notefunc, analysis_func, table_func
+from .views import book_adminfunc, YogaCreate, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, users_detail, signup_admin_func, notefunc, analysis_func, table_func, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
 
 urlpatterns = [
     path('signup/', signupfunc, name='signup'),
@@ -27,4 +27,8 @@ urlpatterns = [
     path('table/', table_func, name='table'),
     path('signup_admin/', signup_admin_func, name='signup_admin'),
     path('note/', notefunc, name='note'),
+    path('calendar_default/', calendar_dafault_func, name='calendar_default'),
+    path('calendar_default/detail/<weekday>', weekday_detail_func, name='weekday_detail'),
+    path('calendar_default/detail/<weekday>/update/<int:pk>', weekday_update_func, name='weekday_update'),
+    path('calendar_default/detail/<weekday>/delete/<int:pk>', WeekdayPlanDelete.as_view(), name='weekday_delete'),
 ]

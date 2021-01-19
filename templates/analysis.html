@@ -28,15 +28,17 @@
         <input hidden id="location" value="{{ location }}">
     </div>
 
-    <div class="alert alert-warning" role="alert">
-        <p>集計する期間を選択してください．<span style="color: red;">{{ error1 }}</span></p>
-        <form action="" method="POST" name="form1">{% csrf_token %}
+    <form action="" method="POST" name="form1">{% csrf_token %}
+        <div class="alert alert-warning" role="alert">
+            <p>集計する期間を選択してください．<span style="color: red;">{{ error1 }}</span></p>
             <div class="input-group mb-3 plans" id="plan_hidden">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">期間</label>
                 </div>
-                <select class="custom-select" id="inputGroupSelect01" name="from_month" onchange="change_select()">
+                <select class="custom-select" id="from_month_p" name="from_month">
+                    {% if from_month != '' %}
                     <option value="{{ from_month }}" selected>{{ from_month }}</option>
+                    {% endif %}
                     {% for month in month_list %}
                     <option value="{{ month }}">{{ month }}</option>
                     {% endfor %}
@@ -44,105 +46,178 @@
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">~</label>
                 </div>
-                <select class="custom-select" id="inputGroupSelect01" name="to_month" onchange="change_select()">
+                <select class="custom-select" id="to_month_p" name="to_month">
+                    {% if to_month != '' %}
                     <option value="{{ to_month }}" selected>{{ to_month }}</option>
+                    {% endif %}
                     {% for month in month_list %}
                     <option value="{{ month }}">{{ month }}</option>
                     {% endfor %}
                 </select>
                 <input class="btn btn-primary btn-sm" type="submit" value="選 択">
             </div>
-        </form>
-    </div>
-
-    <h3>月別予約人数と売上</h3>
-    <div class="box">
-        <div class="x_scroll_box">
-            <table width="100%" style="border: 1px solid #ddd;">
-                <thead style="background-color: rgb(194, 243, 194);">
-                    <th>月</th>
-                    <th>総予約者数【人】</th>
-                    <th>(仮)総売上【円】</th>
-                </thead>
-
-                {% for index, row in total_price_per_month.iterrows %}
-                <tr>
-                    <td>{{ index }}</td>
-                    <td>{{ row.number_of_people }}</td>
-                    <td>{{ row.total_price }}</td>
-                </tr>
-                {% endfor %}
-            </table>
         </div>
-    </div>
 
-    <br>
-    <h3>予約率【%】｜曜日-プラン</h3>
-    <div class="box">
-        <div class="x_scroll_box">
-            <table width="100%" style="border: 1px solid #ddd;">
-                <thead style="background-color: rgb(194, 243, 194);">
-                    <th>曜日</th>
-                    {% for plan_name in plan_name_list %}
-                    <th>{{ plan_name }}</th>
-                    {% endfor %}
-                </thead>
-                {% for index, row in weekday_plan_rate_pivot.iterrows %}
-                <tr>
-                    <td style="background-color: rgb(194, 243, 194);">{{ index }}</td>
-                    {% for r in row %}
-                    <td>{{ r }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-    </div>
+        {% if post %}
+        <h3>月別予約人数と売上</h3>
+        <div class="box">
+            <div class="x_scroll_box">
+                <table width="100%" style="border: 1px solid #ddd;">
+                    <thead style="background-color: rgb(194, 243, 194);">
+                        <th>月</th>
+                        <th>総予約者数【人】</th>
+                        <th>(仮)総売上【円】</th>
+                    </thead>
 
-    <br>
-    <h3>(仮)売上【円】｜曜日-プラン</h3>
-    <div class="box">
-        <div class="x_scroll_box">
-            <table width="100%" style="border: 1px solid #ddd;">
-                <thead style="background-color: rgb(194, 243, 194);">
-                    <th>曜日</th>
-                    {% for plan_name in plan_name_list %}
-                    <th>{{ plan_name }}</th>
+                    {% for index, row in total_price_per_month.iterrows %}
+                    <tr>
+                        <td>{{ index }}</td>
+                        <td>{{ row.number_of_people }}</td>
+                        <td>{{ row.total_price }}</td>
+                    </tr>
                     {% endfor %}
-                </thead>
-                {% for index, row in weekday_plan_totalprice_pivot.iterrows %}
-                <tr>
-                    <td style="background-color: rgb(194, 243, 194);">{{ index }}</td>
-                    {% for r in row %}
-                    <td>{{ r }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <br>
-    <h3>予約回数ランク</h3>
-    <div class="box">
-        <div class="x_scroll_box">
-            <table width="100%" style="border: 1px solid #ddd;">
-                <thead style="background-color: rgb(194, 243, 194);">
-                    <th>ランク</th>
-                    <th>氏名</th>
-                    <th>予約回数</th>
-                </thead>
-                {% for i, key, value in booked_people_count %}
-                <tr>
-                    <td>{{ i }}</td>
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+        <br><br>
+        <input hidden id="index_p" value="{{ index }}">
+        <input hidden id="columns_p" value="{{ columns }}">
+        <input hidden id="data_p" value="{{ data }}">
+        <input hidden id="aggfunc_p" value="{{ aggfunc }}">
+
+        <h3>{{ terms }}</h3>
+        <table class="input-table-head" style="border: 1px solid #ccc;">
+            <thead style="background-color: #bbb">
+                <th style="width: 25%;">縦軸</th>
+                <th style="width: 25%;">横軸</th>
+                <th style="width: 25%;">データ</th>
+                <th style="width: 25%;">算出法</th>
+            </thead>
+        </table>
+        <div class="input-group mb-3 input-table" id="plan_hidden">
+            <select class="custom-select" id="index" name="index" onchange="delete_weekday1(this)">
+                <option id="weekday" value="weekday" style="text-align: center;">曜日</option>
+                <option id="time" value="time">時間</option>
+            </select>
+            <select class="custom-select" id="columns" name="columns" onchange="delete_weekday2(this)">
+                <option id="weekday2" value="weekday2">曜日</option>
+                <option id="plan" value="plan">プラン</option>
+            </select>
+            <select class="custom-select" id="data" name="data">
+                <option id="rate_of_book" value="rate_of_book">予約率</option>
+                <option id="number_of_people" value="number_of_people">予約数</option>
+                <option id="total_price" value="total_price">売上金額</option>
+            </select>
+            <select class="custom-select" id="aggfunc" name="aggfunc">
+                <option id="sum" value="sum">合計</option>
+                <option id="mean" value="mean">平均値</option>
+                <option id="std" value="std">標準偏差</option>
+                <option id="median" value="median">中央値</option>
+            </select>
+            <input class="btn btn-primary btn-sm" id="btn" type="submit" value="選 択">
         </div>
-    </div>
+        <div class="box">
+            <div class="x_scroll_box">
+                <table width="100%" style="border: 1px solid #ddd;">
+                    <thead style="background-color: rgb(194, 243, 194);">
+                        <th></th>
+                        {% for columns in columns_list %}
+                        <th>{{ columns }}</th>
+                        {% endfor %}
+                    </thead>
+                    {% for index, row in pivot_table.iterrows %}
+                    <tr>
+                        <td style="background-color: rgb(194, 243, 194);">{{ index }}</td>
+                        {% for r in row %}
+                        <td>{{ r }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <br><br>
+        <h3>予約回数ランク</h3>
+        <div class="input-group mb-3 input-rank">
+            <input hidden id="len_select_plan" value="{{ len_columns_list2 }}">
+            <select class="custom-select" id="select_plan" onchange="change_plan(this)">
+                {% for plan in columns_list2 %}
+                {% if plan == 'All' %}
+                <option value="{{ plan }}" selected>{{ plan }}</option>
+                {% else %}
+                <option value="{{ plan }}">{{ plan }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        {% for columns, pivot in pivot_list %}
+        <div class="box_last box" id="{{ columns }}" style="display: none;">
+            <div class="x_scroll_box">
+                <table width="100%" style="border: 1px solid #ddd;">
+                    <thead style="background-color: rgb(194, 243, 194);">
+                        <th>ランク</th>
+                        <th>氏名</th>
+                        <th>予約回数</th>
+                    </thead>
+                    {% for i, key, value in pivot %}
+                    <tr>
+                        <td>{{ i }}</td>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% endif %}
+    </form>
 
 </div>
+
+<script>
+    window.onload = function () {
+        const index_p = document.getElementById('index_p').value;
+        const columns_p = document.getElementById('columns_p').value;
+        const data_p = document.getElementById('data_p').value;
+        const aggfunc_p = document.getElementById('aggfunc_p').value;
+        document.getElementById(index_p).selected = true;
+        document.getElementById(columns_p).selected = true;
+        document.getElementById(data_p).selected = true;
+        document.getElementById(aggfunc_p).selected = true;
+        document.getElementById('All').style.display = "block";
+    }
+
+    function delete_weekday1(ele) {
+        if (ele.value == 'weekday') {
+            document.getElementById('weekday2').style.display = 'none';
+            document.getElementById('plan').selected = true;
+        } else if (ele.value == 'time') {
+            document.getElementById('weekday2').style.display = 'block';
+        }
+    }
+
+    function delete_weekday2(ele) {
+        if (ele.value == 'weekday2') {
+            document.getElementById('weekday').style.display = 'none';
+            document.getElementById('time').selected = true;
+        } else if (ele.value == 'plan') {
+            document.getElementById('weekday').style.display = 'block';
+        }
+    }
+
+    function change_plan(ele) {
+        const plan_name = ele.value;
+        const num = document.getElementById('len_select_plan').value;
+        for (i = 0; i < num; i++) {
+            const plan = document.getElementById('select_plan').options[i].value;
+            document.getElementById(plan).style.display = "none";
+        }
+        document.getElementById(plan_name).style.display = "block";
+    }
+</script>
 
 {% endblock content %}

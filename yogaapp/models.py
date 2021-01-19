@@ -44,3 +44,18 @@ class SettingPlanModel(models.Model):
 class NoteModel(models.Model):
     memo = models.TextField('お知らせ', null=True, blank=True)
     num = models.IntegerField('ナンバー', default=0)
+    monday = models.IntegerField('月曜日', default=0) #0は非表示1は表示
+    
+#曜日別デフォルト設定
+class WeekdayDefaultModel(models.Model):
+    weekday = models.CharField('曜日', max_length=100, default='')
+    plan = models.CharField('プラン', max_length=100, default=0)
+    time = models.CharField('時間', max_length=50, default='')
+    location = models.CharField('場所', max_length=50, default='スタジオ')
+    max_book = models.IntegerField('最大予約人数', default=7)
+    # ヨガ→1, 椅子ヨガ→2
+    plan_num = models.IntegerField('モデルナンバー', default=1)
+    
+    def __str__(self):
+        return self.weekday
+    

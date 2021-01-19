@@ -61,6 +61,29 @@ th, td {
     white-space: nowrap;
 }
 
+.input-table-head {
+    width: 90%;
+}
+
+.input-table {
+    width: 90%;
+}
+
+#btn {
+    margin: 0;
+    position: absolute;
+    right: -70px;
+}
+
+.download {
+    text-decoration: underline;
+    margin-top: 5px;
+}
+
+.input-rank {
+    width: 20%;
+}
+
 @media (max-width: 992px) {
     .btn {
         margin-left: 200px;
@@ -74,6 +97,12 @@ th, td {
     .alert {
         margin-top: 30px;
         margin-bottom: 20px;
+    }
+    .input-table-head {
+        width: 80%
+    }
+    .input-table {
+        width: 80%;
     }
 }
 
@@ -94,6 +123,14 @@ th, td {
     h3 {
         font-size: 20px;
     }
+    .download {
+        margin-top: 4px;
+        font-size: 16px;
+    }
+    .input-rank {
+        width: 30%;
+    }
+    
 }
 
 @media (max-width: 480px) {
@@ -102,7 +139,7 @@ th, td {
         padding: 4px;
     }
     .custom-select {
-        font-size: 16px;
+        font-size: 14px;
         padding: 4px;
     }
     .btn {
@@ -113,6 +150,20 @@ th, td {
         margin-top: 20px;
         margin-bottom: 15px;
     }
+    .input-table-head {
+        width: 85%
+    }
+    .input-table {
+        width: 85%;
+    }
+    #btn {
+        right: -50px;
+        bottom: 2px;
+    }
+    .input-rank {
+        width: 50%;
+    }
+    
 }
 
 @media (max-width: 350px) {
@@ -130,4 +181,12 @@ th, td {
     .btn {
         margin-left: 0px;
     }
+    .download {
+        margin-top: 6px;
+        font-size: 14px;
+    }
+    .input-rank {
+        width: 100%;
+    }
+    
 }

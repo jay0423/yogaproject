@@ -1,0 +1,31 @@
+.order_top .nav-item {
+    width: calc(100% / 3);
+    background-color: #fff;
+    border-radius: 0.25rem;
+}
+
+.order_top .nav-link {
+    padding: 4px;
+    border-left: 1px solid #ddd;
+    color: #000;
+    text-align: center;
+}
+
+@media (max-width: 576px) {
+    .order_top .nav-link {
+        font-size: 16px;
+        padding: 3px 0;
+    }
+    h3 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 350px) {
+    .order_top .nav-link {
+        font-size: 13px;
+    }
+    h3 {
+        font-size: 16px;
+    }
+}

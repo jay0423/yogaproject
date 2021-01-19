@@ -17,24 +17,23 @@
             <li class="nav-item">
                 <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span id='titleuesita'></span></a>
             </li>
-            <li class="nav-item" style="background-color: rgb(248, 160, 150);">
-                <a id="booked_list" class="nav-link" href="{% url 'note' %}">お知らせ<span id='dateuesita'></span></a>
-            </li>
             <li class="nav-item">
-                <a id="access" class="nav-link" href="{% url 'signup_admin' %}">サインアップ<span id='title_mainuesita'></span></a>
+                <a id="access" class="nav-link" href="{% url 'calendar_default' %}">曜日別プラン<span id='title_mainuesita'></span></a>
+            </li>
+            <li class="nav-item" style="background-color: rgb(248, 160, 150);">
+                <a id="booked_list" class="nav-link" href="{% url 'note' %}">表示設定<span id='dateuesita'></span></a>
             </li>
         </ul>
         <input hidden id="location" value="{{ location }}">
     </div>
 
     <br>
-    <div class="alert alert-warning" role="alert">
-        <h3>「お知らせ」の内容</h3>
-        <hr style="border-color: green;">
-        <p>{{ item.memo }}</p>
-    </div>
-    <div class="alert alert-warning" role="alert">
-        <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+    <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+        <div class="alert alert-warning" role="alert">
+            <h3>「お知らせ」の内容</h3>
+            <hr style="border-color: green;">
+            <p>{{ item.memo }}</p>
+            <hr style="border-color: green;">
             <h3>編集</h3>
             <textarea name="memo" type="text" id="note" class="note" placeholder="150字以内" maxlength="150"
                 style="width: 100%; height: 150px;">{{ item.memo }}</textarea>
@@ -42,13 +41,44 @@
             <input class="btn btn-secondary btn-sm" type="submit" value="削 除" style="margin-bottom: 10px;"
                 onclick=" get_clear()">
             <input class="btn btn-primary btn-sm" type="submit" value="更 新" style="margin-bottom: 10px;">
-        </form>
-    </div>
+        </div>
+
+        <br>
+        <div class="alert alert-warning" role="alert">
+            <h3>月曜日の表示設定</h3>
+            <hr style="border-color: green;">
+            <p>
+                現在の設定：
+                {% if item.monday == 0 %}
+                非表示
+                {% else %}
+                表示
+                {% endif %}
+            </p>
+            <input id="monday" hidden value="10" name="monday">
+            {% if item.monday == 0 %}
+            <input class="btn btn-primary btn-sm" type="submit" id="off" value="表示に変更" style="margin-bottom: 10px;" onclick="hidden_off()">
+            {% else %}
+            <input class="btn btn-primary btn-sm" type="submit"  id="on" value="非表示に変更" style="margin-bottom: 10px;" onclick="hidden_on()">
+            {% endif %}
+        </div>
+    </form>
+
 </div>
 
 <script>
     function get_clear() {
         document.getElementById('note').innerText = '';
+    }
+
+    function hidden_off() {
+        document.getElementById('monday').value = 1;
+        alert("設定を表示に変更しました．");
+    }
+    
+    function hidden_on() {
+        document.getElementById('monday').value = 0;
+        alert("設定を非表示に変更しました．");
     }
 </script>
 

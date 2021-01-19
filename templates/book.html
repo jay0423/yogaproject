@@ -31,7 +31,9 @@
     </div>
     <table width="100%">
         <thead style="background-color: rgb(194, 243, 194);">
-            <!-- <th>月</th> -->
+            {% if monday == 1 %}
+            <th>月</th>
+            {% endif %}
             <th>火</th>
             <th>水</th>
             <th>木</th>
@@ -41,22 +43,41 @@
         </thead>
         {% for calendar_list in calendar_list_all %}
         <tr class="box">
-            {% for c, object, plans in calendar_list %}
+            {% for c, object, plans, short_plans in calendar_list %}
             <th>
                 <p class="c">{{ c }}</p>
                 {% if object != '' %}
                 <a href="{% url 'confirm' object.date %}">
-                    {% for plan in plans %}
-                    {% if plan == 'ヨガ' %}
-                    <p class=" yoga">{{ plan }}</p>
-                    {% elif plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan }}</p>
-                    {% elif plan == 'お茶会' %}
-                    <p class="ochakai">{{ plan }}</p>
-                    {% else %}
-                    <p class="others">{{ plan }}</p>
-                    {% endif %}
-                    {% endfor %}
+                    <div class="when_big">
+                        {% for plan in plans %}
+                        {% if plan == 'ヨガ' %}
+                        <p class="yoga">{{ plan }}</p>
+                        {% elif plan == '椅子ヨガ' %}
+                        <p class="isuyoga">{{ plan }}</p>
+                        {% elif plan == 'お茶会' %}
+                        <p class="ochakai">{{ plan }}</p>
+                        {% elif plan == '蔵のカフェ' %}
+                        <p class="kura">{{ plan }}</p>
+                        {% else %}
+                        <p class="others">{{ plan }}</p>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="when_small">
+                        {% for plan in short_plans %}
+                        {% if plan == 'ヨガ' %}
+                        <p class="yoga">{{ plan }}</p>
+                        {% elif plan == '椅子' %}
+                        <p class="isuyoga">{{ plan }}</p>
+                        {% elif plan == 'お茶' %}
+                        <p class="ochakai">{{ plan }}</p>
+                        {% elif plan == '蔵' %}
+                        <p class="kura">{{ plan }}</p>
+                        {% else %}
+                        <p class="others">{{ plan }}</p>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
                 </a>
                 {% endif %}
             </th>
@@ -68,6 +89,12 @@
     <p class="note" style="padding-top: 10px;">
         予約したい日のプランをタッチして下さい．<br>
         *定休日：月曜日，日曜日
+    </p>
+    <p class="when_small">
+        <span class='note-2' style="background-color: rgba(55, 167, 55, 0.7);">ヨガ</span>：ヨガ<br>
+        <span class='note-2' style="background-color: rgba(10, 161, 149, 0.7);">椅子</span>：椅子ヨガ<br>
+        <span class='note-2' style="background-color: rgba(153, 205, 50, 0.7);">お茶</span>：お茶会<br>
+        <span class='note-2 note-3' style="background-color: rgba(134, 241, 248, 0.7);">蔵</span>：蔵のカフェヨガ
     </p>
 </div>
 

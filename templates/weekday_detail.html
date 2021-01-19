@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'detail_admin.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header_admin.html' %}
+{% endblock header %}
+
+{% block content %}
+
+<div class="container">
+    <a id="title" class="move" href="{% url 'calendar_default' %}">デフォルト画面へ</a>
+    <h3 class="date">{{ weekday_j }}</h3>
+    <span style="color: red;">{{ error }}</span>
+    {% for time, item, plan in object_plan_list %}
+    {% if item.plan != '0' %}
+    <div class="alert alert-warning" role="alert">
+        <h3 class="plan_name">
+            {{ item.plan }}<span class="time" style="color: red; float: right;">{{ item.time }}</span>
+        </h3>
+        <hr style="border-color: green;">
+        <p>
+            料金：{{ plan.price }}円<br>
+            場所：{{ item.location }}<br>
+            最大予約人数：{{ item.max_book }} 人<br>
+        </p>
+        <div class="bottom">
+            <a href="{% url 'weekday_delete' weekday item.pk %}" class="btn btn-secondary btn-sm">削除</a>
+            <a href="{% url 'weekday_update' weekday item.pk %}" class="btn btn-secondary btn-sm">編集</a>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+</script>
+
+{% endblock content %}

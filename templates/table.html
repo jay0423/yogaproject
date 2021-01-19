@@ -37,7 +37,9 @@
                     <label class="input-group-text" for="inputGroupSelect01">期間</label>
                 </div>
                 <select class="custom-select" id="inputGroupSelect01" name="from_month" onchange="change_select()">
+                    {% if from_month != '' %}
                     <option value="{{ from_month }}" selected>{{ from_month }}</option>
+                    {% endif %}
                     {% for month in month_list %}
                     <option value="{{ month }}">{{ month }}</option>
                     {% endfor %}
@@ -46,7 +48,9 @@
                     <label class="input-group-text" for="inputGroupSelect01">~</label>
                 </div>
                 <select class="custom-select" id="inputGroupSelect01" name="to_month" onchange="change_select()">
+                    {% if to_month != '' %}
                     <option value="{{ to_month }}" selected>{{ to_month }}</option>
+                    {% endif %}
                     {% for month in month_list %}
                     <option value="{{ month }}">{{ month }}</option>
                     {% endfor %}
@@ -56,7 +60,8 @@
         </form>
     </div>
 
-    <h3>テーブル</h3>
+    {% if post %}
+    <h3>テーブル<a class="download" href="{% static 'table.csv' %}" download="table.csv" style="float: right;">csvファイルをダウンロード</a></h3>
     <div class="box">
         <div class="x_scroll_box">
             <table width="100%" style="border: 1px solid #ddd;">
@@ -65,8 +70,8 @@
                     <th>日付</th>
                     <th>曜日</th>
                     <th>月</th>
-                    <th>時間</th>
                     <th>プラン名</th>
+                    <th>時間</th>
                     <th>料金</th>
                     <th>売上</th>
                     <th>予約数</th>
@@ -94,6 +99,7 @@
             </table>
         </div>
     </div>
+    {% endif %}
 </div>
 
 {% endblock content %}

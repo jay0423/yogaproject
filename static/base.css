@@ -44,6 +44,10 @@ footer a {
     text-decoration: underline;
 }
 
+textarea {
+    width: 100%;
+}
+
 @media (max-width: 576px) {
     hr {
         margin: 10px 0 15px 0;

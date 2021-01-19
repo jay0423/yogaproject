@@ -12,16 +12,14 @@
 
 {% block content %}
 <div class="container">
-    <a class="move" href="{% url 'detail' item.date %}">詳細画面へ</a>
+    <a class="move" href="{% url 'weekday_detail' item.weekday %}">詳細画面へ</a>
 
-    <h3 class="date">編集画面｜20{{ item.date|date:"y-m-d" }}｜{{ item.plan }}</h3>
+    <h3 class="date">編集画面｜{{ weekday_j }}｜{{ item.plan }}</h3>
 
     <div class="alert alert-warning setting" role="alert" style="margin-top: 15px;">
 
         <div id="select_get">
             <p style="text-align: left;">編集したい項目を選択してください．</p>
-            <p><input class="btn btn-primary btn-sm" type="button" value="予約者の取消" onclick="select_get_cancelling()"></p>
-            <p><input class="btn btn-primary btn-sm" type="button" value="予約者の追加" onclick="select_get_book()"></p>
             <p><input class="btn btn-primary btn-sm" type="button" value="時間の変更" onclick="select_get_time()">
             </p>
             <p><input class="btn btn-primary btn-sm" type="button" value="場所の変更" onclick="select_get_place()"></p>
@@ -30,39 +28,9 @@
 
         <form action="" method="POST">{% csrf_token %}
 
-            <div id="get_cancelling" class="get">
-                {% if item.number_of_people != 0 %}
-                <p>
-                    予約を取り消す人を選択してください．
-                </p>
-                {% for i, booked_people_name in booked_people_name_list %}
-                <input class="btn btn-success btn-sm btn-cancel" id="name{{ i }}" type="button"
-                    value="{{ booked_people_name }}" onclick="get_num(this)">
-                {% endfor %}
-                {% endif %}
-                <input hidden id="hidden_num" value="{{ people_num }}">
-                <input hidden id="cancel_name" name="cancel_name">
-            </div>
-
-            <div id="get_book" class="get">
-                {% if item.number_of_people != item.max_book %}
-                <span style="color: red;" id="error">{{ error }}</span>
-                <p>追加する予約者の氏名は間違えなく記入してください．</p>
-                <div class="input-group mb-3 get_book">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">追加の予約者</span>
-                    </div>
-                    <input type="text" class="form-control time1" placeholder="姓" id="timechange" name="last_name">
-                    <input type="text" class="form-control time1" placeholder="名" id="timechange" name="first_name">
-                </div>
-                {% else %}
-                <input type="hidden" class="form-control time1" value="" name="add_booked_people">
-                {% endif %}
-            </div>
-
             <div id="get_time" class="get">
                 <div class="input-group mb-3 times">
-                    <p>時間を変更する際は予約者がいないことを注意してください．また，他のプランと時間が重複しないように気を付けてください．</p>
+                    <p>変更したい時間を選択してください．矛盾した時間にならないように，また他のプランと時間が重複しないように気を付けてください．</p>
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">時間</span>
                     </div>
@@ -127,7 +95,7 @@
             </div>
 
             <div id="get_place" class="get">
-                <p>場所を変更する際は予約者がいないことを確認してください．</p>
+                <p>変更したい場所を選択してください．</p>
                 <div class="input-group mb-3 location">
                     <div class="input-group-prepend">
                         <label class="input-group-text" for="inputGroupSelect01">場所</label>
@@ -165,22 +133,6 @@
 
 <script>
 
-    window.onload = function () {
-        if (document.getElementById('error').innerHTML !== "") {
-            select_get_book()
-        }
-    }
-
-    function select_get_cancelling() {
-        document.getElementById('get_cancelling').style.display = "block";
-        document.getElementById('select_get').style.display = "none";
-        document.getElementById('btns').style.display = "block";
-    }
-    function select_get_book() {
-        document.getElementById('get_book').style.display = "block";
-        document.getElementById('select_get').style.display = "none";
-        document.getElementById('btns').style.display = "block";
-    }
     function select_get_time() {
         document.getElementById('get_time').style.display = "block";
         document.getElementById('select_get').style.display = "none";
@@ -197,36 +149,11 @@
         document.getElementById('btns').style.display = "block";
     }
     function get_back() {
-        document.getElementById('get_cancelling').style.display = "none";
-        document.getElementById('get_book').style.display = "none";
         document.getElementById('get_time').style.display = "none";
         document.getElementById('get_place').style.display = "none";
         document.getElementById('get_number').style.display = "none";
         document.getElementById('select_get').style.display = "block";
         document.getElementById('btns').style.display = "none";
-    }
-
-
-
-    function get_num(ele) {
-        var id_value = ele.id;
-        if (document.getElementById('cancel_name').value === ele.value) {
-            clear_name();
-        } else {
-            clear_name();
-            document.getElementById('cancel_name').value = ele.value;
-            document.getElementById(id_value).style.background = "rgb(2, 59, 2)";
-            document.getElementById(id_value).style.color = "#fff";
-        }
-    }
-
-    function clear_name() {
-        var max_num = Number(document.getElementById('hidden_num').value);
-        for (let i = 0; i < max_num; i++) {
-            document.getElementById('cancel_name').value = '';
-            document.getElementById('name%'.replace('%', i)).style.background = "#fff";
-            document.getElementById('name%'.replace('%', i)).style.color = "#000";
-        }
     }
 
 </script>
