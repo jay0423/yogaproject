@@ -2,11 +2,11 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'header.css' %}">
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light"
-    style="background-color: #fff; border-bottom: 1px solid #eee;">
-    <a class="navbar-brand" href="#" style="font-weight:bold;">monaヨガ</a>
+<nav class="navbar navbar-expand-md navbar-light sticky-top" style="background-color: rgb(194, 243, 194); border-bottom: 1px solid #eee;">
+    <a class="navbar-brand"><img src="{% static 'logo.png' %}" width="35" height="35">monaヨガ</a>
+    
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="background-color: rgb(227, 253, 227);">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -15,12 +15,15 @@
                 <a class="nav-link" href="{% url 'book_admin' '0' %}">カレンダー画面</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'setting_plan' %}">プラン一覧</a>
+                <a class="nav-link" href="{% url 'users' %}">データ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'setting_plan' %}">設定</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout' %}">ログアウト</a>
             </li>
         </ul>
     </div>
-    <span style="color: #000;" class="hidden">管理者画面</span>
+    <span style="color: #000;" class="hidden_admin">管理者画面</span>
 </nav>

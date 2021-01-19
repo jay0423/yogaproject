@@ -14,16 +14,16 @@
 
     <h3 class="date">{{ date }}</h3>
     <div class="alert alert-warning" role="alert">
-        <h3>
-            {{ object.plan }}
+        <h3 class="plan_name">
+            {{ object.plan }}<span class="time" style="color: red; float: right;">{{ object.time }}</span>
         </h3>
+        <hr style="border-color: green;">
         <p>
-            料金：{{ plan.price }}円　時間：{{ object.time }}時　場所：{{ plan.location }}<br>
-            予約最大人数：{{ plan.max_book }}
+            料金：{{ plan.price }}円<br>
         </p>
+        <br>
         <form action="" method="POST">{% csrf_token %}
             <div class="bottom">
-                <span style="color: red;">本当に削除してもよろしいでしょうか？</span>
                 <a class="btn btn-secondary btn-sm" href="{% url 'detail' date %}">キャンセル</a>
                 <input type="submit" value="削除完了" class="btn btn-secondary btn-sm">
             </div>

@@ -1,0 +1,36 @@
+
+.badge {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.br-get {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    iframe {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    h3 {
+        font-size: 20px;
+    }
+    br {
+        margin: 5px;
+    }
+    iframe {
+        height: 200px;
+    }
+    .badge {
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .br-get {
+        display: block;
+    }
+}
+
+@media (max-width: 350px) {}

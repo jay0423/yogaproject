@@ -3,6 +3,7 @@
 
 {% block customcss %}
 <link rel="stylesheet" type="text/css" href="{% static 'detail_admin.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'plan_update.css' %}">
 {% endblock customcss %}
 
 {% block header %}
@@ -13,24 +14,31 @@
 <div class="container">
     <a class="move" href="{% url 'detail' item.date %}">詳細画面へ</a>
 
-    <h3 class="date">20{{ item.date|date:"y-m-d" }}</h3>
-    <div class="alert alert-warning" role="alert">
+    <h3 class="date">編集画面｜20{{ item.date|date:"y-m-d" }}｜{{ item.plan }}</h3>
+    <div class="alert alert-warning setting" role="alert">
+        <p>変更のない部分はいじらないでください.</p>
         <form action="" method="POST">{% csrf_token %}
-            <h2>{{ item.plan }}</h2>
-            <p style="color: red;">{{ error }}</p>
+            {% if item.number_of_people != 0 %}
             <div class="input-group mb-3 times">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">キャンセルする予約者</span>
                 </div>
                 {% for i, booked_people_name in booked_people_name_list %}
                 <pre> </pre>
-                <input class="btn btn-success btn-sm" id="name{{ i }}" type="button" value="{{ booked_people_name }}"
-                    onclick="get_num(this)">
+                <input class="btn btn-success btn-sm btn-cancel" id="name{{ i }}" type="button"
+                    value="{{ booked_people_name }}" onclick="get_num(this)">
                 {% endfor %}
             </div>
+            <p id="hint1" style="display: none; color: red;">
+                ↑
+                キャンセルさせたい人を選択すると深緑色になり，その状態で更新を押すと，管理者側からキャンセルさせることができます．基本的に電話でキャンセルの依頼が来たとき以外は勝手にキャンセルしないよう，気を付けてください．
+            </p>
+            {% endif %}
             <input hidden id="hidden_num" value="{{ people_num }}">
             <input hidden id="cancel_name" name="cancel_name">
 
+            {% if item.number_of_people != item.max_book %}
+            <span style="color: red;">{{ error }}</span>
             <div class="input-group mb-3 times">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">追加の予約者</span>
@@ -38,17 +46,76 @@
                 <input type="text" class="form-control time1" placeholder="氏名入力" id="timechange"
                     name="add_booked_people">
             </div>
+            <p id="hint2" style="display: none; color: red;">↑ 電話予約があった場合にその方の名前を入力します．なお，本人のアカウントの予約画面には反映されません．
+            </p>
+            {% else %}
+            <input type="hidden" class="form-control time1" value="" name="add_booked_people">
+            {% endif %}
 
             <div class="input-group mb-3 times">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">時間</span>
                 </div>
-                <input type="number" class="form-control time1" placeholder="" id="timechange" value="{{ first_time }}" name="time1">
+                <select class="custom-select" id="inputGroupSelect03" name="time1">
+                    <option value="{{ first_time }}" selected>{{ first_time }}</option>
+                    <option value="08">8</option>
+                    <option value="09">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                </select>
+                <div class="input-group-prepend hidden_times">
+                    <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">時</span>
+                </div>
+                <select class="custom-select" id="inputGroupSelect04" name="time1-5">
+                    <option value="{{ first_half_time }}" selected>{{ first_half_time }}</option>
+                    <option value="00">00</option>
+                    <option value="30">30</option>
+                </select>
+                <div class="input-group-prepend hidden_times">
+                    <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
+                </div>
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">～</span>
                 </div>
-                <input type="number" class="form-control" placeholder="" id="timechange2" value="{{ last_time }}" name="time2">
+                <select class="custom-select" id="inputGroupSelect05" name="time2">
+                    <option value="{{ last_time }}" selected>{{ last_time }}</option>
+                    <option value="08">8</option>
+                    <option value="09">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                </select>
+                <div class="input-group-prepend hidden_times">
+                    <span class="input-group-text" id="basic-addon2" style="background-color: #fff;">時</span>
+                </div>
+                <select class="custom-select" id="inputGroupSelect06" name="time2-5">
+                    <option value="{{ last_half_time }}" selected>{{ last_half_time }}</option>
+                    <option value="00">00</option>
+                    <option value="30">30</option>
+                </select>
+                <div class="input-group-prepend hidden_times">
+                    <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
+                </div>
+            </div>
 
+            <div class="input-group mb-3 location">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">場所</label>
                 </div>
@@ -58,7 +125,12 @@
                     <option value="{{ model.location }}">{{ model.location }}</option>
                     {% endfor %}
                 </select>
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="addon-wrapping">最大予約人数</span>
+                </div>
+                <input type="number" class="max_book form-control" id="max_book" name="max_book" value="{{ item.max_book }}">
             </div>
+            <input class="btn btn-secondary btn-md" type="button" value="ヘルプ" onclick="hint()">
             <input class="btn btn-primary btn-md" type="submit" value="更新">
         </form>
     </div>
@@ -82,6 +154,15 @@
             document.getElementById('cancel_name').value = '';
             document.getElementById('name%'.replace('%', i)).style.background = "#28a745";
         }
+    }
+
+    function hint() {
+        if (document.getElementById('hint1')) {
+            document.getElementById('hint1').style.display = "block";
+        };
+        if (document.getElementById('hint2')) {
+            document.getElementById('hint2').style.display = "block";
+        };
     }
 </script>
 

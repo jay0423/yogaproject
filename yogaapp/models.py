@@ -18,11 +18,12 @@ class PlanModel(models.Model):
     booked_people_name = models.TextField('プランの予約者の名前', default='', null=True, blank=True)
     time = models.CharField('時間', max_length=50, default='10～11')
     location = models.CharField('場所', max_length=50, default='スタジオ')
+    max_book = models.IntegerField('最大予約人数', default=7)
     # ヨガ→1, 椅子ヨガ→2
     plan_num = models.IntegerField('モデルナンバー', default=1)
     
     def __str__(self):
-        return str(self.date) + '/' + str(self.time)
+        return str(self.date.strftime('%y-%m-%d')) + '/' + str(self.time)
     
     
 # プランの設定
@@ -38,3 +39,8 @@ class SettingPlanModel(models.Model):
     
     def __str__(self):
         return str(self.name)
+    
+#お知らせ
+class NoteModel(models.Model):
+    memo = models.TextField('お知らせ', null=True, blank=True)
+    num = models.IntegerField('ナンバー', default=0)

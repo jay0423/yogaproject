@@ -10,19 +10,22 @@
 {% endblock header %}
 
 {% block content %}
-<div class="container">
 
+<div class="container">
+    <a id="title" class="move" href="{% url 'book_admin' '0' %}">カレンダー予約画面へ</a>
     <h3 class="date">{{ date }}</h3>
-    <p style="color: red;">{{ error }}</p>
+    <span style="color: red;">{{ error }}</span>
     {% for time, item, plan, name in object_plan_name_list %}
     {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
-        <h3>
-            {{ item.plan }}
+        <h3 class="plan_name">
+            {{ item.plan }}<span class="time" style="color: red; float: right;">{{ item.time }}</span>
         </h3>
+        <hr style="border-color: green;">
         <p>
-            料金：{{ plan.price }}円　時間：{{ item.time }}時　場所：{{ item.location }}<br>
-            予約人数：{{ item.number_of_people }} / {{ plan.max_book }}<br>
+            料金：{{ plan.price }}円<br>
+            場所：{{ item.location }}<br>
+            予約人数：{{ item.number_of_people }} / {{ item.max_book }}<br>
             予約者：{{ name }}
         </p>
         <div class="bottom">

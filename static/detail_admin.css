@@ -1,12 +1,14 @@
-.container {
-    margin-top: 10px;
+.order_top .nav-item {
+    width: calc(100% / 3);
+    background-color: #fff;
+    border-radius: 0.25rem;
 }
 
-.move {
+.order_top .nav-link {
+    padding: 4px;
+    border-left: 1px solid #ddd;
     color: #000;
-    display: block;
-    margin-left: 10px;
-    margin-bottom: 30px;
+    text-align: center;
 }
 
 .date {
@@ -23,47 +25,40 @@
     margin-bottom: 10px;
 }
 
-.alert {
-    border: 1px solid #eee;
-    background-color: #fff;
+@media (max-width: 576px) {
+    .order_top .nav-link {
+        font-size: 16px;
+        padding: 3px 0;
+    }
+    h3 {
+        font-size: 22px;
+        padding: 2px 5px;
+    }
+    .plan_name {
+        margin-bottom: 10px;
+        padding-left: 0;
+    }
 }
 
-@media (max-width: 769px) {
-    p, span {
-        font-size: 12px;
-    }
-    .container {
-        margin-top: 10px;
-    }
-    .move {
-        margin-left: 3px;
-        margin-bottom: 15px;
-        font-size: 12px;
-    }
+@media (max-width: 480px) {
     .bottom {
         position: absolute;
         bottom: 0;
         right: 0;
         padding-right: 15px;
     }
+    .time {
+        font-size: 18px;
+    }
     .bottom a {
         margin-left: 5px;
     }
     h3 {
-        margin: 0;
-        font-size: 16px;
-        padding: 2px 5px;
+        font-size: 20px;
+        padding: 0;
     }
     .hidden {
         display: none;
-    }
-    .alert {
-        padding: 8px;
-        margin-bottom: 10px;
-    }
-    .btn {
-        font-size: 12px;
-        padding: 3px 6px;
     }
 }
 

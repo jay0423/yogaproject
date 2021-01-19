@@ -1,27 +1,29 @@
-.container {
-    margin-top: 10px;
-}
-
-.move {
-    color: #000;
-    display: block;
-    margin-left: 10px;
-    margin-bottom: 30px;
-}
-
 h3 {
     margin-left: 10px;
 }
 
+.date span {
+    font-size: 20px;
+}
+
+.date {
+    font-size: 25px;
+}
+
+.plan_name {
+    margin-bottom: 30px;
+}
+
 .badge {
-    font-size: 14px;
+    font-size: 16px;
     margin-left: 2px;
     vertical-align: top;
     margin-top: 8px;
 }
 
 img {
-    height: 250px;
+    /* height: 250px; */
+    width: 100%;
     border-radius: 10px;
 }
 
@@ -29,7 +31,7 @@ img {
     position: absolute;
     bottom: 0;
     right: 0;
-    font-size: 14px;
+    font-size: 16px;
     padding-right: 20px;
 }
 
@@ -37,34 +39,61 @@ img {
     margin-left: 10px;
 }
 
-.alert {
-    border: 1px solid #eee;
-    background-color: #fff;
+.br-get {
+    display: none;
 }
 
-@media (max-width: 769px) {
-    p, span {
-        font-size: 12px;
+@media (max-width: 992px) {
+    .plan_name {
+        margin-bottom: 20px;
     }
-    .container {
-        margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .plan_name {
+        margin-bottom: 20px;
+        margin-left: 0;
     }
-    .move {
-        margin-left: 3px;
-        margin-bottom: 15px;
-        font-size: 12px;
+    .hidden {
+        display: none;
+    }
+    .date span {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .col-5 {
+        padding-right: 0px;
+    }
+    h3 {
+        margin: 0;
+        font-size: 22px;
+        padding: 2px 5px;
+    }
+    .br-get {
+        display: block;
+    }
+    .date span {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .plan_name {
+        margin-bottom: 10px;
+    }
+    h3 span {
+        font-size: 16px;
+    }
+    .time {
+        font-size: 18px;
     }
     .badge {
-        font-size: 10px;
+        font-size: 14px;
         margin-top: 2px;
     }
-    img {
-        height: 105px;
-    }
     .bottom {
-        position: absolute;
-        bottom: 0;
-        right: 0;
         padding-right: 15px;
     }
     .bottom a {
@@ -72,27 +101,13 @@ img {
     }
     h3 {
         margin: 0;
-        font-size: 16px;
+        font-size: 20px;
         padding: 2px 5px;
-    }
-    .hidden {
-        display: none;
-    }
-    .alert {
-        padding: 8px;
-        margin-bottom: 10px;
-    }
-    .btn {
-        font-size: 12px;
-        padding: 3px 6px;
     }
 }
 
 @media (max-width: 350px) {
-    img {
-        height: 85px;
-    }
-    .hidden2 {
-        display: none;
+    .date span {
+        font-size: 12px;
     }
 }

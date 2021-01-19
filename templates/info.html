@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'access.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'info.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock header %}
+
+{% block content %}
+
+<div class="container">
+    {% include 'nav-link.html' %}
+
+    <div class="alert alert-warning setting" role="alert">
+        <h3>お得な回数券</h3>
+        <hr style="border-color: green;">
+        <div class="row">
+            <div class="col-lg">
+                <p><img class="img-main" src="{% static 'card1.jpg' %}"></p>
+            </div>
+            <div class="col-lg">
+                <p>
+                    monaヨガでは<br>
+                    【10回 6000円 3ヵ月有効カード】<br>
+                    【5回 3300円 2ヵ月有効カード】<br>
+                    の2種類のお得な回数券を販売しています．<br>
+                    全てのmonaヨガでご利用いただけます．<br>
+                    お気軽にお買い求めください．
+                    <hr style="border-color: green;">
+                    <span class="note">
+                        ・レッスン料が異なる場合は差額を頂戴致します<br>
+                        ・ご使用はご本人さまのみに限ります<br>
+                        ・再発行はできません
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-warning setting" role="alert">
+        <h3>お問合せ</h3>
+        <hr style="border-color: green;">
+        <p>
+            メール：yukika.okhm@gmail.com<br>
+            LINE ID：mokakai426<br>
+            電話番号：090-2151-8491<br>
+            *電話は出られないことがあります．その場合は留守電に入れて下さい．
+        </p>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+<footer style="background-color: rgb(194, 243, 194);">
+    <div class="footer">
+        <span class="copy">© 2020 MonaYoga　　</span>
+        <a href="{% url 'logout' %}">ログアウト</a>
+    </div>
+    <br><br><br>
+</footer>
+{% endblock footer %}

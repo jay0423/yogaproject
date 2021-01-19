@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'users.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header_admin.html' %}
+{% endblock header %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a id="callendar" class="nav-link" href="{% url 'users' %}">登録者情報<span id='titleuesita'></span></a>
+            </li>
+            <li class="nav-item" style="background-color: rgb(248, 160, 150);">
+                <a id="booked_list" class="nav-link" href="{% url 'analysis' %}">売上・他<span id='dateuesita'></span></a>
+            </li>
+            <li class="nav-item">
+                <a id="access" class="nav-link" href="{% url 'table' %}">テーブル<span id='title_mainuesita'></span></a>
+            </li>
+        </ul>
+        <input hidden id="location" value="{{ location }}">
+    </div>
+
+    <div class="alert alert-warning" role="alert">
+        <p>集計する期間を選択してください．<span style="color: red;">{{ error1 }}</span></p>
+        <form action="" method="POST" name="form1">{% csrf_token %}
+            <div class="input-group mb-3 plans" id="plan_hidden">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">期間</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01" name="from_month" onchange="change_select()">
+                    <option value="{{ from_month }}" selected>{{ from_month }}</option>
+                    {% for month in month_list %}
+                    <option value="{{ month }}">{{ month }}</option>
+                    {% endfor %}
+                </select>
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">~</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01" name="to_month" onchange="change_select()">
+                    <option value="{{ to_month }}" selected>{{ to_month }}</option>
+                    {% for month in month_list %}
+                    <option value="{{ month }}">{{ month }}</option>
+                    {% endfor %}
+                </select>
+                <input class="btn btn-primary btn-sm" type="submit" value="選 択">
+            </div>
+        </form>
+    </div>
+
+    <h3>月別予約人数と売上</h3>
+    <div class="box">
+        <div class="x_scroll_box">
+            <table width="100%" style="border: 1px solid #ddd;">
+                <thead style="background-color: rgb(194, 243, 194);">
+                    <th>月</th>
+                    <th>総予約者数【人】</th>
+                    <th>(仮)総売上【円】</th>
+                </thead>
+
+                {% for index, row in total_price_per_month.iterrows %}
+                <tr>
+                    <td>{{ index }}</td>
+                    <td>{{ row.number_of_people }}</td>
+                    <td>{{ row.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <br>
+    <h3>予約率【%】｜曜日-プラン</h3>
+    <div class="box">
+        <div class="x_scroll_box">
+            <table width="100%" style="border: 1px solid #ddd;">
+                <thead style="background-color: rgb(194, 243, 194);">
+                    <th>曜日</th>
+                    {% for plan_name in plan_name_list %}
+                    <th>{{ plan_name }}</th>
+                    {% endfor %}
+                </thead>
+                {% for index, row in weekday_plan_rate_pivot.iterrows %}
+                <tr>
+                    <td style="background-color: rgb(194, 243, 194);">{{ index }}</td>
+                    {% for r in row %}
+                    <td>{{ r }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <br>
+    <h3>(仮)売上【円】｜曜日-プラン</h3>
+    <div class="box">
+        <div class="x_scroll_box">
+            <table width="100%" style="border: 1px solid #ddd;">
+                <thead style="background-color: rgb(194, 243, 194);">
+                    <th>曜日</th>
+                    {% for plan_name in plan_name_list %}
+                    <th>{{ plan_name }}</th>
+                    {% endfor %}
+                </thead>
+                {% for index, row in weekday_plan_totalprice_pivot.iterrows %}
+                <tr>
+                    <td style="background-color: rgb(194, 243, 194);">{{ index }}</td>
+                    {% for r in row %}
+                    <td>{{ r }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <br>
+    <h3>予約回数ランク</h3>
+    <div class="box">
+        <div class="x_scroll_box">
+            <table width="100%" style="border: 1px solid #ddd;">
+                <thead style="background-color: rgb(194, 243, 194);">
+                    <th>ランク</th>
+                    <th>氏名</th>
+                    <th>予約回数</th>
+                </thead>
+                {% for i, key, value in booked_people_count %}
+                <tr>
+                    <td>{{ i }}</td>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

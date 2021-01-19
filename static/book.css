@@ -1,27 +1,21 @@
-.container {
-    padding-top: 50px;
-}
-
-.move {
-    color: #000;
-    float: right;
-    padding: 10px;
-}
-
 .this-month {
     display: block;
     text-align: center;
 }
 
 .next-month {
-    color: #000;
+    font-size: 20px;
+    color: #fff;
+    background-color: rgb(255, 107, 91);
+    padding: 2px 10px;
+    border-radius: 5px;
     margin-bottom: 0;
-    font-size: 25px;
 }
 
 table {
     background-color: #fff;
     color: #000;
+    font-size: 20px;
 }
 
 thead {
@@ -45,51 +39,41 @@ th {
 .c {
     text-align: left;
     margin-bottom: 5px;
-}
-
-a {
-    transition: .5s;
-    color: black;
-}
-
-a:hover {
-    text-decoration: none;
+    font-size: 20px;
 }
 
 .yoga {
     font-family: Arial, Helvetica, sans-serif;
-    color: #000;
-    background-color: violet;
+    color: #fff;
+    background-color: rgb(55, 167, 55);
     text-align: center;
+    padding: 2px 6px;
     margin-bottom: 0;
+    border: 1px solid #ddd;
+    text-decoration: none;
     transition: 0.5s;
 }
 
-.alert {
-    border: 1px solid #eee;
-    background-color: #fff;
-}
-
-/* .isuyoga:hover, .yoga:hover, .others:hover {
-    opacity: 0.8;
-} */
-
 .isuyoga {
     font-family: Arial, Helvetica, sans-serif;
-    color: #000;
-    background-color: yellow;
+    color: #fff;
+    background-color: rgb(10, 161, 149);
     text-align: center;
+    padding: 2px 6px;
     margin-bottom: 0;
+    border: 1px solid #ddd;
     text-decoration: none;
     transition: 0.5s;
 }
 
 .ochakai {
     font-family: Arial, Helvetica, sans-serif;
-    color: #000;
-    background-color: yellowgreen;
+    color: #fff;
+    background-color: rgb(124, 167, 40);
     text-align: center;
+    padding: 2px 6px;
     margin-bottom: 0;
+    border: 1px solid #ddd;
     text-decoration: none;
     transition: 0.5s;
 }
@@ -97,19 +81,21 @@ a:hover {
 .others {
     font-family: Arial, Helvetica, sans-serif;
     color: #000;
-    background-color: rgb(209, 183, 233);
+    background-color: rgb(145, 210, 248);
     text-align: center;
+    padding: 2px 6px;
     margin-bottom: 0;
+    border: 1px solid #ddd;
     text-decoration: none;
     transition: 0.5s;
 }
 
-@media (max-width: 599px) {
-    .container {
-        padding-top: 30px;
+@media (max-width: 576px) {
+    .c {
+        font-size: 16px;
     }
-    table {
-        font-size: 12px;
+    thead {
+        font-size: 16px;
     }
     .box {
         height: 65px;
@@ -119,9 +105,23 @@ a:hover {
         margin-bottom: 7px;
     }
     .next-month {
+        font-size: 16px;
+    }
+    .yoga, .isuyoga, .ochakai, .others {
+        padding: 0.5px 0;
         font-size: 12px;
     }
     .note {
-        font-size: 12px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 350px) {
+    .yoga, .isuyoga, .ochakai, .others {
+        padding: 0;
+        font-size: 11px;
+    }
+    .next-month {
+        font-size: 14px;
     }
 }

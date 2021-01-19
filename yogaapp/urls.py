@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import signupfunc,loginfunc, logoutfunc, bookfunc, confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func
-from .views import book_adminfunc, YogaCreate, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete
+from .views import signupfunc,loginfunc, logoutfunc, bookfunc, confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func, access_func, info_func
+from .views import book_adminfunc, YogaCreate, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, users_detail, signup_admin_func, notefunc, analysis_func, table_func
 
 urlpatterns = [
     path('signup/', signupfunc, name='signup'),
@@ -11,6 +11,8 @@ urlpatterns = [
     path('confirm/<date>/get_yoga/<int:pk>', get_yoga_func, name='get_yoga'),
     path('confirm/<date>/cancel_yoga/<int:pk>/<mark>', cancel_yoga_func, name='cancel_yoga'),
     path('booked_list', booked_list_func, name='booked_list'),
+    path('access', access_func, name='access'),
+    path('info', info_func, name='info'),
     #管理者用
     path('book_admin/<month>', book_adminfunc, name='book_admin'),
     path('detail/<date>/', detail_admin_func, name='detail'),
@@ -20,4 +22,9 @@ urlpatterns = [
     path('setting_plan/<int:pk>/detail', SettingPlanUpdate.as_view(), name='setting_plan_update'),
     path('create/', YogaCreate.as_view(), name='create'),
     path('setting_plan/<int:pk>/delete', YogaPlanDelete.as_view(), name='yoga_plan_delete'),
+    path('users', users_detail, name='users'), 
+    path('analysis/', analysis_func, name='analysis'),
+    path('table/', table_func, name='table'),
+    path('signup_admin/', signup_admin_func, name='signup_admin'),
+    path('note/', notefunc, name='note'),
 ]

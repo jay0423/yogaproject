@@ -1,0 +1,9 @@
+.img-main {
+    width: 100%;
+}
+
+@media (max-width: 480px) {
+    .note {
+        font-size: 14px;
+    }
+}

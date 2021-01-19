@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'access.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header.html' %}
+{% endblock header %}
+
+{% block content %}
+
+<div class="container">
+    {% include 'nav-link.html' %}
+
+    <div class="alert alert-warning setting" role="alert">
+        <h3>monaスタジオ</h3>
+        <hr style="border-color: green;">
+        <p>
+            <span class="badge badge-success">住所</span><br class="br-get">
+            さいたま市浦和区木崎5-13-4　<br class="br-get">小林宅(2階)<br>
+            <span class="badge badge-success">最寄り駅</span><br class="br-get">
+            北浦和駅(東口)<br>
+            <span class="badge badge-success">バス乗車</span><br class="br-get">
+            北浦和東口（クイーンズ伊勢丹前）<br class="br-get">【岩02】岩槻行き・宮下行き・東新井団地行き<br>
+            <span class="badge badge-success">バス下車</span><br class="br-get">
+            山崎
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3232.396050906912!2d139.66197351555508!3d35.88831462619364!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018c04423cadd0d%3A0x110d02c82e70bb11!2z44CSMzMwLTAwNDIg5Z-8546J55yM44GV44GE44Gf44G-5biC5rWm5ZKM5Yy65pyo5bSO77yV5LiB55uu77yR77yT4oiS77yU!5e0!3m2!1sja!2sjp!4v1596255637316!5m2!1sja!2sjp"
+            width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </div>
+    <div class="alert alert-warning setting" role="alert">
+        <h3>SECOM会場</h3>
+        <hr style="border-color: green;">
+        <p>
+            <span class="badge badge-success">住所</span><br class="br-get">
+            さいたま市浦和区常磐9-31-17　<br class="br-get">北隣館荘司ビル1F<br>
+            <span class="badge badge-success">最寄り駅</span><br class="br-get">
+            北浦和駅(西口)<br>
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3233.090441720321!2d139.64204441555455!3d35.87130042713125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018c1c94f2536b7%3A0x9ddb053ee25cffbc!2z44CSMzMwLTAwNjEg5Z-8546J55yM44GV44GE44Gf44G-5biC5rWm5ZKM5Yy65bi455uk77yZ5LiB55uu77yT77yR4oiS77yR77yX!5e0!3m2!1sja!2sjp!4v1596255684484!5m2!1sja!2sjp"
+            width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </div>
+    <div class="alert alert-warning setting" role="alert">
+        <h3>蔵のcafe</h3>
+        <hr style="border-color: green;">
+        <p>
+            <span class="badge badge-success">住所</span><br class="br-get">
+            さいたま市緑区三室630<br>
+            <span class="badge badge-success">最寄り駅</span><br class="br-get">
+            北浦和駅(東口)<br>
+        </p>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3232.2478159078923!2d139.670727715555!3d35.89194582599353!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6018c0698491b751%3A0x6a3c816b1af36516!2z44CSMzM2LTA5MTEg5Z-8546J55yM44GV44GE44Gf44G-5biC57eR5Yy65aSn5a2X5LiJ5a6k77yW77yT77yQ!5e0!3m2!1sja!2sjp!4v1596255718188!5m2!1sja!2sjp"
+            width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block footer %}
+<footer style="background-color: rgb(194, 243, 194);">
+    <div class="footer">
+        <span class="copy">© 2020 MonaYoga　　</span>
+        <a href="{% url 'logout' %}">ログアウト</a>
+    </div>
+    <br><br><br>
+</footer>
+{% endblock footer %}

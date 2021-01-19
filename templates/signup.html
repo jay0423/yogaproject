@@ -6,87 +6,36 @@
 {% endblock customcss %}
 
 {% block content %}
-<form class="form-signin" method="POST" action="">{% csrf_token %}
-    <h1 class="monayoga">Mona Yoga</h1>
+<div class="container">
+    <h1 class="monayoga">monaヨガ</h1>
     <br><br><br>
-    <h4>サインアップ</h4>
-    {% if error %}
-    {{ error }}
-    {% endif %}
-    <label for="name" class="sr-only">User Name</label>
-    <input type="text" id="name" class="form-control" name="username" placeholder="ログインID" required autofocus>
-    <label for="inputPassword" class="sr-only">Password</label>
-    <input type="password" id="inputPassword" class="form-control" name="password" placeholder="パスワード" required>
-    <label for="lastname" class="sr-only">Last Name</label>
-    <input type="text" id="lastname" class="form-control" name="lastname" placeholder="姓" required>
-    <label for="firstname" class="sr-only">First Name</label>
-    <input type="text" id="firstname" class="form-control" name="firstname" placeholder="名" required>
-    <br>
-    <h4>同意文</h4>
-    <div class="consent">
-        <p>
-            この個人情報保護方針は、株式会社ケイルート（以下「当社」といいます。）のウェブサイトを利用している時に適用されます。また、当ウェブサイトにおいてお預かりした個人情報は、この個人情報保護方針に従って管理されます。
-            当社は個人情報の取り扱いについて以下の通りです．
-        </p>
-        <hr>
-        <h5>お預かりした個人情報の収集・利用について</h5>
-        <p>
-            当社は、サービスの提供のために必要な個人情報以外は収集致しません。
-            個人情報を利用する際には、目的を逸脱して利用することはありません。
-            また、必要な個人情報の収集の際には、事前に同意を得ます。
-        </p>
-        <hr>
-        <h5>お預かりした個人情報の共有・開示について</h5>
-        <p>
-            当社は、以下の場合を除いて、お預かりした個人情報をご本人の許可なく第三者と共有することはありません。
-        </p>
-        <ol>
-            <li>収集当初の目的を達成するために、必要な業務を委託する場合。</li>
-            <li>法令に基づき情報開示の依頼があった場合。</li>
-        </ol>
-        <hr>
-        <h5>お預かりした個人情報の修正・利用停止について</h5>
-        <p>
-            お預かりした個人情報（画像を含む）の修正・利用停止を必要とする場合には、その旨をご連絡ください。
-            ご本人である確認をとらせて頂いた上で対応させて頂きます。
-        </p>
-        <hr>
-        <h5>セキュリティについて</h5>
-        <p>
-            お預かりした個人情報は社内での使用に限定されており、お問い合わせ担当者など、特別な業務を果たす為に個人情報を必要とするスタッフだけがアクセスすることを許されます。
-        </p>
-        <hr>
-        <h5>個人情報保護方針の更新</h5>
-        <p>
-            当社は、個人情報保護方針を一部改訂することがあります。
-            その際は、当ウェブサイト上にてお知らせ致します。
-        </p>
-    </div>
-    <p id="formc" class="form-check">
-        <input class="form-check-input position-static" type="checkbox" id="blankCheckbox" value="option1"
-            onchange="checkbox()">
-        利用規約に同意します
-    </p>
-    <br>
-    <div class="signup-button">
-        <button class="btn btn-md btn-secondary disable" type="reset" style="width: 49%;">クリア</button>
-        <button class="btn btn-md btn-primary disable" id="signup-button" type="submit"
-            style="width: 49%;">サインアップ</button>
-    </div>
-    <a class="move-link" href="{% url 'login' %}">ログインへ</a>
-    <p class="mt-5 mb-3 text-muted">&copy; 2020/07 MonaYoga</p>
-</form>
-
-<script type='text/javascript'>
-    document.querySelector("#signup-button").disabled = true;
-    function checkbox() {
-        const check = document.getElementById("blankCheckbox").checked;
-        const button = document.querySelector("#signup-button");
-        if (check == true) {
-            button.disabled = false;
-        } else {
-            button.disabled = true;
-        }
-    };
-</script>
+    <form class="form-signin" method="POST" action="">{% csrf_token %}
+        <h3>サインアップ</h3>
+        <br>
+        {% if error %}
+        {{ error }}
+        {% endif %}
+        <label for="name" class="sr-only">User Name</label>ログインID
+        <input type="text" id="name" class="form-control" name="username" placeholder="例）sadayo1026" required autofocus>
+        <br>
+        <label for="lastname" class="sr-only">Last Name</label>氏名
+        <input type="text" id="lastname" class="form-control" name="lastname" placeholder="姓" required>
+        <label for="firstname" class="sr-only">First Name</label>
+        <input type="text" id="firstname" class="form-control" name="firstname" placeholder="名" required>
+        <br>
+        <label for="email" class="sr-only">email</label>連絡先
+        <input type="text" id="email" class="form-control" name="email" placeholder="メールアドレス" required>
+        <br>
+        <div class="signup-button">
+            <button class="btn btn-md btn-secondary disable" type="reset" style="width: 49%;">クリア</button>
+            <button class="btn btn-md btn-primary disable" id="signup-button" type="submit"
+                style="width: 49%;">サインアップ</button>
+        </div>
+        <a class="move-link" href="{% url 'login' %}">ログインへ</a>
+        <p class="mt-5 mb-3 text-muted">&copy; 2020/07 MonaYoga</p>
+    </form>
+</div>
 {% endblock content %}
+
+{% block footer %}
+{% endblock footer %}

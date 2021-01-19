@@ -1,23 +1,37 @@
-.logout {
-    color: #000;
-    float: right;
-    padding: 10px;
+.header_logo {
+    width: 45px;
+    height: 45px;
+    padding: 0;
 }
 
+.navbar-brand {
+    padding: 0;
+    font-size: 25px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 992px) {
+    .nav-link {
+        font-size: 16px;
+    }
+    .hidden_admin {
+        display: none;
+    }
+}
 
 @media (max-width: 599px) {
+    .header_logo {
+        width: 35px;
+        height: 35px;
+    }
     span {
-        font-size: 12px;
-    }
-    .navbar-brand {
         font-size: 16px;
-        font-family: 'Times New Roman', Times, serif;
     }
-    .logout {
-        font-size: 12px;
-        padding-top: 2px;
+    .navbar-brand span {
+        font-size: 22px;
     }
-    .hidden {
-        display: none;
+    .navbar-collapse {
+        font-size: 16px;
     }
 }

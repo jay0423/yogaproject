@@ -10,26 +10,27 @@
 {% endblock header %}
 
 {% block content %}
-<a class="move" href="{% url 'booked_list' %}">予約確認画面へ</a>
+
 <div class="container">
-    <br>
+    {% include 'nav-link.html' %}
+
     <div class="row">
-        <div class="col-3" style="text-align: left;">
+        <div class="col-4" style="text-align: left;">
             {% if month != '0' %}
-            <a class="next-month" href="0">◀前月</a>
+            <a class="next-month" href="0">◀{{ pre_month }}月</a>
             {% endif %}
         </div>
-        <div class="col-6">
+        <div class="col-4">
             <h3 class="this-month">{{ month2 }}月</h3>
         </div>
-        <div class="col-3" style="text-align: right;">
+        <div class="col-4" style="text-align: right;">
             {% if month != '100' %}
-            <a class="next-month" href="100">次月▶</a>
+            <a class="next-month" href="100">{{ next_month }}月▶</a>
             {% endif %}
         </div>
     </div>
     <table width="100%">
-        <thead>
+        <thead style="background-color: rgb(194, 243, 194);">
             <!-- <th>月</th> -->
             <th>火</th>
             <th>水</th>
@@ -47,7 +48,7 @@
                 <a href="{% url 'confirm' object.date %}">
                     {% for plan in plans %}
                     {% if plan == 'ヨガ' %}
-                    <p class="yoga">{{ plan }}</p>
+                    <p class=" yoga">{{ plan }}</p>
                     {% elif plan == '椅子ヨガ' %}
                     <p class="isuyoga">{{ plan }}</p>
                     {% elif plan == 'お茶会' %}
@@ -64,14 +65,20 @@
         {% endfor %}
     </table>
 
-    <a class="logout" href="{% url 'logout' %}">ログアウト</a>
     <p class="note" style="padding-top: 10px;">
-        *定休日：月曜日，日曜日<br>
-        予約したい日にちをタッチして下さい．
+        予約したい日のプランをタッチして下さい．<br>
+        *定休日：月曜日，日曜日
     </p>
 </div>
 
-<script>
-
-</script>
 {% endblock content %}
+
+{% block footer %}
+<footer style="background-color: rgb(194, 243, 194);">
+    <div class="footer">
+        <span class="copy">© 2020 MonaYoga　　</span>
+        <a href="{% url 'logout' %}">ログアウト</a>
+    </div>
+    <br><br><br>
+</footer>
+{% endblock footer %}

@@ -1,0 +1,133 @@
+.order_top .nav-item {
+    width: calc(100% / 3);
+    background-color: #fff;
+    border-radius: 0.25rem;
+}
+
+.order_top .nav-link {
+    padding: 4px;
+    border-left: 1px solid #ddd;
+    color: #000;
+    text-align: center;
+}
+
+.alert {
+    margin-top: 50px;
+    margin-bottom: 40px;
+}
+
+.btn {
+    margin-left: 450px;
+}
+
+.box {
+    width: 100%;
+    overflow: hidden;
+    border-right: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+    border-left: 1px solid #CCC;
+}
+
+.x_scroll_box {
+    float: left;
+    width: 100%;
+    max-height: 700px;
+    border-left: 1px solid #CCC;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+table {
+    background-color: #fff;
+    color: #000;
+    font-size: 20px;
+}
+
+thead {
+    text-align: center;
+}
+
+tr th, tr td {
+    border: 1px solid #ddd;
+    font-weight: normal;
+    text-align: center;
+}
+
+th, td {
+    padding: 2px;
+    width: 14.25%;
+    vertical-align: top;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+    .btn {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .btn {
+        margin-left: 90px;
+    }
+    .alert {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .order_top .nav-link {
+        font-size: 16px;
+        padding: 3px 0;
+    }
+    .x_scroll_box {
+        max-height: 400px;
+    }
+    .btn {
+        margin-left: 10px;
+    }
+    table {
+        font-size: 14px;
+    }
+    h3 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .input-group-text {
+        font-size: 16px;
+        padding: 4px;
+    }
+    .custom-select {
+        font-size: 16px;
+        padding: 4px;
+    }
+    .btn {
+        font-size: 14px;
+        padding: 4px;
+    }
+    .alert {
+        margin-top: 20px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 350px) {
+    .order_top .nav-link {
+        font-size: 12px;
+    }
+    .input-group-text {
+        font-size: 14px;
+        padding: 4px;
+    }
+    .custom-select {
+        font-size: 14px;
+        padding: 4px;
+    }
+    .btn {
+        margin-left: 0px;
+    }
+}

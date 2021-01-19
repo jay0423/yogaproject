@@ -1,3 +1,92 @@
 body {
-    background-color: rgb(194, 243, 194);
+    background-color: rgb(247, 243, 243);
+    color: #000;
+}
+
+.container {
+    margin-top: 10px;
+}
+
+p, a {
+    font-size: 20px;
+    color: #000;
+}
+
+.btn {
+    font-size: 18px;
+}
+
+.alert {
+    border: 1px solid #eee;
+    background-color: #fff;
+    color: #000;
+}
+
+.move {
+    color: #000;
+    display: block;
+    margin-left: 10px;
+    margin-bottom: 30px;
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+footer .copy, footer a {
+    font-size: 20px;
+}
+
+footer a {
+    text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+    hr {
+        margin: 10px 0 15px 0;
+    }
+    footer {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    footer .copy, footer a {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    p, span {
+        font-size: 16px;
+    }
+    .container {
+        margin-top: 10px;
+    }
+    .move {
+        margin-left: 3px;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+    .alert {
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+    .btn {
+        font-size: 16px;
+        padding: 2px 6px;
+    }
+}
+
+@media (max-width: 350px) {
+    p, span {
+        font-size: 14px;
+    }
+    .btn {
+        font-size: 14px;
+    }
+    footer .copy, footer a {
+        font-size: 14px;
+    }
 }

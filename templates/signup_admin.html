@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customcss %}
+<link rel="stylesheet" type="text/css" href="{% static 'signup_admin.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+{% include 'header_admin.html' %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    
+    <div class="order_top" id="order" style="margin-top: 10px; margin-bottom: 10px;">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a id="callendar" class="nav-link" href="{% url 'setting_plan' %}">プラン一覧<span id='titleuesita'></span></a>
+            </li>
+            <li class="nav-item">
+                <a id="booked_list" class="nav-link" href="{% url 'note' %}">お知らせ<span id='dateuesita'></span></a>
+            </li>
+            <li class="nav-item" style="background-color: rgb(248, 160, 150);">
+                <a id="access" class="nav-link" href="{% url 'signup_admin' %}">サインアップ<span id='title_mainuesita'></span></a>
+            </li>
+        </ul>
+        <input hidden id="location" value="{{ location }}">
+    </div>
+
+    <br>
+    <form class="form-signin" method="POST" action="">{% csrf_token %}
+        <h3>管理者用サインアップ</h3>
+        <br>
+        {% if error %}
+        {{ error }}
+        {% endif %}
+        <label for="name" class="sr-only">User Name</label>ログインID
+        <input type="text" id="name" class="form-control" name="username" placeholder="例）sadayo1026" required autofocus>
+        <br>
+        <label for="lastname" class="sr-only">Last Name</label>氏名
+        <input type="text" id="lastname" class="form-control" name="lastname" placeholder="姓" required>
+        <label for="firstname" class="sr-only">First Name</label>
+        <input type="text" id="firstname" class="form-control" name="firstname" placeholder="名" required>
+        <br>
+        <label for="email" class="sr-only">email</label>連絡先
+        <input type="text" id="email" class="form-control" name="email" placeholder="メールアドレス" required>
+        <br>
+        <div class="bottom">
+            <button class="btn btn-md btn-secondary disable" type="reset" style="width: 49%;">クリア</button>
+            <button class="btn btn-md btn-primary disable" id="signup-button" type="submit"
+                style="width: 49%;">サインアップ</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block customcss %}
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'header.css' %}"> -->
 <link rel="stylesheet" type="text/css" href="{% static 'book_admin.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'header.css' %}">
 {% endblock customcss %}
 
 {% block header %}
@@ -14,18 +14,18 @@
 <div class="container">
     <br>
     <div class="row">
-        <div class="col-3" style="text-align: left;">
-            <a href="" class="next-month" onclick="pre_month()">◀前月</a>
+        <div class="col-4" style="text-align: left;">
+            <a href="" class="next-month" onclick="pre_month()">◀{{ pre_month }}月</a>
         </div>
-        <div class="col-6">
-            <h3 class="this-month">{{ month2 }}月</h3>
+        <div class="col-4">
+            <h3 class="this-month">{{ year }}-{{ month2 }}</h3>
         </div>
-        <div class="col-3" style="text-align: right;">
-            <a href="" class="next-month" onclick="next_month()">次月▶</a>
+        <div class="col-4" style="text-align: right;">
+            <a href="" class="next-month" onclick="next_month()">{{ next_month }}月▶</a>
         </div>
     </div>
     <table width="100%">
-        <thead style="background-color: salmon;">
+        <thead style="background-color: rgb(194, 243, 194);">
             <!-- <th>月</th> -->
             <th>火</th>
             <th>水</th>
@@ -48,17 +48,13 @@
                 <a href="{% url 'detail' object.date %}">
                     {% for plan in plans %}
                     {% if plan.plan == 'ヨガ' %}
-                    <p class="yoga">{{ plan.plan }} <span class="hidden"
-                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
+                    <p class="yoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% elif plan.plan == '椅子ヨガ' %}
-                    <p class="isuyoga">{{ plan.plan }} <span class="hidden"
-                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
+                    <p class="isuyoga">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% elif plan.plan == 'お茶会' %}
-                    <p class="ochakai">{{ plan.plan }} <span class="hidden"
-                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
+                    <p class="ochakai">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% else %}
-                    <p class="others">{{ plan.plan }} <span class="hidden"
-                            style="color:rgb(194, 243, 194);">{{ plan.time }}</span></p>
+                    <p class="others">{{ plan.plan }} <span class="hidden">{{ plan.time }}</span></p>
                     {% endif %}
                     {% endfor %}
                 </a>
@@ -70,12 +66,16 @@
     </table>
 
     <br>
-    <div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning setting" role="alert">
         <form action="" method="POST" name="form1">{% csrf_token %}
             <template id="totalcheckbox">{{ total_checkbox }}</template>
-            <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取得">
-            <input type="text" placeholder="" id="checked" name="select_days">
-            <br><br>
+            <div class="input-group flex-nowrap">
+                <div class="input-group-prepend">
+                    <input type="button" class="btn btn-secondary btn-sm" onclick="check_click()" value="取得">
+                </div>
+                <input type="" class="form-control" placeholder="" id="checked" name="select_days" readonly style="background-color: #fff;">
+            </div>
+            <br>
             <div class="input-group mb-3 plans" id="plan_hidden" style="display: none;">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">プラン</label>
@@ -92,9 +92,9 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">時間</span>
                     </div>
-                    <select class="custom-select" id="inputGroupSelect03" name="select_plan_time1">
-                        <option value="8">8</option>
-                        <option value="9">9</option>
+                    <select class="custom-select" id="inputGroupSelectTime1" name="time1" onchange="change_time()">
+                        <option value="08">8</option>
+                        <option value="09">9</option>
                         <option value="10" selected>10</option>
                         <option value="11">11</option>
                         <option value="12">12</option>
@@ -107,22 +107,22 @@
                         <option value="19">19</option>
                         <option value="20">20</option>
                     </select>
-                    <div class="input-group-prepend">
+                    <div class="input-group-prepend hidden_times">
                         <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">時</span>
                     </div>
-                    <select class="custom-select" id="inputGroupSelect04" name="select_plan_time1-5">
-                        <option value="0" selected>00</option>
+                    <select class="custom-select" id="inputGroupSelect04" name="time1-5">
+                        <option value="00" selected>00</option>
                         <option value="30">30</option>
                     </select>
-                    <div class="input-group-prepend">
+                    <div class="input-group-prepend hidden_times">
                         <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
                     </div>
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">～</span>
                     </div>
-                    <select class="custom-select" id="inputGroupSelect05" name="select_plan_time2">
-                        <option value="8">8</option>
-                        <option value="9">9</option>
+                    <select class="custom-select" id="inputGroupSelectTime2" name="time2">
+                        <option value="08">8</option>
+                        <option value="09">9</option>
                         <option value="10">10</option>
                         <option value="11" selected>11</option>
                         <option value="12">12</option>
@@ -135,37 +135,16 @@
                         <option value="19">19</option>
                         <option value="20">20</option>
                     </select>
-                    <div class="input-group-prepend">
+                    <div class="input-group-prepend hidden_times">
                         <span class="input-group-text" id="basic-addon2" style="background-color: #fff;">時</span>
                     </div>
-                    <select class="custom-select" id="inputGroupSelect06" name="select_plan_time2-5">
-                        <option value="0" selected>00</option>
+                    <select class="custom-select" id="inputGroupSelect06" name="time2-5">
+                        <option value="00" selected>00</option>
                         <option value="30">30</option>
                     </select>
-                    <div class="input-group-prepend">
+                    <div class="input-group-prepend hidden_times">
                         <span class="input-group-text" id="basic-addon1" style="background-color: #fff;">分</span>
                     </div>
-                    <!-- <input type="number" class="form-control time1" placeholder="" id="timechange" value="10"
-                        name="time1" onchange="change_time()">
-                    <div class="input-group-prepend"> -->
-                    <!-- <span class="input-group-text" id="basic-addon2">時</span>
-                    <input type="number" class="form-control time1-5" placeholder="" id="timechange" value="0"
-                        name="time1-5">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">分</span>
-                    </div>
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">～</span>
-                    </div>
-                    <input type="number" class="form-control" placeholder="" id="timechange2" value="11" name="time2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon2">時</span>
-                    </div>
-                    <input type="number" class="form-control time2-5" placeholder="" id="timechange" value="0"
-                        name="time2-5">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">分</span>
-                    </div> -->
                 </div>
                 <div id="for_hidden2" style="display: none;">
                     <div class="input-group-prepend">
@@ -176,13 +155,25 @@
                         <option value="{{ model.location }}">{{ model.location }}</option>
                         {% endfor %}
                     </select>
+                    <div hidden class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect07">最大予約人数</label>
+                    </div>
+                    <select hidden class="custom-select" id="inputGroupSelect07">
+                        {% for model in setting_plan_model2 %}
+                        <option value="{{ model.max_book }}">{{ model.max_book }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="addon-wrapping">最大予約人数</span>
+                    </div>
+                    <input type="number" class="max_book form-control" id="max_book" name="max_book" value="0">
                 </div>
+                <br>
                 <input class="btn btn-secondary btn-sm" type="submit" value="完了">
         </form>
     </div>
 </div>
 
-</div>
 
 <script>
     // チェックボックス選択された日にちを取得
@@ -194,10 +185,10 @@
         for (i = 0; i < total; i++) {
             if (checks[i].checked === true) {
                 str += checks[i].value + " ";
-                // checks[i].checked = false;
             }
         }
         document.getElementById('checked').value = str;
+        // document.getElementById('checked2').innerHTML = str;
         // 取得したときのプランの表示
         if (str !== '') {
             document.getElementById("plan_hidden").style.display = "flex";
@@ -221,6 +212,9 @@
         }
         // プラン別に場所を選択させる
         document.getElementById('inputGroupSelect02').options[Number(str)].selected = true;
+        document.getElementById('inputGroupSelect07').options[Number(str)].selected = true;
+        document.getElementById('max_book').value = document.getElementById('inputGroupSelect07').value;
+
     }
 
     function pre_month() {
@@ -240,8 +234,8 @@
 
     // 時間が変更したとき
     function change_time() {
-        var from_time = document.getElementById('timechange').value;
-        document.getElementById('timechange2').value = Number(from_time) + 1;
+        var from_time = document.getElementById('inputGroupSelectTime1').value;
+        document.getElementById('inputGroupSelectTime2').options[Number(from_time) - 7].selected = true;
     }
 
 </script>

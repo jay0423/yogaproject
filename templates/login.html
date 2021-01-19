@@ -7,8 +7,16 @@
 
 {% block content %}
 <form class="form-signin" method="POST" action="">{% csrf_token %}
-    <h1 class="monayoga">mona ヨガ</h1>
-    <br><br><br>
+    <h1 class="monayoga">monaヨガ</h1>
+    <br><br>
+    {% if memo != '' %}
+    <div class="alert alert-warning setting" role="alert">
+        <h4>お知らせ</h4>
+        <hr style="border-color: green;">
+        <p>{{ memo }}</p>
+    </div>
+    {% endif %}
+    <br>
     <!-- <h5>ログイン</h5> -->
     {% if error %}
     {{ error }}
@@ -19,8 +27,13 @@
     </div>
     <div class="signup-button">
         <button class="btn btn-md btn-secondary disable" type="reset" style="width: 49%;">クリア</button>
-        <button class="btn btn-md btn-primary disable" id="signup-button" type="submit" style="width: 49%;">ログイン</button>
+        <button class="btn btn-md btn-primary disable" id="signup-button" type="submit"
+            style="width: 49%;">ログイン</button>
     </div>
+    <br>
     <p class="mt-5 mb-3 text-muted">&copy; 2020/07 MonaYoga</p>
 </form>
 {% endblock content %}
+
+{% block footer %}
+{% endblock footer %}

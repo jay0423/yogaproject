@@ -11,18 +11,19 @@
 
 {% block content %}
 <div class="container">
-    <a class="move" href="{% url 'book' 0 %}">カレンダー画面へ</a>
-    
-    <h3>{{ date }}</h3>
+    <a id="title" class="move" href="{% url 'book' '0' %}">カレンダー予約画面へ<span id='titleuesita'></span></a>
+    <div class="date">{{ month }}月{{ day }}日（{{weekday}}）　<span><br class="br-get">予約したい時間のプランを選択して下さい</span></div>
     {% for time, item, plan, error_booked in object_plan_error_list %}
     {% if item.plan != '0' %}
     <div class="alert alert-warning" role="alert">
-        <h3>
+        <h3 class="plan_name">
             {{ item.plan }}
             {% if error_booked != 0 %}
-            <span class="badge badge-danger">予約済</span>
+            <span class="badge badge-primary" style="background-color: #fff; border: 1px solid #007bff; color: #007bff;">予約済</span>
             {% endif %}
+            <span class="time" style="color: red; float: right;">{{ item.time }}</span>
         </h3>
+        <hr style="border-color: green;">
         <div class="row">
             <div class="col-5">
                 <img src="{{ plan.image.url }}">
@@ -30,19 +31,26 @@
             <div class="col-7">
                 <p class="hidden">{{ plan.memo }}</p>
                 <p>
+
                     料金：{{ plan.price }}円<br>
-                    時間：{{ item.time }}時<br>
-                    場所：{{ item.location }}
+                    場所：{{ item.location }}<br>
+                    人数：{{ item.number_of_people }} / {{ item.max_book }}<br>
+                    {% if error_booked == 0 %}
+                    {% if item.number_of_people == item.max_book %}
+                    <span style="color: red;">予約がいっぱいです</span>
+                    {% endif %}
+                    {% endif %}
                 </p>
                 <div class="bottom">
                     <span style="color: red;">{{ error }}</span>
-                    <span><span class="hidden2">予約</span>人数 {{ item.number_of_people }} / {{ plan.max_book }}</span>
                     {% if error_booked == 0 %}
-                    <a href="get_yoga/{{ item.pk }}" class="btn btn-danger btn-md" role="button" aria-pressed="true">予約</a>
+                    {% if item.number_of_people != item.max_book %}
+                    <a href="get_yoga/{{ item.pk }}" class="btn btn-primary btn-md" role="button" aria-pressed="true"
+                        onclick="get_book()">予 約</a>
+                    {% endif %}
                     {% else %}
-                    <a href="#" class="btn btn-primary btn-md" role="button"
-                        aria-pressed="true" onclick="var ok=confirm('この予約をキャンセルしますか？');
-                        if (ok) location.href='cancel_yoga/{{ item.pk }}/0'; return false;">キャンセル</a>
+                    <a href="#" class="btn btn-danger btn-md" role="button" aria-pressed="true" onclick="var ok=confirm('この予約を取消しますか？');
+                        if (ok) location.href='cancel_yoga/{{ item.pk }}/0'; return false;">取 消</a>
                     {% endif %}
                 </div>
             </div>
@@ -51,5 +59,11 @@
     {% endif %}
     {% endfor %}
 </div>
+
+<script>
+    function get_book() {
+        alert('ご予約が完了致しました．');
+    }
+</script>
 
 {% endblock content %}

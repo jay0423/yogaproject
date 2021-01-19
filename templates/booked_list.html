@@ -11,30 +11,27 @@
 
 {% block content %}
 <div class="container">
-    <a class="move" href="{% url 'book' 0 %}">カレンダー画面へ</a>
+    {% include 'nav-link.html' %}
+    <h3>予約済プラン</h3>
+    <p class="hope">ご予約の取消は１日前までにお願い致します．</p>
     {% if check == 0 %}
     <div class="alert alert-warning" role="alert">
-    <p>現在ご予約しているプランはございません．</p>
+        <p>現在ご予約しているプランはございません．</p>
     </div>
     {% endif %}
-    {% for item, plan in object_list %}
+    {% for item, plan, weekday in object_list %}
     <div class="alert alert-warning" role="alert">
-        <div class="row">
-            <div class="col-4">
-                <p class="date">{{ item.date|date:"Y-m-d" }}</p>
-                <h3>{{ item.plan }}</h3>
-            </div>
-            <div class="col-8">
-                <p>
-                    時間：{{ item.time }}時<br>
-                    料金：{{ plan.price }}円<br>
-                    場所：{{ plan.location }}
-                </p>
-                <a href="#" class="bottom btn btn-primary btn-md" role="button"
-                    aria-pressed="true" onclick="var ok=confirm('この予約をキャンセルしますか？');
-                    if (ok) location.href='confirm/{{ item.date }}/cancel_yoga/{{ item.pk }}/1'; return false;">キャンセル</a>
-            </div>
-        </div>
+        <h3 class="plan_name">{{ item.plan }}<span class="date">{{ item.date|date:"m" }}月{{ item.date|date:"d" }}日（{{ weekday }}）</span></h3>
+        <hr style="border-color: green;">
+        <p>
+            <!-- <span style="color: blue;">予約済<br></span> -->
+            時間：{{ item.time }}<br>
+            料金：{{ plan.price }}円<br>
+            場所：{{ plan.location }}
+            <a href="#" class="btn btn-danger btn-md" role="button" aria-pressed="true"
+                onclick="var ok=confirm('この予約を取消しますか？');
+                    if (ok) location.href='confirm/{{ item.date }}/cancel_yoga/{{ item.pk }}/1'; return false;">取 消</a>
+        </p>
     </div>
     {% endfor %}
 </div>
