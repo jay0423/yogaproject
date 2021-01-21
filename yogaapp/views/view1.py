@@ -1,5 +1,5 @@
 """
-サインアップ，ログイン，ログアウト機能の実装
+サインアップ，管理者用サインアップ，ログイン，ログアウト機能の実装
 """
 
 from django.shortcuts import render, redirect
@@ -70,7 +70,7 @@ def signup_admin_func(request):
             return render(request, 'signup_admin.html', {'error': 'このユーザーは登録されています'})
     return render(request, 'signup_admin.html')
 
-
+#ログイン機能の実装
 def loginfunc(request):
     item = NoteModel.objects.get(num=0)
     if request.method == "POST":
@@ -95,6 +95,7 @@ def loginfunc(request):
     return render(request, 'login.html', context)
 
 
+#ログアウト機能の実装
 def logoutfunc(request):
     logout(request)
     return redirect('login')    
