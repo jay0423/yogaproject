@@ -2,7 +2,8 @@ from django.urls import path
 from .views.view1 import signupfunc,loginfunc, logoutfunc, signup_admin_func
 from .views.view2 import bookfunc, book_adminfunc
 from .views.view3 import confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func, access_func, info_func
-from .views.view4 import YogaCreate, yoga_create_plan_num, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, users_detail, users_update, notefunc, analysis_func, table_func, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
+from .views.view4 import YogaCreate, yoga_create_plan_num, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, notefunc, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
+from .views.view5 import users_detail, users_update, analysis_func, table_func
 
 urlpatterns = [
     #views1.py
@@ -29,13 +30,14 @@ urlpatterns = [
     path('create/', YogaCreate.as_view(), name='create'),
     path('create/plan_num', yoga_create_plan_num, name='yoga_create_plan_num'),
     path('setting_plan/<int:pk>/delete', YogaPlanDelete.as_view(), name='yoga_plan_delete'),
-    path('users', users_detail, name='users'), 
-    path('users/update/<username>', users_update, name='users_update'), 
-    path('analysis/', analysis_func, name='analysis'),
-    path('table/', table_func, name='table'),
     path('note/', notefunc, name='note'),
     path('calendar_default/', calendar_dafault_func, name='calendar_default'),
     path('calendar_default/detail/<weekday>', weekday_detail_func, name='weekday_detail'),
     path('calendar_default/detail/<weekday>/update/<int:pk>', weekday_update_func, name='weekday_update'),
     path('calendar_default/detail/<weekday>/delete/<int:pk>', WeekdayPlanDelete.as_view(), name='weekday_delete'),
+    #views4.py
+    path('users', users_detail, name='users'), 
+    path('users/update/<username>', users_update, name='users_update'), 
+    path('analysis/', analysis_func, name='analysis'),
+    path('table/', table_func, name='table'),
 ]
