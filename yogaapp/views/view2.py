@@ -18,6 +18,19 @@ class CALENDAR:
         self.year = 2021
         self.monday = NoteModel.objects.get(num=0).monday #monday=0：月曜日と日曜日は非表示, monday=1：日曜日は非表示, その他：全曜日を表示
 
+    def adjust_year_month2(self, year, month):
+        #翌年以降の調整．
+        while True:
+            if month > 12:
+                year += 1
+                month -= 12
+            elif month < 1:
+                year -= 1
+                month += 12
+            else:
+                break
+        return year, month
+        
     def adjust_year_month(self):
         #表示月を生成する．
         now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
@@ -25,9 +38,7 @@ class CALENDAR:
         #month_numから表示月を生成
         self.month = int(int(self.month_num) / 100 + now.month)
         #翌年以降の調整．
-        if self.month > 12:
-            self.year += 1
-            self.month -= 12
+        (self.year, self.month) = self.adjust_year_month2(self.year, self.month)
         
     def make_pre_next_month(self):
         #正確な前月，翌月を生成する．(1, 12月時のバグ回避)
@@ -45,6 +56,7 @@ class CALENDAR:
     
     def get_calendar(self):
         #カレンダーの日付リストを生成する．
+        print(self.year, self.month)
         c_str = calendar.month(self.year, self.month)
         c_str = c_str[c_str.find('\n', 25) + 1:]
         c_list = [] #カレンダーの日付リスト
@@ -145,7 +157,8 @@ class CALENDAR:
                 zip(c_list[7:14], object_list[7:14], plan_list[7:14]),
                 zip(c_list[14:21], object_list[14:21], plan_list[14:21]),
                 zip(c_list[21:28], object_list[21:28], plan_list[21:28]),
-                zip(c_list[28:35], object_list[28:35], plan_list[28:35])
+                zip(c_list[28:35], object_list[28:35], plan_list[28:35]),
+                zip(c_list[35:], object_list[35:], plan_list[35:])
                 ]
         ################################################################
         calendar_list_all = self.adjust_calendar_list(c_list, calendar_list_all)
@@ -236,13 +249,19 @@ class CALENDAR_ADMIN(CALENDAR):
         plan_list = self.sort_by_time(time_list, plan_list)
         return c_list_plan, plan_list
     
-    def checkbox_counts(self, c_list):
-        #checkboxの総数を算出する
-        total_checkbox = 0
+    def make_new_c_list(self, c_list):
         if self.monday == 0:
             new_c_list = c_list[1:6] + c_list[8:13] + c_list[15:20] + c_list[22:27] + c_list[29:34] + c_list[36:41]
         elif self.monday == 1:
             new_c_list = c_list[0:6] + c_list[7:13] + c_list[14:20] + c_list[21:27] + c_list[28:34] + c_list[35:41]
+        else:
+            new_c_list = c_list[:7] + c_list[7:14] + c_list[14:21] + c_list[21:28] + c_list[28:35] + c_list[35:42]
+        return new_c_list
+    
+    def checkbox_counts(self, c_list):
+        #checkboxの総数を算出する
+        total_checkbox = 0
+        new_c_list = self.make_new_c_list(c_list)
         for c in new_c_list:
             if c != ' ':
                 total_checkbox += 1
@@ -308,11 +327,12 @@ class CALENDAR_ADMIN(CALENDAR):
             add_plans.append(plans)
         PlanModel.objects.bulk_create(add_plans)
         
-    def default_input(self):
+    def default_input(self, request):
         weekday_default_model = WeekdayDefaultModel.objects.all()
         month_str = self.plus_zero(self.month) #1ケタの月の先頭に0を足す
         year_month = str(self.year) + "-" + month_str
         #日にちと曜日のリストの作成
+        new_c_list = self.make_new_c_list(self.get_calendar())
         for i in range(new_c_list.count(' ')):
             new_c_list.remove(' ')
         weekday_d = {0:'monday', 1:'tuesday', 2:'wednesday', 3:'thursday', 4:'friday', 5:'saturday', 6:'sunday'}
@@ -339,7 +359,6 @@ class CALENDAR_ADMIN(CALENDAR):
 def book_adminfunc(request, month):
     a = CALENDAR_ADMIN(month)
     context = a.get_context_data()
-    
     #予定入力設定
     if request.method == "POST":
         default = int(request.POST["default_or_not"])
