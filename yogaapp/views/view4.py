@@ -246,7 +246,7 @@ def users_update(request, username):
         object.first_name = new_firstname
         object.email = new_email
         object.save()
-        make_users_csv()
+####        make_users_csv()
         #ユーザー名が変更されるとき
         if username != new_username:
             user = BookModel.objects.get(user=username)
@@ -259,16 +259,16 @@ def users_update(request, username):
     }
     return render(request, 'users_update.html', context)
 
-#usersのcsvの作成
-def make_users_csv():
-    from django_pandas.io import read_frame
-    model = User.objects.all()
-    columns = ['username', 'first_name', 'last_name', 'email']
-    df = read_frame(model, fieldnames=columns)
-    #csvファイルで吐き出し
-    # df.to_csv('/var/www/yogaproject/static/users.csv', encoding='utf_8_sig')
-    df.to_csv('static/users.csv', encoding='utf_8_sig')
-    return None
+# #usersのcsvの作成
+# def make_users_csv():
+#     from django_pandas.io import read_frame
+#     model = User.objects.all()
+#     columns = ['username', 'first_name', 'last_name', 'email']
+#     df = read_frame(model, fieldnames=columns)
+#     #csvファイルで吐き出し
+#     # df.to_csv('/var/www/yogaproject/static/users.csv', encoding='utf_8_sig')
+#     df.to_csv('static/users.csv', encoding='utf_8_sig')
+#     return None
     
 
 #売上やピボットテーブル
@@ -557,30 +557,30 @@ def table_func(request):
     return render(request, 'table.html', context)
     
 
-#管理者用サインアップページ
-@login_required
-def signup_admin_func(request):
-    if request.method == "POST":
-        username = request.POST['username'].replace('　', '').replace(' ', '')
-        password = 'password'
-        last_name = request.POST['lastname'].replace('　', '').replace(' ', '')
-        first_name = request.POST['firstname'].replace('　', '').replace(' ', '')
-        email = request.POST['email'].replace('　', '').replace(' ', '')
-        try:
-            user = User.objects.create_user(username, '', password)
-            user.is_active = True
-            user.first_name = first_name
-            user.last_name = last_name
-            user.email = email
-            user.save()
-            user_plan = BookModel.objects.create()
-            user_plan.user = username
-            user_plan.save()
-            make_users_csv()
-            return redirect('signup_admin')
-        except:
-            return render(request, 'signup_admin.html', {'error': 'このユーザーは登録されています'})
-    return render(request, 'signup_admin.html')
+# #管理者用サインアップページ
+# @login_required
+# def signup_admin_func(request):
+#     if request.method == "POST":
+#         username = request.POST['username'].replace('　', '').replace(' ', '')
+#         password = 'password'
+#         last_name = request.POST['lastname'].replace('　', '').replace(' ', '')
+#         first_name = request.POST['firstname'].replace('　', '').replace(' ', '')
+#         email = request.POST['email'].replace('　', '').replace(' ', '')
+#         try:
+#             user = User.objects.create_user(username, '', password)
+#             user.is_active = True
+#             user.first_name = first_name
+#             user.last_name = last_name
+#             user.email = email
+#             user.save()
+#             user_plan = BookModel.objects.create()
+#             user_plan.user = username
+#             user_plan.save()
+#             make_users_csv()
+#             return redirect('signup_admin')
+#         except:
+#             return render(request, 'signup_admin.html', {'error': 'このユーザーは登録されています'})
+#     return render(request, 'signup_admin.html')
 
 
 #お知らせ機能
