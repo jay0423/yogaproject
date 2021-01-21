@@ -73,14 +73,17 @@ class CALENDAR:
     def plus_zero(self, num): #1ケタの月の先頭に0を足す
         return '0' + str(num) if len(str(num)) == 1 else str(num)
     
-    def make_object_list(self):
-        #プランの取得
-        month_str = self.plus_zero(self.month) #1ケタの月の先頭に0を足す
-        object_list = list(PlanModel.objects.filter(month=str(self.year) + "-" + month_str).order_by('time'))
+    def delete_object_before_yesterday(self, object_list):
         today = datetime.datetime.today()
         today = datetime.datetime(today.year, today.month, today.day)
         #日にちの過ぎているものを削除
         object_list = [item for item in object_list if (datetime.datetime(int(str(item.date).split('-')[0]), int(str(item.date).split('-')[1]), int(str(item.date).split('-')[2])) - today).days >= 0]
+        return object_list
+    
+    def make_object_list(self):
+        #プランの取得
+        month_str = self.plus_zero(self.month) #1ケタの月の先頭に0を足す
+        object_list = list(PlanModel.objects.filter(month=str(self.year) + "-" + month_str).order_by('time'))
         return object_list
     
     def make_plan_list(self, c_list, object_list):
@@ -180,6 +183,7 @@ class CALENDAR:
         (pre_month, next_month) = self.make_pre_next_month() #前月と翌月を取得
         c_list = self.get_calendar() #カレンダーリストを生成
         object_list = self.make_object_list() #表示月のプランのオブジェクトを生成
+        object_list = self.delete_object_before_yesterday(object_list)
         calendar_list_all = self.extract_display_calendar(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
         setting_plan_model_exist = self.exist_plan(object_list) #表示月のプランの種類
         context = {
