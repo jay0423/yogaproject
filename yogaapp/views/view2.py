@@ -7,7 +7,7 @@ from ..models import PlanModel, SettingPlanModel, BookModel, NoteModel, WeekdayD
 
 
 class CALENDAR:
-    
+            
     def __init__(self, month):
         self.month_num = month # example)-100/0/100/200
         self.month = 1 #仮値，adjust_year_monthを必ず行う．
@@ -51,6 +51,7 @@ class CALENDAR:
                 c_list = c_list + c.split() + list(' ' * (7 - len(c.split())))
             else:
                 c_list += c.split()
+        self.c_list = c_list
         return c_list
     
     def make_object_list(self):
@@ -108,9 +109,8 @@ class CALENDAR:
                 calendar_list_all.append(zip(c_list[35:], object_list[35:], plan_list[35:]))
         return calendar_list_all
             
-    def main(self, object_list):
+    def main(self, c_list, object_list):
         #月曜日と日曜日の有無を考慮して，表示する範囲を設定し，zipで融合させる．
-        c_list = self.get_calendar() #カレンダーリストを生成
         (c_list_plan, plan_list) = self.make_plan_list(c_list, object_list)
         #月曜日と日曜日を表示しない場合
         if self.monday == 0:
@@ -157,14 +157,16 @@ class CALENDAR:
         return setting_plan_model_exist
         
 
+#顧客用カレンダー画面
 @login_required
 def bookfunc(request, month):    
     a = CALENDAR(month)
     a.adjust_year_month() #表示月の設定．
     month2 = a.month #表示月の取得
     (pre_month, next_month) = a.make_pre_next_month() #前月と翌月を取得
+    c_list = a.get_calendar() #カレンダーリストを生成
     object_list = a.make_object_list() #表示月のプランのオブジェクトを生成
-    calendar_list_all = a.main(object_list) #templatesに送るプランのオブジェクトをまとめたリスト
+    calendar_list_all = a.main(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
     monday = a.monday #月曜日，日曜日の有無
     setting_plan_model_exist = a.exist_plan(object_list) #表示月のプランの種類
     
@@ -181,139 +183,90 @@ def bookfunc(request, month):
     
 
 
+
+class CALENDAR_ADMIN(CALENDAR):
+        
+    def sort_by_time(self, time_list, plan_list):
+        #並び替えの処理
+        new_plan_list = []
+        for time, plan in zip(time_list, plan_list):
+            if len(time) >= 2:
+                try:
+                    plan = [item for _, item in sorted(zip(time, plan))]
+                except:
+                    pass
+                new_plan_list.append(plan)
+            else:
+                new_plan_list.append(plan)
+        return new_plan_list
+    
+    def make_plan_list(self, c_list, object_list):
+        #contextに使用するc_list_plan(カレンダー表示用のオブジェクトリスト)とplan_list(実際のプラン用のオブジェクト)の作成
+        c_list_plan = [] #カレンダー表示用のオブジェクトリスト，同じプランは省略している．
+        plan_list = [] #実際のプラン用のオブジェクト，各要素はリストで保存している．
+        time_list = []
+        for c in c_list:
+            true_or_false = True
+            for item in object_list:
+                if str(item.date.day) == c and true_or_false == True:
+                    c_list_plan.append(item)
+                    plan_list.append([item])
+                    time_list.append([item.time])
+                    true_or_false = False
+                elif str(item.date.day) == c and true_or_false == False: #同じ日付がある時
+                    a = plan_list[-1]
+                    a.append(item)
+                    b = time_list[-1]
+                    b.append(item.time)
+                    plan_list.pop(-1)
+                    plan_list.append(a)
+                    time_list.pop(-1)
+                    time_list.append(b)
+            if true_or_false:
+                c_list_plan.append('')
+                plan_list.append('')
+                time_list.append('')
+        plan_list = self.sort_by_time(time_list, plan_list)
+        return c_list_plan, plan_list
+    
+    def checkbox_counts(self, c_list):
+        #checkboxの総数を算出する
+        total_checkbox = 0
+        if self.monday == 0:
+            new_c_list = c_list[1:6] + c_list[8:13] + c_list[15:20] + c_list[22:27] + c_list[29:34] + c_list[36:41]
+        elif self.monday == 1:
+            new_c_list = c_list[0:6] + c_list[7:13] + c_list[14:20] + c_list[21:27] + c_list[28:34] + c_list[35:41]
+        for c in new_c_list:
+            if c != ' ':
+                total_checkbox += 1
+        return total_checkbox
+    
+    def djage_default_input(self, object_list):
+        #デフォルト入力の必要性を確認
+        if len(object_list) == 0:
+            default_needs = True
+        else:
+            default_needs = False
+        return default_needs
+
+
 ############################################################
 #管理者用
 @login_required
 def book_adminfunc(request, month):
-    #カレンダーの作製
-    now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
-    month2 = int(int(month) / 100 + now.month)
-    next_month = month2 + 1
-    pre_month = month2 - 1
-    year = now.year
-    if month2 > 12: #12月から1月へのバグ回避
-        year += 1 * abs(int(month2/12))
-        month2 -= 12 * abs(int(month2/12))
-    if month2 <= 0:
-        year -= 1 * (abs(int(month2/12)) + 1)
-        month2 += 12 * (abs(int(month2/12)) + 1)
-    if next_month > 12:
-        next_month -= 12 * abs(int(next_month/12))
-    if next_month <= 0:
-        next_month += 12 * (abs(int(next_month/12)) + 1)
-    if pre_month > 12:
-        pre_month -= 12 * abs(int(pre_month/12))
-    if pre_month <= 0:
-        pre_month += 12 * (abs(int(pre_month/12)) + 1)
-    c_str = calendar.month(year, month2)
-    c_str = c_str[c_str.find('\n', 25) + 1:]
-    c_list = [] #カレンダーの日付リスト
-    for i, c in enumerate(c_str.split('\n')[:-1]):
-        if i == 0 and len(c.split()) <= 7:
-            c_list = c_list + list(' ' * (7 - len(c.split()))) + c.split()
-        elif i != 0 and len(c.split()) <= 7:
-            c_list = c_list + c.split() + list(' ' * (7 - len(c.split())))
-        else:
-            c_list += c.split()
-    #プランの取得
-    month3 = '0' + str(month2) if len(str(month2)) == 1 else str(month2) #1ケタの月の先頭に0を足す
-    object_list = list(PlanModel.objects.filter(month=str(year) + "-" + month3).order_by('time'))
-    #デフォルト入力の必要性を確認
-    if len(object_list) == 0:
-        default_needs = True
-    else:
-        default_needs = False
-    c_list_plan = [] #オブジェクトリスト
-    plan_list = []
-    time_list = []
-    for c in c_list:
-        true_or_false = True
-        for item in object_list:
-            if str(item.date.day) == c and true_or_false == True:
-                c_list_plan.append(item)
-                plan_list.append([item])
-                time_list.append([item.time])
-                true_or_false = False
-            elif str(item.date.day) == c and true_or_false == False: #同じ日付がある時
-                a = plan_list[-1]
-                a.append(item)
-                b = time_list[-1]
-                b.append(item.time)
-                plan_list.pop(-1)
-                plan_list.append(a)
-                time_list.pop(-1)
-                time_list.append(b)
-        if true_or_false:
-            c_list_plan.append('')
-            plan_list.append('')
-            time_list.append('')
-    #並び替えの処理
-    new_plan_list = []
-    for time, plan in zip(time_list, plan_list):
-        if len(time) >= 2:
-            try:
-                plan = [item for _, item in sorted(zip(time, plan))]
-            except:
-                pass
-            new_plan_list.append(plan)
-        else:
-            new_plan_list.append(plan)
-    plan_list = new_plan_list.copy()
-    object_list = c_list_plan.copy()
-    #checkboxの総数を算出する
-    monday = NoteModel.objects.get(num=0).monday
-    total_checkbox = 0
-    if monday == 0:
-        new_c_list = c_list[1:6] + c_list[8:13] + c_list[15:20] + c_list[22:27] + c_list[29:34] + c_list[36:41]
-    elif monday == 1:
-        new_c_list = c_list[0:6] + c_list[7:13] + c_list[14:20] + c_list[21:27] + c_list[28:34] + c_list[35:41]
-    for c in new_c_list:
-        if c != ' ':
-            total_checkbox += 1
-    ################月曜日と日曜日を非表示にする場合################
-    if monday == 0:
-        calendar_list_all = [
-            zip(c_list[1:6], object_list[1:6], plan_list[1:6]),
-            zip(c_list[8:13], object_list[8:13], plan_list[8:13]),
-            zip(c_list[15:20], object_list[15:20], plan_list[15:20]),
-            zip(c_list[22:27], object_list[22:27], plan_list[22:27]),
-            zip(c_list[29:34], object_list[29:34], plan_list[29:34]),
-            zip(c_list[36:41], object_list[36:41], plan_list[36:41])
-            ]
-        if c_list[1:6].count(' ') == 5: #1行少ない時用
-            calendar_list_all.pop(0)
-        if c_list[36:41].count(' ') == 5 or c_list[36:41] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-        if c_list[29:34].count(' ') == 5 or c_list[29:34] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-    ################月曜日を非表示にしない場合################
-    elif monday == 1:
-        calendar_list_all = [
-            zip(c_list[0:6], object_list[0:6], plan_list[0:6]),
-            zip(c_list[7:13], object_list[7:13], plan_list[7:13]),
-            zip(c_list[14:20], object_list[14:20], plan_list[14:20]),
-            zip(c_list[21:27], object_list[21:27], plan_list[21:27]),
-            zip(c_list[28:34], object_list[28:34], plan_list[28:34]),
-            zip(c_list[35:41], object_list[35:41], plan_list[35:41])
-            ]
-        if c_list[0:6].count(' ') == 6: #1行少ない時用
-            calendar_list_all.pop(0)
-        if c_list[35:41].count(' ') == 6 or c_list[35:41] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-        if c_list[28:34].count(' ') == 6 or c_list[28:34] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-    ################月曜日と日曜日を非表示にしない場合################
-    # calendar_list_all = [
-    #     zip(c_list[:7], object_list[:7], plan_list[:7]),
-    #     zip(c_list[7:14], object_list[7:14], plan_list[7:14]),
-    #     zip(c_list[14:21], object_list[14:21], plan_list[14:21]),
-    #     zip(c_list[21:28], object_list[21:28], plan_list[21:28]),
-    #     zip(c_list[28:35], object_list[28:35], plan_list[28:35])
-    #     ]
-    # #1つ行が多い月用
-    # if len(c_list) > 35:
-    #     calendar_list_all.append(zip(c_list[35:], object_list[35:], plan_list[35:]))
-    #############################################################
+    a = CALENDAR_ADMIN(month)
+    a.adjust_year_month() #表示月の設定．
+    month2 = a.month #表示月の取得
+    year = a.year
+    (pre_month, next_month) = a.make_pre_next_month() #前月と翌月を取得
+    c_list = a.get_calendar() #カレンダーリストを生成
+    object_list = a.make_object_list() #表示月のプランのオブジェクトを生成
+    calendar_list_all = a.main(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
+    monday = a.monday #月曜日，日曜日の有無
+    setting_plan_model_exist = a.exist_plan(object_list) #表示月のプランの種類
+    
+    total_checkbox = a.checkbox_counts(c_list) #チェックボックスの数を取得
+    default_needs = a.djage_default_input(object_list)
     
     #予定入力設定
     setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
