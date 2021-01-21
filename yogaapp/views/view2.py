@@ -109,7 +109,7 @@ class CALENDAR:
                 calendar_list_all.append(zip(c_list[35:], object_list[35:], plan_list[35:]))
         return calendar_list_all
             
-    def main(self, c_list, object_list):
+    def extract_display_calendar(self, c_list, object_list):
         #月曜日と日曜日の有無を考慮して，表示する範囲を設定し，zipで融合させる．
         (c_list_plan, plan_list) = self.make_plan_list(c_list, object_list)
         #月曜日と日曜日を表示しない場合
@@ -155,37 +155,40 @@ class CALENDAR:
             if item.name in plan_exist_list:
                 setting_plan_model_exist.append(item) 
         return setting_plan_model_exist
+    
+    def get_context_data(self):
+        self.adjust_year_month() #表示月の設定．
+        (pre_month, next_month) = self.make_pre_next_month() #前月と翌月を取得
+        c_list = self.get_calendar() #カレンダーリストを生成
+        object_list = self.make_object_list() #表示月のプランのオブジェクトを生成
+        calendar_list_all = self.extract_display_calendar(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
+        setting_plan_model_exist = self.exist_plan(object_list) #表示月のプランの種類
+        context = {
+            'month': self.month_num,
+            'month2': self.month,
+            'pre_month': pre_month,
+            'next_month': next_month,
+            'calendar_list_all': calendar_list_all,
+            'monday': self.monday,
+            'setting_plan_model_exist': setting_plan_model_exist
+        }
+        return context
         
 
 #顧客用カレンダー画面
 @login_required
 def bookfunc(request, month):    
     a = CALENDAR(month)
-    a.adjust_year_month() #表示月の設定．
-    month2 = a.month #表示月の取得
-    (pre_month, next_month) = a.make_pre_next_month() #前月と翌月を取得
-    c_list = a.get_calendar() #カレンダーリストを生成
-    object_list = a.make_object_list() #表示月のプランのオブジェクトを生成
-    calendar_list_all = a.main(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
-    monday = a.monday #月曜日，日曜日の有無
-    setting_plan_model_exist = a.exist_plan(object_list) #表示月のプランの種類
-    
-    context = {
-        'month': month,
-        'month2': month2,
-        'pre_month': pre_month,
-        'next_month': next_month,
-        'calendar_list_all': calendar_list_all,
-        'monday': monday,
-        'setting_plan_model_exist': setting_plan_model_exist
-    }
+    context = a.get_context_data()
     return render(request, 'book.html', context)
     
 
 
 
 class CALENDAR_ADMIN(CALENDAR):
-        
+
+    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
+    
     def sort_by_time(self, time_list, plan_list):
         #並び替えの処理
         new_plan_list = []
@@ -248,6 +251,32 @@ class CALENDAR_ADMIN(CALENDAR):
         else:
             default_needs = False
         return default_needs
+    
+    def get_context_data(self):
+        #管理者用のcontextデータを生成
+        self.adjust_year_month() #表示月の設定．
+        (pre_month, next_month) = self.make_pre_next_month() #前月と翌月を取得
+        c_list = self.get_calendar() #カレンダーリストを生成
+        object_list = self.make_object_list() #表示月のプランのオブジェクトを生成
+        calendar_list_all = self.extract_display_calendar(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
+        setting_plan_model_exist = self.exist_plan(object_list) #表示月のプランの種類
+        total_checkbox = self.checkbox_counts(c_list) #チェックボックスの数を取得
+        default_needs = self.djage_default_input(object_list)
+        context = {
+            'month': self.month_num,
+            'month2': self.month,
+            'year': self.year,
+            'pre_month': pre_month,
+            'next_month': next_month,
+            'calendar_list_all': calendar_list_all,
+            'monday': self.monday,
+            'setting_plan_model_exist': setting_plan_model_exist,
+            'total_checkbox': total_checkbox,
+            'setting_plan_model': enumerate(self.setting_plan_model),
+            'setting_plan_model2': self.setting_plan_model,
+            'default_needs': default_needs
+        }
+        return context
 
 
 ############################################################
@@ -255,18 +284,7 @@ class CALENDAR_ADMIN(CALENDAR):
 @login_required
 def book_adminfunc(request, month):
     a = CALENDAR_ADMIN(month)
-    a.adjust_year_month() #表示月の設定．
-    month2 = a.month #表示月の取得
-    year = a.year
-    (pre_month, next_month) = a.make_pre_next_month() #前月と翌月を取得
-    c_list = a.get_calendar() #カレンダーリストを生成
-    object_list = a.make_object_list() #表示月のプランのオブジェクトを生成
-    calendar_list_all = a.main(c_list, object_list) #templatesに送るプランのオブジェクトをまとめたリスト
-    monday = a.monday #月曜日，日曜日の有無
-    setting_plan_model_exist = a.exist_plan(object_list) #表示月のプランの種類
-    
-    total_checkbox = a.checkbox_counts(c_list) #チェックボックスの数を取得
-    default_needs = a.djage_default_input(object_list)
+    context = a.get_context_data()
     
     #予定入力設定
     setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
@@ -324,18 +342,6 @@ def book_adminfunc(request, month):
             PlanModel.objects.bulk_create(add_plans)
                 
             return redirect('book_admin', month)
-    context = {
-        'default_needs': default_needs,
-        'month': month,
-        'month2': month2,
-        'year': year,
-        'calendar_list_all': calendar_list_all,
-        'total_checkbox': total_checkbox,
-        'setting_plan_model': enumerate(setting_plan_model),
-        'setting_plan_model2': setting_plan_model,
-        'next_month': next_month,
-        'pre_month': pre_month,
-        'monday': monday,
-    }
+
     return render(request, 'book_admin.html', context)
 
