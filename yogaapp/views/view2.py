@@ -1,3 +1,7 @@
+"""
+顧客用，及び管理者用のカレンダー画面の機能を実装．
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 import datetime
@@ -54,9 +58,12 @@ class CALENDAR:
         self.c_list = c_list
         return c_list
     
+    def plus_zero(self, num): #1ケタの月の先頭に0を足す
+        return '0' + str(num) if len(str(num)) == 1 else str(num)
+    
     def make_object_list(self):
         #プランの取得
-        month_str = '0' + str(self.month) if len(str(self.month)) == 1 else str(self.month) #1ケタの月の先頭に0を足す
+        month_str = self.plus_zero(self.month) #1ケタの月の先頭に0を足す
         object_list = list(PlanModel.objects.filter(month=str(self.year) + "-" + month_str).order_by('time'))
         today = datetime.datetime.today()
         today = datetime.datetime(today.year, today.month, today.day)
@@ -86,7 +93,6 @@ class CALENDAR:
                 c_list_plan.append('')
                 plan_list.append('')
         return c_list_plan, plan_list
-
 
     def adjust_calendar_list(self, c_list, calendar_list_all):
         if self.monday == 0:
@@ -183,8 +189,6 @@ def bookfunc(request, month):
     return render(request, 'book.html', context)
     
 
-
-
 class CALENDAR_ADMIN(CALENDAR):
 
     setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
@@ -277,71 +281,72 @@ class CALENDAR_ADMIN(CALENDAR):
             'default_needs': default_needs
         }
         return context
+    
+    #POST時の処理
+    def get_forms(self, request):
+        #formの値の取得
+        days = request.POST["select_days"]
+        select_plan = request.POST["select_plan"]
+        plan = list(self.setting_plan_model)[int(select_plan)].name
+        short_plan_name = self.setting_plan_model.get(name=plan).short_plan_name
+        time1 = request.POST["time1"]
+        time1_5 = request.POST["time1-5"]
+        time2 = request.POST["time2"]
+        time2_5 = request.POST["time2-5"]
+        location = request.POST["select_plan2"]
+        max_book = request.POST["max_book"]
+        #整理
+        month_str = self.plus_zero(self.month) #1ケタの月の先頭に0を足す
+        year_month = str(self.year) + "-" + month_str
+        days_list = days.split()
+        time = time1 + ":" + time1_5 + "-" + time2 + ":" + time2_5
+        plan_num = SettingPlanModel.objects.get(name=plan).plan_num
+        #新規作成
+        add_plans = []
+        for day in days_list:
+            plans = PlanModel(date=year_month + "-" + day, month=year_month, plan=plan, short_plan_name=short_plan_name, time=time, plan_num=plan_num, location=location, max_book=max_book)
+            add_plans.append(plans)
+        PlanModel.objects.bulk_create(add_plans)
+        
+    def default_input(self):
+        weekday_default_model = WeekdayDefaultModel.objects.all()
+        month_str = self.plus_zero(self.month) #1ケタの月の先頭に0を足す
+        year_month = str(self.year) + "-" + month_str
+        #日にちと曜日のリストの作成
+        for i in range(new_c_list.count(' ')):
+            new_c_list.remove(' ')
+        weekday_d = {0:'monday', 1:'tuesday', 2:'wednesday', 3:'thursday', 4:'friday', 5:'saturday', 6:'sunday'}
+        weekday_list = [weekday_d[datetime.datetime(int(self.year), int(month_str), int(day)).weekday()] for day in new_c_list]
+        #データの保存
+        add_plans = []
+        for c, weekday3 in zip(new_c_list, weekday_list):
+            for item in list(weekday_default_model.filter(weekday=weekday3)):
+                #データの収集
+                plan = item.plan
+                short_plan_name =self.setting_plan_model.get(name=plan).short_plan_name
+                time = item.time
+                plan_num = item.plan_num
+                location = item.location
+                max_book = item.max_book
+                #保存タプルの作成
+                plans = PlanModel(date=year_month + "-" + c, month=year_month, plan=plan, short_plan_name=short_plan_name, time=time, plan_num=plan_num, location=location, max_book=max_book)
+                add_plans.append(plans)
+        PlanModel.objects.bulk_create(add_plans)
+        
 
-
-############################################################
-#管理者用
+#管理者用カレンダー画面設定
 @login_required
 def book_adminfunc(request, month):
     a = CALENDAR_ADMIN(month)
     context = a.get_context_data()
     
     #予定入力設定
-    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
     if request.method == "POST":
         default = int(request.POST["default_or_not"])
         if default == 0:
-            #formの値の取得
-            days = request.POST["select_days"]
-            select_plan = request.POST["select_plan"]
-            plan = list(setting_plan_model)[int(select_plan)].name
-            short_plan_name = setting_plan_model.get(name=plan).short_plan_name
-            time1 = request.POST["time1"]
-            time1_5 = request.POST["time1-5"]
-            time2 = request.POST["time2"]
-            time2_5 = request.POST["time2-5"]
-            location = request.POST["select_plan2"]
-            max_book = request.POST["max_book"]
-            #整理
-            month3 = '0' + str(month2) if len(str(month2)) == 1 else str(month2) #1ケタの月の先頭に0を足す
-            year_month = str(year) + "-" + month3
-            days_list = days.split()
-            time = time1 + ":" + time1_5 + "-" + time2 + ":" + time2_5
-            plan_num = SettingPlanModel.objects.get(name=plan).plan_num
-            #新規作成
-            add_plans = []
-            for day in days_list:
-                plans = PlanModel(date=year_month + "-" + day, month=year_month, plan=plan, short_plan_name=short_plan_name, time=time, plan_num=plan_num, location=location, max_book=max_book)
-                add_plans.append(plans)
-            PlanModel.objects.bulk_create(add_plans)
+            a.get_forms(request)
             return redirect('book_admin', month)
-
         elif default == 1: #デフォルト入力時
-            weekday_default_model = WeekdayDefaultModel.objects.all()
-            month3 = '0' + str(month2) if len(str(month2)) == 1 else str(month2) #1ケタの月の先頭に0を足す
-            year_month = str(year) + "-" + month3
-            #日にちと曜日のリストの作成
-            for i in range(new_c_list.count(' ')):
-                new_c_list.remove(' ')
-            weekday_d = {0:'monday', 1:'tuesday', 2:'wednesday', 3:'thursday', 4:'friday', 5:'saturday', 6:'sunday'}
-            weekday_list = [weekday_d[datetime.datetime(int(year), int(month3), int(day)).weekday()] for day in new_c_list]
-            #データの保存
-            add_plans = []
-            for c, weekday3 in zip(new_c_list, weekday_list):
-                for item in list(weekday_default_model.filter(weekday=weekday3)):
-                    #データの収集
-                    plan = item.plan
-                    short_plan_name =setting_plan_model.get(name=plan).short_plan_name
-                    time = item.time
-                    plan_num = item.plan_num
-                    location = item.location
-                    max_book = item.max_book
-                    #保存タプルの作成
-                    plans = PlanModel(date=year_month + "-" + c, month=year_month, plan=plan, short_plan_name=short_plan_name, time=time, plan_num=plan_num, location=location, max_book=max_book)
-                    add_plans.append(plans)
-            PlanModel.objects.bulk_create(add_plans)
-                
+            a.default_input(request)
             return redirect('book_admin', month)
-
     return render(request, 'book_admin.html', context)
-
