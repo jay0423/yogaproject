@@ -56,7 +56,6 @@ class CALENDAR:
     
     def get_calendar(self):
         #カレンダーの日付リストを生成する．
-        print(self.year, self.month)
         c_str = calendar.month(self.year, self.month)
         c_str = c_str[c_str.find('\n', 25) + 1:]
         c_list = [] #カレンダーの日付リスト

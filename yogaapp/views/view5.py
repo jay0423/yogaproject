@@ -1,3 +1,8 @@
+"""
+管理者用データ画面の実装．
+登録ユーザの情報画面，売り上げやデータ分析画面，テーブル画面の機能の実装．
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required

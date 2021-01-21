@@ -1,3 +1,8 @@
+"""
+顧客用画面の実装．
+予約確定画面，予約確認画面，アクセス，情報画面の機能を実装．
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -111,73 +116,98 @@ def cancel_yoga_func(request, month, date, pk, mark):
         return redirect('booked_list')
 
 
-#予約したプランを返す
+class BOOKED_PLAN:
+
+    today = datetime.datetime.today()
+    today = datetime.datetime(today.year, today.month, today.day)
+    
+    def __init__(self, username):
+        self.username = username
+        
+    def clean_plan(self):
+        #ユーザー別のプランpkの掃除
+        book_model = BookModel.objects.get(user=self.username)
+        pk_list = book_model.plan.split()
+        new_pk_list = []
+        for i in range(len(pk_list)):
+            PK = int(pk_list[i])
+            try:
+                DATE = PlanModel.objects.get(pk=PK).date
+                booked_people = PlanModel.objects.get(pk=PK).booked_people.split() #プランモデルの方に名前が入っているかの確認
+                if (datetime.datetime(DATE.year, DATE.month, DATE.day) - self.today).days >= 0 and self.username in booked_people:
+                    new_pk_list.append(str(PK))
+            except: #指定pkプランが削除されていた場合のバグ回避
+                pass
+        #記録
+        pk_str = ''
+        for p in new_pk_list:
+            pk_str += p + ' '
+        book_model.plan = pk_str
+        book_model.save()
+    
+    def make_pk_list(self):
+        if list(BookModel.objects.filter(user=self.username)) == []:
+            user_plan = BookModel.objects.create()
+            user_plan.user = self.username
+            user_plan.save()
+        if BookModel.objects.filter(user=self.username)[0].plan == None:
+            pk_list = []
+        else:
+            pk_list = BookModel.objects.filter(user=self.username)[0].plan.split()
+        return pk_list
+    
+    def make_object_list(self):
+        #ユーザーの予約したプランのpkを取得
+        object_list = []
+        date_list = []
+        pk_list = self.make_pk_list()
+        for pk in pk_list:
+            date_list_2 = str(PlanModel.objects.get(pk=pk).date).split('-')
+            #日にちが今日よりも後の物のみ格納
+            if (datetime.datetime(int(date_list_2[0]), int(date_list_2[1]), int(date_list_2[2])) - self.today).days >= 0:
+                object_list.append(PlanModel.objects.get(pk=pk))
+                date_list.append(PlanModel.objects.get(pk=pk).date)
+        object_list = sorted(object_list, key = lambda x: (x.date, x.time))
+        return object_list
+        
+    def make_plan_model_list(self, object_list):
+        return list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
+        
+    def make_weekday_list(self, object_list):
+        #予約したプランのプラン設定の取得
+        weekday_d = {0:'月', 1:'火', 2:'水', 3:'木', 4:'金', 5:'土', 6:'日'}
+        weekday_list = []
+        for item in object_list:
+            weekday_list.append(weekday_d[item.date.weekday()])
+        return weekday_list
+        
+    def get_context_data(self):
+        object_list = self.make_object_list()
+        plan_model_list = self.make_plan_model_list(object_list)
+        weekday_list = self.make_weekday_list(object_list)
+        context = {
+            'object_list': zip(object_list, plan_model_list, weekday_list),
+            'check': 0 if object_list == [] else 1,
+        }
+        return context
+
+#予約確認画面．予約したプランを返す．
 @login_required
 def booked_list_func(request):
     username = request.user.get_username()
-    clean_plan(username)
-    today = datetime.datetime.today()
-    today = datetime.datetime(today.year, today.month, today.day)
-    if list(BookModel.objects.filter(user=username)) == []:
-        user_plan = BookModel.objects.create()
-        user_plan.user = username
-        user_plan.save()
-    if BookModel.objects.filter(user=username)[0].plan == None:
-        pk_list = []
-    else:
-        pk_list = BookModel.objects.filter(user=username)[0].plan.split()
-    #ユーザーの予約したプランのpkを取得
-    object_list = []
-    date_list = []
-    for pk in pk_list:
-        date_list_2 = str(PlanModel.objects.get(pk=pk).date).split('-')
-        #日にちが今日よりも後の物のみ格納
-        if (datetime.datetime(int(date_list_2[0]), int(date_list_2[1]), int(date_list_2[2])) - today).days >= 0:
-            object_list.append(PlanModel.objects.get(pk=pk))
-            date_list.append(PlanModel.objects.get(pk=pk).date)
-    object_list = sorted(object_list, key = lambda x: (x.date, x.time))
-    #予約したプランのプラン設定の取得
-    weekday_d = {0:'月', 1:'火', 2:'水', 3:'木', 4:'金', 5:'土', 6:'日'}
-    weekday_list = []
-    for item in object_list:
-        weekday_list.append(weekday_d[item.date.weekday()])
-    plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
-    context = {
-        'object_list': zip(object_list, plan_model_list, weekday_list),
-        'check': 0 if object_list == [] else 1,
-    }
+    a = BOOKED_PLAN(username)
+    a.clean_plan()
+    context = a.get_context_data()
     return render(request, 'booked_list.html', context)
 
-#ユーザー別のプランpkの掃除
-def clean_plan(username):
-    today = datetime.datetime.today()
-    today = datetime.datetime(today.year, today.month, today.day)
-    book_model = BookModel.objects.get(user=username)
-    pk_list = book_model.plan.split()
-    new_pk_list = []
-    for i in range(len(pk_list)):
-        PK = int(pk_list[i])
-        try:
-            DATE = PlanModel.objects.get(pk=PK).date
-            booked_people = PlanModel.objects.get(pk=PK).booked_people.split() #プランモデルの方に名前が入っているかの確認
-            if (datetime.datetime(DATE.year, DATE.month, DATE.day) - today).days >= 0 and username in booked_people:
-                new_pk_list.append(str(PK))
-        except: #指定pkプランが削除されていた場合のバグ回避
-            pass
-    #記録
-    pk_str = ''
-    for p in new_pk_list:
-        pk_str += p + ' '
-    book_model.plan = pk_str
-    book_model.save()
-    
 
-#アクセス
+#アクセス画面
 @login_required
 def access_func(request):
     return render(request, 'access.html')
 
-#インフォメーション
+
+#インフォメーション画面
 @login_required
 def info_func(request):
     return render(request, 'info.html')
