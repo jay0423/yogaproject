@@ -5,115 +5,169 @@ import pytz
 import calendar
 from ..models import PlanModel, SettingPlanModel, BookModel, NoteModel, WeekdayDefaultModel
 
-@login_required
-def bookfunc(request, month):
-    #カレンダーの作製
-    now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
-    month2 = int(int(month) / 100 + now.month)
-    next_month = month2 + 1
-    pre_month = month2 - 1
-    year = now.year
-    if month2 > 12: #12月から1月へのバグ回避
-        year += 1
-        month2 -= 12
-    if next_month > 12:
-        next_month -= 12 * abs(int(next_month/12))
-        print(next_month)
-    if next_month <= 0:
-        next_month += 12 * (abs(int(next_month/12)) + 1)
-    if pre_month > 12:
-        pre_month -= 12 * abs(int(pre_month/12))
-    if pre_month <= 0:
-        pre_month += 12 * (abs(int(pre_month/12)) + 1)
-    c_str = calendar.month(year, month2)
-    c_str = c_str[c_str.find('\n', 25) + 1:]
-    c_list = [] #カレンダーの日付リスト
-    for i, c in enumerate(c_str.split('\n')[:-1]):
-        if i == 0 and len(c.split()) <= 7:
-            c_list = c_list + list(' ' * (7 - len(c.split()))) + c.split()
-        elif i != 0 and len(c.split()) <= 7:
-            c_list = c_list + c.split() + list(' ' * (7 - len(c.split())))
+
+class CALENDAR:
+    
+    def __init__(self, month):
+        self.month_num = month # example)-100/0/100/200
+        self.month = 1 #仮値，adjust_year_monthを必ず行う．
+        self.year = 2021
+        self.monday = NoteModel.objects.get(num=0).monday #monday=0：月曜日と日曜日は非表示, monday=1：日曜日は非表示, その他：全曜日を表示
+
+    def adjust_year_month(self):
+        #表示月を生成する．
+        now = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+        self.year = now.year
+        #month_numから表示月を生成
+        self.month = int(int(self.month_num) / 100 + now.month)
+        #翌年以降の調整．
+        if self.month > 12:
+            self.year += 1
+            self.month -= 12
+        
+    def make_pre_next_month(self):
+        #正確な前月，翌月を生成する．(1, 12月時のバグ回避)
+        next_month = self.month + 1
+        pre_month = self.month - 1
+        if next_month > 12:
+            next_month -= 12 * abs(int(next_month/12))
+        if next_month <= 0:
+            next_month += 12 * (abs(int(next_month/12)) + 1)
+        if pre_month > 12:
+            pre_month -= 12 * abs(int(pre_month/12))
+        if pre_month <= 0:
+            pre_month += 12 * (abs(int(pre_month/12)) + 1)
+        return pre_month, next_month
+    
+    def get_calendar(self):
+        #カレンダーの日付リストを生成する．
+        c_str = calendar.month(self.year, self.month)
+        c_str = c_str[c_str.find('\n', 25) + 1:]
+        c_list = [] #カレンダーの日付リスト
+        for i, c in enumerate(c_str.split('\n')[:-1]):
+            if i == 0 and len(c.split()) <= 7:
+                c_list = c_list + list(' ' * (7 - len(c.split()))) + c.split()
+            elif i != 0 and len(c.split()) <= 7:
+                c_list = c_list + c.split() + list(' ' * (7 - len(c.split())))
+            else:
+                c_list += c.split()
+        return c_list
+    
+    def make_object_list(self):
+        #プランの取得
+        month_str = '0' + str(self.month) if len(str(self.month)) == 1 else str(self.month) #1ケタの月の先頭に0を足す
+        object_list = list(PlanModel.objects.filter(month=str(self.year) + "-" + month_str).order_by('time'))
+        today = datetime.datetime.today()
+        today = datetime.datetime(today.year, today.month, today.day)
+        #日にちの過ぎているものを削除
+        object_list = [item for item in object_list if (datetime.datetime(int(str(item.date).split('-')[0]), int(str(item.date).split('-')[1]), int(str(item.date).split('-')[2])) - today).days >= 0]
+        return object_list
+    
+    def make_plan_list(self, c_list, object_list):
+        #contextに使用するc_list_plan(カレンダー表示用のオブジェクトリスト)とplan_list(実際のプラン用のオブジェクト)の作成
+        c_list_plan = [] #カレンダー表示用のオブジェクトリスト，同じプランは省略している．
+        plan_list = [] #実際のプラン用のオブジェクト，各要素はリストで保存している．
+        for c in c_list:
+            true_or_false = True
+            for item in object_list:
+                if str(item.date.day) == c and true_or_false == True:
+                    c_list_plan.append(item)
+                    plan_list.append([item])
+                    true_or_false = False
+                elif str(item.date.day) == c and true_or_false == False: #同じ日付がある時
+                    a = plan_list[-1]
+                    a2 = [p.plan for p in a]
+                    if item.plan not in a2:
+                        a.append(item)
+                    plan_list.pop(-1)
+                    plan_list.append(a)
+            if true_or_false:
+                c_list_plan.append('')
+                plan_list.append('')
+        return c_list_plan, plan_list
+
+
+    def adjust_calendar_list(self, c_list, calendar_list_all):
+        if self.monday == 0:
+            if c_list[1:6].count(' ') == 5: #1行少ない時用
+                calendar_list_all.pop(0)
+            if c_list[36:41].count(' ') == 5 or c_list[36:41] == []: #1行少ない時用
+                calendar_list_all.pop(-1)
+            if c_list[29:34].count(' ') == 5 or c_list[29:34] == []: #1行少ない時用
+                calendar_list_all.pop(-1)
+        elif self.monday == 1:
+            if c_list[0:6].count(' ') == 6: #1行少ない時用
+                calendar_list_all.pop(0)
+            if c_list[35:41].count(' ') == 6 or c_list[35:41] == []: #1行少ない時用
+                calendar_list_all.pop(-1)
+            if c_list[28:34].count(' ') == 6 or c_list[28:34] == []: #1行少ない時用
+                calendar_list_all.pop(-1)
         else:
-            c_list += c.split()
-    #プランの取得
-    month3 = '0' + str(month2) if len(str(month2)) == 1 else str(month2) #1ケタの月の先頭に0を足す
-    object_list = list(PlanModel.objects.filter(month=str(year) + "-" + month3).order_by('time'))
-    today = datetime.datetime.today()
-    today = datetime.datetime(today.year, today.month, today.day)
-    #日にちの過ぎているものを削除
-    object_list = [item for item in object_list if (datetime.datetime(int(str(item.date).split('-')[0]), int(str(item.date).split('-')[1]), int(str(item.date).split('-')[2])) - today).days >= 0]
-    #プランリストの作成
-    c_list_plan = [] #オブジェクトリスト
-    plan_list = []
-    for c in c_list:
-        true_or_false = True
-        for item in object_list:
-            if str(item.date.day) == c and true_or_false == True:
-                c_list_plan.append(item)
-                plan_list.append([item])
-                true_or_false = False
-            elif str(item.date.day) == c and true_or_false == False: #同じ日付がある時
-                a = plan_list[-1]
-                a2 = [p.plan for p in a]
-                if item.plan not in a2:
-                    a.append(item)
-                plan_list.pop(-1)
-                plan_list.append(a)
-        if true_or_false:
-            c_list_plan.append('')
-            plan_list.append('')
-    #プランが存在しているプランのみ取得
-    plan_exist_list = set(item.plan for item in object_list)
-    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
-    setting_plan_model_exist = []
-    for item in setting_plan_model:
-        if item.name in plan_exist_list:
-            setting_plan_model_exist.append(item) 
-################月曜日と日曜日を非表示にする場合################
-    monday = NoteModel.objects.get(num=0).monday
-    if monday == 0:
-        calendar_list_all = [
-            zip(c_list[1:6], c_list_plan[1:6], plan_list[1:6]),
-            zip(c_list[8:13], c_list_plan[8:13], plan_list[8:13]),
-            zip(c_list[15:20], c_list_plan[15:20], plan_list[15:20]),
-            zip(c_list[22:27], c_list_plan[22:27], plan_list[22:27]),
-            zip(c_list[29:34], c_list_plan[29:34], plan_list[29:34]),
-            zip(c_list[36:41], c_list_plan[36:41], plan_list[36:41])
-            ]
-        if c_list[1:6].count(' ') == 5: #1行少ない時用
-            calendar_list_all.pop(0)
-        if c_list[36:41].count(' ') == 5 or c_list[36:41] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-        if c_list[29:34].count(' ') == 5 or c_list[29:34] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-    ################月曜日を非表示にしない場合################
-    elif monday == 1:
-        calendar_list_all = [
-            zip(c_list[0:6], c_list_plan[0:6], plan_list[0:6]),
-            zip(c_list[7:13], c_list_plan[7:13], plan_list[7:13]),
-            zip(c_list[14:20], c_list_plan[14:20], plan_list[14:20]),
-            zip(c_list[21:27], c_list_plan[21:27], plan_list[21:27]),
-            zip(c_list[28:34], c_list_plan[28:34], plan_list[28:34]),
-            zip(c_list[35:41], c_list_plan[35:41], plan_list[35:41])
-            ]
-        if c_list[0:6].count(' ') == 6: #1行少ない時用
-            calendar_list_all.pop(0)
-        if c_list[35:41].count(' ') == 6 or c_list[35:41] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-        if c_list[28:34].count(' ') == 6 or c_list[28:34] == []: #1行少ない時用
-            calendar_list_all.pop(-1)
-    ################月曜日と日曜日を非表示にしない場合################
-    # calendar_list_all = [
-    #     zip(c_list[:7], object_list[:7], plan_list[:7]),
-    #     zip(c_list[7:14], object_list[7:14], plan_list[7:14]),
-    #     zip(c_list[14:21], object_list[14:21], plan_list[14:21]),
-    #     zip(c_list[21:28], object_list[21:28], plan_list[21:28]),
-    #     zip(c_list[28:35], object_list[28:35], plan_list[28:35])
-    #     ]
-    # #1つ行が多い月用
-    # if len(c_list) > 35:
-    #     calendar_list_all.append(zip(c_list[35:], object_list[35:], plan_list[35:]))
-    #############################################################
+            #1つ行が多い月用
+            if len(c_list) > 35:
+                calendar_list_all.append(zip(c_list[35:], object_list[35:], plan_list[35:]))
+        return calendar_list_all
+            
+    def main(self, object_list):
+        #月曜日と日曜日の有無を考慮して，表示する範囲を設定し，zipで融合させる．
+        c_list = self.get_calendar() #カレンダーリストを生成
+        (c_list_plan, plan_list) = self.make_plan_list(c_list, object_list)
+        #月曜日と日曜日を表示しない場合
+        if self.monday == 0:
+            calendar_list_all = [
+                zip(c_list[1:6], c_list_plan[1:6], plan_list[1:6]),
+                zip(c_list[8:13], c_list_plan[8:13], plan_list[8:13]),
+                zip(c_list[15:20], c_list_plan[15:20], plan_list[15:20]),
+                zip(c_list[22:27], c_list_plan[22:27], plan_list[22:27]),
+                zip(c_list[29:34], c_list_plan[29:34], plan_list[29:34]),
+                zip(c_list[36:41], c_list_plan[36:41], plan_list[36:41])
+                ]
+        #日曜日を非表示にし，月曜日を表示する場合
+        elif self.monday == 1:
+            calendar_list_all = [
+                zip(c_list[0:6], c_list_plan[0:6], plan_list[0:6]),
+                zip(c_list[7:13], c_list_plan[7:13], plan_list[7:13]),
+                zip(c_list[14:20], c_list_plan[14:20], plan_list[14:20]),
+                zip(c_list[21:27], c_list_plan[21:27], plan_list[21:27]),
+                zip(c_list[28:34], c_list_plan[28:34], plan_list[28:34]),
+                zip(c_list[35:41], c_list_plan[35:41], plan_list[35:41])
+                ]
+        ###################月曜日と日曜日を表示する場合###################
+        else: #推奨しない．
+            calendar_list_all = [
+                zip(c_list[:7], object_list[:7], plan_list[:7]),
+                zip(c_list[7:14], object_list[7:14], plan_list[7:14]),
+                zip(c_list[14:21], object_list[14:21], plan_list[14:21]),
+                zip(c_list[21:28], object_list[21:28], plan_list[21:28]),
+                zip(c_list[28:35], object_list[28:35], plan_list[28:35])
+                ]
+        ################################################################
+        calendar_list_all = self.adjust_calendar_list(c_list, calendar_list_all)
+        return calendar_list_all
+
+    def exist_plan(self, object_list):
+        #客用カレンダー画面の下にプランの説明を表示するため
+        #プランが存在しているプランのみ取得
+        plan_exist_list = set(item.plan for item in object_list)
+        setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
+        setting_plan_model_exist = []
+        for item in setting_plan_model:
+            if item.name in plan_exist_list:
+                setting_plan_model_exist.append(item) 
+        return setting_plan_model_exist
+        
+
+@login_required
+def bookfunc(request, month):    
+    a = CALENDAR(month)
+    a.adjust_year_month() #表示月の設定．
+    month2 = a.month #表示月の取得
+    (pre_month, next_month) = a.make_pre_next_month() #前月と翌月を取得
+    object_list = a.make_object_list() #表示月のプランのオブジェクトを生成
+    calendar_list_all = a.main(object_list) #templatesに送るプランのオブジェクトをまとめたリスト
+    monday = a.monday #月曜日，日曜日の有無
+    setting_plan_model_exist = a.exist_plan(object_list) #表示月のプランの種類
+    
     context = {
         'month': month,
         'month2': month2,
@@ -124,8 +178,7 @@ def bookfunc(request, month):
         'setting_plan_model_exist': setting_plan_model_exist
     }
     return render(request, 'book.html', context)
-
-
+    
 
 
 ############################################################
