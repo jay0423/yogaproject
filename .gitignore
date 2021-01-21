@@ -1,3 +1,6 @@
 .VSCodeCounter/
-views.py
-table.csv
+static/table.csv
+static/users.csv
+**/__pycache__
+db.sqlite3
+migrations/**
