@@ -1,7 +1,7 @@
 from django.urls import path
 from .views.view1 import signupfunc,loginfunc, logoutfunc, signup_admin_func
 from .views.view2 import bookfunc, book_adminfunc
-from .views.view3 import confirmfunc, get_yoga_func, cancel_yoga_func, booked_list_func, access_func, info_func
+from .views.view3 import confirmfunc, get_confirm, cancel_yoga_func, booked_list_func, access_func, info_func
 from .views.view4 import YogaCreate, yoga_create_plan_num, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, notefunc, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
 from .views.view5 import users_detail, users_update, analysis_func, table_func
 
@@ -16,7 +16,7 @@ urlpatterns = [
     path('book_admin/<month>', book_adminfunc, name='book_admin'),
     #views3.py
     path('book/<month>/confirm/<date>/', confirmfunc, name='confirm'),
-    path('book/<month>/confirm/<date>/get_yoga/<int:pk>', get_yoga_func, name='get_yoga'),
+    path('book/<month>/confirm/<date>/get_confirm/<int:pk>', get_confirm, name='get_confirm'),
     path('book/<month>/confirm/<date>/cancel_yoga/<int:pk>/<mark>', cancel_yoga_func, name='cancel_yoga'),
     path('booked_list', booked_list_func, name='booked_list'),
     path('access', access_func, name='access'),

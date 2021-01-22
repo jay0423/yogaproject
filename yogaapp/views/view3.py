@@ -12,6 +12,7 @@ import calendar
 from ..models import PlanModel, SettingPlanModel, BookModel
 
 class CONFIRM:
+    
     def __init__(self, request, month, date):
         self.username = request.user.get_username()
         self.month = month
@@ -63,7 +64,7 @@ class CONFIRM:
         }
         return context
 
-#予約確定画面
+#プラン選択画面
 @login_required
 def confirmfunc(request, month, date):
     a = CONFIRM(request, month, date)
@@ -71,33 +72,53 @@ def confirmfunc(request, month, date):
     return render(request, 'confirm.html', context)
 
 
-#planの予約者数
-@login_required
-def get_yoga_func(request, month, date, pk):
-    objects = PlanModel.objects.get(pk=pk)
-    item = SettingPlanModel.objects.get(plan_num=objects.plan_num)
-    username = request.user.get_username()
-    name = User.objects.get(username=username).last_name + User.objects.get(username=username).first_name
-    if username in objects.booked_people.split(): #予約者の重複を無くすための処理
-        return redirect('book', month)
-    else:
-        objects.booked_people += username + ' ' 
+class GET_CONFIRM:
+    
+    def __init__(self, request, month, date, pk):
+        self.username = request.user.get_username()
+        self.month = month
+        self.date = date
+        self.pk = pk
+        
+    def make_objects(self):
+        return PlanModel.objects.get(pk=self.pk)
+    
+    def make_name(self): #フルネームの取得
+        return User.objects.get(username=self.username).last_name + User.objects.get(username=self.username).first_name
+    
+    def save_planmodel(self, objects, name):
+        #PlanModelに予約者の名前を記録
+        objects.booked_people += self.username + ' ' 
         objects.booked_people_name += name + ' '
         booked_people_list = objects.booked_people.split()
         objects.number_of_people = len(booked_people_list)
         objects.save()
+    
+    def save_bookmodel(self):
         #ユーザー別で予約したプランを記録
-        if list(BookModel.objects.filter(user=username)) == []:
+        if list(BookModel.objects.filter(user=self.username)) == []:
             user_plan = BookModel.objects.create()
-            user_plan.user = username
-            user_plan.plan = str(pk)
+            user_plan.user = self.username
+            user_plan.plan = str(self.pk)
         else:
-            user_plan = BookModel.objects.filter(user=username)[0]
+            user_plan = BookModel.objects.filter(user=self.username)[0]
             try:
-                user_plan.plan += ' ' + str(pk)
+                user_plan.plan += ' ' + str(self.pk)
             except:
-                user_plan.plan = str(pk)
+                user_plan.plan = str(self.pk)
         user_plan.save()
+    
+#planの予約確定処理
+@login_required
+def get_confirm(request, month, date, pk):
+    objects = PlanModel.objects.get(pk=pk)
+    a = GET_CONFIRM(request, month, date, pk)
+    name = a.make_name()
+    if a.username in objects.booked_people.split(): #予約者の重複を無くすための処理
+        return redirect('book', month)
+    else:
+        a.save_planmodel(objects, name)
+        a.save_bookmodel() #ユーザー別で予約したプランを記録
     return redirect('confirm', month, date)
 
 

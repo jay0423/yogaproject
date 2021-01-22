@@ -45,7 +45,7 @@
                     <span style="color: red;">{{ error }}</span>
                     {% if error_booked == 0 %}
                     {% if item.number_of_people != item.max_book %}
-                    <a href="get_yoga/{{ item.pk }}" class="btn btn-primary btn-md" role="button" aria-pressed="true"
+                    <a href="get_confirm/{{ item.pk }}" class="btn btn-primary btn-md" role="button" aria-pressed="true"
                         onclick="get_book()">予 約</a>
                     {% endif %}
                     {% else %}
