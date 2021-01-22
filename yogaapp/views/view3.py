@@ -11,36 +11,63 @@ import datetime
 import calendar
 from ..models import PlanModel, SettingPlanModel, BookModel
 
+class CONFIRM:
+    def __init__(self, request, month, date):
+        self.username = request.user.get_username()
+        self.month = month
+        self.date = date
+        
+    def make_weekday(self): #曜日を取得
+        weekday_d = {0:'月', 1:'火', 2:'水', 3:'木', 4:'金', 5:'土', 6:'日'}
+        weekday = weekday_d[datetime.datetime.strptime(self.date, '%Y-%m-%d').weekday()]
+        return weekday
+    
+    def make_object_list(self): #object_listの取得
+        return list(PlanModel.objects.filter(date=self.date))
+    
+    def make_plan_model_list(self, object_list): #プランモデルの取得
+        return list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
+    
+    def make_error_booked(self, object_list):
+        #既に予約している人手はないかの確認
+        error_booked = []
+        for i in range(len(object_list)):
+            booked_people_list = object_list[i].booked_people.split()
+            if self.username in booked_people_list:
+                error_booked.append(1) #予約済
+            else:
+                error_booked.append(0)
+        return error_booked
+    
+    def make_zip_list(self, object_list, plan_model_list, error_booked):
+        #3つのリストをzipでまとめ，時間順にsortする
+        time_list = [item.time for item in object_list]#並び替え処理
+        try: #同じ時間がある時バグが生じる
+            object_plan_error_list = sorted(zip(time_list, object_list, plan_model_list, error_booked))
+        except:
+            object_plan_error_list = zip(time_list, object_list, plan_model_list, error_booked)
+        return object_plan_error_list
+    
+    def get_context_data(self): #contextデータを作成して返す．
+        weekday = self.make_weekday()
+        object_list = self.make_object_list()
+        plan_model_list = self.make_plan_model_list(object_list)
+        error_booked = self.make_error_booked(object_list)
+        object_plan_error_list = self.make_zip_list(object_list, plan_model_list, error_booked)
+        context = {
+            'month0': self.month,
+            'month': self.date[5:7],
+            'day': self.date[8:],
+            'object_plan_error_list': object_plan_error_list,
+            'weekday': weekday
+        }
+        return context
 
 #予約確定画面
 @login_required
 def confirmfunc(request, month, date):
-    weekday_d = {0:'月', 1:'火', 2:'水', 3:'木', 4:'金', 5:'土', 6:'日'}
-    weekday = weekday_d[datetime.datetime.strptime(date, '%Y-%m-%d').weekday()]
-    object_list = list(PlanModel.objects.filter(date=date))
-    plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
-    username = request.user.get_username()
-    #既に予約している人手はないかの確認
-    error_booked = []
-    for i in range(len(object_list)):
-        booked_people_list = object_list[i].booked_people.split()
-        if username in booked_people_list:
-            error_booked.append(1) #予約済
-        else:
-            error_booked.append(0)
-     #並び替え処理       
-    time_list = [item.time for item in object_list]
-    try: #同じ時間がある時バグが生じる
-        object_plan_error_list = sorted(zip(time_list, object_list, plan_model_list, error_booked))
-    except:
-        object_plan_error_list = zip(time_list, object_list, plan_model_list, error_booked)
-    context = {
-        'month0': month,
-        'month': date[5:7],
-        'day': date[8:],
-        'object_plan_error_list': object_plan_error_list,
-        'weekday': weekday
-    }
+    a = CONFIRM(request, month, date)
+    context = a.get_context_data()
     return render(request, 'confirm.html', context)
 
 
