@@ -60,115 +60,141 @@ def detail_admin_func(request, month, date):
     context = a.get_context_data()
     return render(request, 'detail_admin.html', context)
 
- 
+
+class PLAN_UPDATE:
+        
+    def __init__(self, request, month, date, pk):
+        self.request = request
+        self.month = month
+        self.date = date
+        self.pk = pk
+        self.item = PlanModel.objects.get(pk=self.pk)
+        self.booked_people_name_list = self.item.booked_people_name.split()
+        #入力値
+        self.last_name = ""
+        self.first_name = ""
+        self.cancel_name = ""
+        self.add_booked_people = ""
+        self.time = ""
+        self.location = ""
+        self.max_book = 0
+    
+    def get_forms(self):
+        self.last_name = self.request.POST['last_name'].replace('　', '').replace(' ', '') #空白削除
+        self.first_name = self.request.POST['first_name'].replace('　', '').replace(' ', '') #空白削除
+        self.add_booked_people = self.last_name + self.first_name
+        self.cancel_name = self.request.POST['cancel_name']
+        time1 = self.request.POST["time1"]
+        time1_5 = self.request.POST["time1-5"]
+        time2 = self.request.POST["time2"]
+        time2_5 = self.request.POST["time2-5"]
+        self.time = time1 + ":" + time1_5 + "-" + time2 + ":" + time2_5
+        self.location = self.request.POST['location']
+        self.max_book = int(self.request.POST['max_book'])
+    
+    def delete_book_model(self, cancel_people):
+        book_model = BookModel.objects.get(user=cancel_people)
+        book_model_plan = book_model.plan.split()
+        book_model_plan.remove(str(self.pk))
+        book_model_plan_2 = ''
+        for plan in book_model_plan:
+            book_model_plan_2 += plan + ' '
+        book_model.plan = book_model_plan_2
+        book_model.save()
+    
+    def get_cancel(self):
+        #キャンセルの処理
+        booked_people_list = self.item.booked_people.split()
+        if self.cancel_name in self.booked_people_name_list:
+            index_num = self.booked_people_name_list.index(self.cancel_name)
+            cancel_people = booked_people_list[index_num]
+            booked_people_list.pop(index_num)
+            self.booked_people_name_list.pop(index_num)
+            booked_people_str = ''
+            booked_people_name_str = ''
+            for booked_people in booked_people_list:
+                booked_people_str += booked_people + ' '
+            for booked_people_name in self.booked_people_name_list:
+                booked_people_name_str += booked_people_name + ' '
+            self.item.booked_people = booked_people_str
+            self.item.booked_people_name = booked_people_name_str
+            self.item.number_of_people = len(booked_people_list)
+            self.item.save()
+            #ブックモデルの予約番号の削除
+            try: #anonimous用
+                self.delete_book_model(cancel_people)
+            except:
+                pass
+    
+    def add_book(self):
+        #名前からユーザー名を取得
+        booked_user = list(User.objects.filter(last_name=self.last_name).filter(first_name=self.first_name))
+        if booked_user != []:
+            booked_people = self.item.booked_people
+            booked_people += ' ' + booked_user[0].username + ' '
+            try:
+                book_model = BookModel.objects.get(user=booked_user[0].username)
+                if book_model.plan == None:
+                    book_model_plan = ''
+                else:
+                    book_model_plan = book_model.plan
+                book_model_plan += ' ' + str(self.pk) + ' '
+                book_model.plan = book_model_plan
+                book_model.save()
+            except:
+                pass
+        else:
+            booked_people = self.item.booked_people
+            booked_people += ' ' + 'anonumous' + ' ' #anonumousは電話予約された場合の人
+        booked_people_name = self.item.booked_people_name
+        booked_people_name += ' ' + self.add_booked_people + ' '
+        #記録
+        self.item.number_of_people = len(booked_people.split())
+        self.item.booked_people = booked_people
+        self.item.booked_people_name = booked_people_name
+        self.item.save()
+    
+    def get_context_data(self, error):
+        context = {
+            'month_num': self.month,
+            'item': self.item,
+            'booked_people_name_list': enumerate(self.booked_people_name_list),
+            'people_num': len(self.booked_people_name_list),
+            'first_time': self.item.time[:self.item.time.index(':')], #始めの時間
+            'first_half_time': self.item.time[self.item.time.index(':') + 1: self.item.time.index('-')],
+            'last_time': self.item.time[self.item.time.index('-') + 1: self.item.time.index(':', 5)], #終わりの時間
+            'last_half_time': self.item.time[self.item.time.index(':', 5) + 1:],
+            'setting_plan_model': SettingPlanModel.objects.all(),
+            'error': error,
+        }
+        return context
+        
+    def get_post(self):
+        #request.method=="POST"のとき
+        self.get_forms()
+        if self.cancel_name != '': #キャンセルする人がいるとき
+            self.get_cancel()
+        if self.add_booked_people != '': #予約追加の人がいるとき
+            if self.add_booked_people not in self.item.booked_people_name.split():
+                self.add_book()
+            else:
+                error = '入力された追加の予約者は既に予約されています．'
+                context = self.get_context_data(error)
+                return render(self.request, 'plan_update.html', context)
+        self.item.time = self.time
+        self.item.location = self.location
+        self.item.max_book = self.max_book
+        self.item.save()
+        
 #プランの編集
 @login_required
 def plan_update(request, month, date, pk):
-    item = PlanModel.objects.get(pk=pk)
-    setting_plan_model = SettingPlanModel.objects.all()
-    #表示処理
-    booked_people_name_list = item.booked_people_name.split()
+    a = PLAN_UPDATE(request, month, date, pk)
     if request.method == "POST": #入力された時の処理
-        last_name = request.POST['last_name'].replace('　', '').replace(' ', '') #空白削除
-        first_name = request.POST['first_name'].replace('　', '').replace(' ', '') #空白削除
-        cancel_name = request.POST['cancel_name']
-        time1 = request.POST["time1"]
-        time1_5 = request.POST["time1-5"]
-        time2 = request.POST["time2"]
-        time2_5 = request.POST["time2-5"]
-        time = time1 + ":" + time1_5 + "-" + time2 + ":" + time2_5
-        location = request.POST['location']
-        max_book = request.POST['max_book']
-        if cancel_name != '': #キャンセルする人がいるとき
-            booked_people_list = item.booked_people.split()
-            booked_people_name_list = item.booked_people_name.split()
-            if cancel_name in booked_people_name_list:
-                index_num = booked_people_name_list.index(cancel_name)
-                cancel_people = booked_people_list[index_num] #633行目以降用
-                booked_people_list.pop(index_num)
-                booked_people_name_list.pop(index_num)
-                booked_people_str = ''
-                booked_people_name_str = ''
-                for booked_people in booked_people_list:
-                    booked_people_str += booked_people + ' '
-                for booked_people_name in booked_people_name_list:
-                    booked_people_name_str += booked_people_name + ' '
-                item.booked_people = booked_people_str
-                item.booked_people_name = booked_people_name_str
-                item.number_of_people = len(booked_people_list)
-                item.save()
-                #ブックモデルの予約番号の削除
-                try: #anonimous用
-                    book_model = BookModel.objects.get(user=cancel_people)
-                    book_model_plan = book_model.plan.split()
-                    book_model_plan.remove(str(pk))
-                    book_model_plan_2 = ''
-                    for plan in book_model_plan:
-                        book_model_plan_2 += plan + ' '
-                    book_model.plan = book_model_plan_2
-                    book_model.save()
-                except:
-                    pass
-        add_booked_people = last_name + first_name
-        if add_booked_people != '': #予約追加の人がいるとき
-            if add_booked_people not in item.booked_people_name.split():
-                #名前からユーザー名を取得
-                booked_user = list(User.objects.filter(last_name=last_name).filter(first_name=first_name))
-                if booked_user != []:
-                    booked_people = item.booked_people
-                    booked_people += ' ' + booked_user[0].username + ' '
-                    try:
-                        book_model = BookModel.objects.get(user=booked_user[0].username)
-                        if book_model.plan == None:
-                            book_model_plan = ''
-                        else:
-                            book_model_plan = book_model.plan
-                        book_model_plan += ' ' + str(pk) + ' '
-                        book_model.plan = book_model_plan
-                        book_model.save()
-                    except:
-                        pass
-                else:
-                    booked_people = item.booked_people
-                    booked_people += ' ' + 'anonumous' + ' ' #anonumousは電話予約された場合の人
-                booked_people_name = item.booked_people_name
-                booked_people_name += ' ' + add_booked_people + ' '
-                #記録
-                item.number_of_people = len(booked_people.split())
-                item.booked_people = booked_people
-                item.booked_people_name = booked_people_name
-                item.save()
-            else:
-                context = {
-                    'month_num': month,
-                    'item': item,
-                    'booked_people_name_list': enumerate(booked_people_name_list),
-                    'people_num': len(booked_people_name_list),
-                    'first_time': item.time[:item.time.index(':')], #始めの時間
-                    'first_half_time': item.time[item.time.index(':') + 1: item.time.index('-')],
-                    'last_time': item.time[item.time.index('-') + 1: item.time.index(':', 5)], #終わりの時間
-                    'last_half_time': item.time[item.time.index(':', 5) + 1:],
-                    'setting_plan_model': setting_plan_model,
-                    'error': '入力された追加の予約者は既に予約されています．',
-                }
-                return render(request, 'plan_update.html', context)
-        item.time = time
-        item.location = location
-        item.max_book = max_book
-        item.save()
-        return redirect('detail', month, item.date)
-    context = {
-        'month_num': month,
-        'item': item,
-        'booked_people_name_list': enumerate(booked_people_name_list),
-        'people_num': len(booked_people_name_list),
-        'first_time': item.time[:item.time.index(':')], #始めの時間
-        'first_half_time': item.time[item.time.index(':') + 1: item.time.index('-')],
-        'last_time': item.time[item.time.index('-') + 1: item.time.index(':', 5)], #終わりの時間
-        'last_half_time': item.time[item.time.index(':', 5) + 1:],
-        'setting_plan_model': setting_plan_model,
-        'error': "",
-    }
+        a.get_post()
+        return redirect('detail', month, a.item.date)
+    error = ""
+    context = a.get_context_data(error)
     return render(request, 'plan_update.html', context)
 
 
