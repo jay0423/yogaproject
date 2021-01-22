@@ -79,17 +79,15 @@ class GET_CONFIRM:
         self.month = month
         self.date = date
         self.pk = pk
+        self.name = User.objects.get(username=self.username).last_name + User.objects.get(username=self.username).first_name
         
     def make_objects(self):
         return PlanModel.objects.get(pk=self.pk)
     
-    def make_name(self): #フルネームの取得
-        return User.objects.get(username=self.username).last_name + User.objects.get(username=self.username).first_name
-    
-    def save_planmodel(self, objects, name):
+    def save_planmodel(self, objects):
         #PlanModelに予約者の名前を記録
         objects.booked_people += self.username + ' ' 
-        objects.booked_people_name += name + ' '
+        objects.booked_people_name += self.name + ' '
         booked_people_list = objects.booked_people.split()
         objects.number_of_people = len(booked_people_list)
         objects.save()
@@ -113,51 +111,71 @@ class GET_CONFIRM:
 def get_confirm(request, month, date, pk):
     objects = PlanModel.objects.get(pk=pk)
     a = GET_CONFIRM(request, month, date, pk)
-    name = a.make_name()
     if a.username in objects.booked_people.split(): #予約者の重複を無くすための処理
         return redirect('book', month)
     else:
-        a.save_planmodel(objects, name)
+        a.save_planmodel(objects)
         a.save_bookmodel() #ユーザー別で予約したプランを記録
     return redirect('confirm', month, date)
 
+
+class CANCEL:
+    
+    def __init__(self, request, month, date, pk):
+        self.username = request.user.get_username()
+        self.month = month
+        self.date = date
+        self.pk = pk
+        self.name = User.objects.get(username=self.username).last_name + User.objects.get(username=self.username).first_name
+    
+    def make_booked_people_list(self, objects):
+        booked_people_list = objects.booked_people.split()
+        booked_people_list.remove(self.username)
+        return booked_people_list
+    
+    def make_booked_people_name_list(self, objects):
+        booked_people_name_list = objects.booked_people_name.split()
+        booked_people_name_list.remove(self.name)
+        return booked_people_name_list
+    
+    def save_planmodel(self, objects, booked_people_list, booked_people_name_list):
+        #PlanModelに刻まれているキャンセルユーザーの削除処理
+        booked_people_str = ''
+        booked_people_name_str = ''
+        for booked_people in booked_people_list:
+            booked_people_str += booked_people + ' '
+        for booked_people_name in booked_people_name_list:
+            booked_people_name_str += booked_people_name + ' '
+        objects.booked_people = booked_people_str
+        objects.booked_people_name = booked_people_name_str
+        objects.number_of_people = len(booked_people_list) #予約人数を減らす
+        objects.save()
+    
+    def save_bookmodel(self):
+        #ユーザー別で予約したプランの削除
+        user_plan = BookModel.objects.filter(user=self.username)[0]
+        plan_list = user_plan.plan.split()
+        try:
+            plan_list.remove(str(self.pk))
+        except:
+            pass
+        plan_str = ''
+        for plan in plan_list:
+            plan_str += plan + ' '
+        #キャンセル回数のカウント
+        user_plan.time_of_cancel = user_plan.time_of_cancel + 1
+        user_plan.plan = plan_str
+        user_plan.save()
 
 #planのキャンセル
 @login_required
 def cancel_yoga_func(request, month, date, pk, mark):
     objects = PlanModel.objects.get(pk=pk)
-    username = request.user.get_username()
-    name = User.objects.get(username=username).last_name + User.objects.get(username=username).first_name
-    booked_people_list = objects.booked_people.split()
-    booked_people_name_list = objects.booked_people_name.split()
-    #プランで予約した人の削除
-    booked_people_list.remove(username)
-    booked_people_name_list.remove(name)
-    objects.number_of_people = len(booked_people_list) #予約人数を減らす
-    booked_people_str = ''
-    booked_people_name_str = ''
-    for booked_people in booked_people_list:
-        booked_people_str += booked_people + ' '
-    for booked_people_name in booked_people_name_list:
-        booked_people_name_str += booked_people_name + ' '
-    objects.booked_people = booked_people_str
-    objects.booked_people_name = booked_people_name_str
-    objects.save()
-    #ユーザー別で予約したプランの削除
-    objects = BookModel.objects.filter(user=username)[0]
-    #キャンセル回数のカウント
-    objects.time_of_cancel = objects.time_of_cancel + 1
-    #
-    plan_list = objects.plan.split()
-    try:
-        plan_list.remove(str(pk))
-    except:
-        pass
-    plan_str = ''
-    for plan in plan_list:
-        plan_str += plan + ' '
-    objects.plan = plan_str
-    objects.save()
+    a = CANCEL(request, month, date, pk)
+    booked_people_list = a.make_booked_people_list(objects)
+    booked_people_name_list = a.make_booked_people_name_list(objects)
+    a.save_planmodel(objects, booked_people_list, booked_people_name_list)
+    a.save_bookmodel()
     if mark == '0':
         return redirect('confirm', month, date)
     elif mark == "1":
