@@ -10,37 +10,56 @@ from django.views.generic import DetailView, CreateView, DeleteView, UpdateView,
 from django.urls import reverse_lazy, reverse
 
 
-#詳細確認
+class DETAIL:
+    
+    def __init__(self, request, month, date):
+        self.username = request.user.get_username()
+        self.month = month
+        self.date = date
+        
+    def make_booked_people_name_list(self, object_list):
+        #予約者の抽出
+        booked_people_name_list = []
+        for item in object_list:
+            booked_people_name_str = item.booked_people_name
+            booked_people_name_str2 = ""
+            for booked_people_name in booked_people_name_str.split():
+                booked_people_name_str2 += '　' + booked_people_name + ','
+            booked_people_name_str2 = booked_people_name_str2[1:-1] #無駄な文字の削除
+            booked_people_name_list.append(booked_people_name_str2)
+        return booked_people_name_list
+    
+    def make_zip_list(self, object_list, plan_model_list, booked_people_name_list):
+        #3つのリストをzipでまとめ，時間順にsortする
+        time_list = [item.time for item in object_list] #並び替えの処理
+        try:
+            object_plan_name_list = sorted(zip(time_list, object_list, plan_model_list, booked_people_name_list))
+            error = ''
+        except:
+            object_plan_name_list = zip(time_list, object_list, plan_model_list, booked_people_name_list)
+            error = '時間が重複しています．'
+        return object_plan_name_list, error
+    
+    def get_context_data(self):
+        object_list = list(PlanModel.objects.filter(date=self.date).order_by('time'))
+        plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
+        booked_people_name_list = self.make_booked_people_name_list(object_list)
+        (object_plan_name_list, error) = self.make_zip_list(object_list, plan_model_list, booked_people_name_list)
+        context = {
+            'month_num': self.month,
+            'date': self.date,
+            'object_plan_name_list': object_plan_name_list,
+            'error': error,
+        }
+        return context
+    
+#管理者用のプラン詳細確認
 @login_required
 def detail_admin_func(request, month, date):
-    object_list = list(PlanModel.objects.filter(date=date).order_by('time'))
-    plan_model_list = list(SettingPlanModel.objects.filter(plan_num=item.plan_num)[0] for item in object_list)
-    username = request.user.get_username()
-    #予約者の抽出
-    booked_people_name_list = []
-    for item in object_list:
-        booked_people_name_str = item.booked_people_name
-        booked_people_name_str2 = ""
-        for booked_people_name in booked_people_name_str.split():
-            booked_people_name_str2 += '　' + booked_people_name + ','
-        booked_people_name_str2 = booked_people_name_str2[1:-1] #無駄な文字の削除
-        booked_people_name_list.append(booked_people_name_str2)
-    #並び替えの処理
-    time_list = [item.time for item in object_list]
-    try:
-        object_plan_name_list = sorted(zip(time_list, object_list, plan_model_list, booked_people_name_list))
-        error = ''
-    except:
-        object_plan_name_list = zip(time_list, object_list, plan_model_list, booked_people_name_list)
-        error = '時間が重複しています．'
-    context = {
-        'month_num': month,
-        'date': date,
-        'object_plan_name_list': object_plan_name_list,
-        'error': error,
-    }
+    a = DETAIL(request, month, date)
+    context = a.get_context_data()
     return render(request, 'detail_admin.html', context)
- 
+
  
 #プランの編集
 @login_required
