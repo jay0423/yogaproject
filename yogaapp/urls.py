@@ -2,8 +2,9 @@ from django.urls import path
 from .views.view1 import signupfunc,loginfunc, logoutfunc, signup_admin_func
 from .views.view2 import bookfunc, book_adminfunc
 from .views.view3 import confirmfunc, get_confirm, cancel_yoga_func, booked_list_func, access_func, info_func
-from .views.view4 import YogaCreate, yoga_create_plan_num, detail_admin_func, plan_update, PlanDelete, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, notefunc, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
+from .views.view4 import detail_admin_func, plan_update, PlanDelete
 from .views.view5 import users_detail, users_update, analysis_func, table_func
+from .views.view6 import YogaCreate, yoga_create_plan_num, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, notefunc, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
 
 urlpatterns = [
     #views1.py
@@ -25,6 +26,12 @@ urlpatterns = [
     path('book_admin/<month>/detail/<date>/', detail_admin_func, name='detail'),
     path('book_admin/<month>/detail/<date>/update/<int:pk>', plan_update, name='plan_update'),
     path('book_admin/<month>/detail/<date>/delete/<int:pk>', PlanDelete.as_view(), name='plan_delete'),
+    #views5.py
+    path('users', users_detail, name='users'), 
+    path('users/update/<username>', users_update, name='users_update'), 
+    path('analysis/', analysis_func, name='analysis'),
+    path('table/', table_func, name='table'),
+    #views6.py
     path('setting_plan/', SettingPlanList.as_view(), name='setting_plan'),
     path('setting_plan/<int:pk>/detail', SettingPlanUpdate.as_view(), name='setting_plan_update'),
     path('create/', YogaCreate.as_view(), name='create'),
@@ -35,9 +42,4 @@ urlpatterns = [
     path('calendar_default/detail/<weekday>', weekday_detail_func, name='weekday_detail'),
     path('calendar_default/detail/<weekday>/update/<int:pk>', weekday_update_func, name='weekday_update'),
     path('calendar_default/detail/<weekday>/delete/<int:pk>', WeekdayPlanDelete.as_view(), name='weekday_delete'),
-    #views4.py
-    path('users', users_detail, name='users'), 
-    path('users/update/<username>', users_update, name='users_update'), 
-    path('analysis/', analysis_func, name='analysis'),
-    path('table/', table_func, name='table'),
 ]
