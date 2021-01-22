@@ -9,6 +9,7 @@ from django.views.generic import CreateView, DeleteView, UpdateView, ListView
 from django.urls import reverse_lazy, reverse
 from ..forms import CreateSettingPlanForm
 
+################プラン一覧設定######################
 #プラン一覧
 class SettingPlanList(ListView):
     template_name = 'setting_plan_detail.html'
@@ -23,7 +24,6 @@ class SettingPlanUpdate(UpdateView):
     model = SettingPlanModel
     fields = ('short_plan_name', 'price', 'location', 'max_book', 'memo', 'image')
     success_url = reverse_lazy('setting_plan')
-
 
 #新しいプランの生成
 class YogaCreate(CreateView):
@@ -40,16 +40,15 @@ def yoga_create_plan_num(request):
     item.plan_num = plan_num_max + 1
     item.save()
     return redirect('setting_plan')
-
-                            
+                    
 #プランの削除
 class YogaPlanDelete(DeleteView):
     template_name = 'yoga_plan_delete.html'
     model = SettingPlanModel
     success_url = reverse_lazy('setting_plan')
+    
 
-
-#お知らせ機能
+###############表示設定，お知らせ機能，月曜日の表示設定######################
 @login_required
 def notefunc(request):
     item = NoteModel.objects.get(num=0)
@@ -67,39 +66,65 @@ def notefunc(request):
 
 
 ################カレンダーの曜日別デフォルト日程設定######################
-#設定
+# from .view2 import CALENDAR_ADMIN
+class WEEKDAY_CALENDAR:
+        
+    def __init__(self):
+        self.monday = NoteModel.objects.get(num=0).monday
+    
+    def sort_by_time(self, plan_list):
+        new_plan_list = []
+        for item_list in plan_list:
+            if len(item_list) >= 2:
+                try:
+                    plan = sorted(item_list, key = lambda x: x.time)
+                except:
+                    pass
+                new_plan_list.append(plan)
+            else:
+                new_plan_list.append(item_list)
+        return new_plan_list
+        
+    def make_plan_list(self):
+        weekday_default_model = WeekdayDefaultModel.objects.all().order_by('time')
+        monday_plan_list = list(weekday_default_model.filter(weekday='monday'))
+        tuesday_plan_list = list(weekday_default_model.filter(weekday='tuesday'))
+        wednesday_plan_list = list(weekday_default_model.filter(weekday='wednesday'))
+        thursday_plan_list = list(weekday_default_model.filter(weekday='thursday'))
+        friday_plan_list = list(weekday_default_model.filter(weekday='friday'))
+        saturday_plan_list = list(weekday_default_model.filter(weekday='saturday'))
+        plan_list = [monday_plan_list, tuesday_plan_list, wednesday_plan_list, thursday_plan_list, friday_plan_list, saturday_plan_list]
+        #並び替え
+        plan_list = self.sort_by_time(plan_list)
+        return plan_list
+    
+    def make_weekday_list(self, plan_list):
+        weekday_list = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        if  self.monday == 0: #月曜日が非表示の時の処理
+            plan_list.pop(0)
+            weekday_list.pop(0)
+        return weekday_list    
+    
+    def get_context_data(self, setting_plan_model):
+        plan_list = self.make_plan_list()
+        weekday_list = self.make_weekday_list(plan_list)
+        total_checkbox = len(plan_list)
+        week_plan_list = zip(weekday_list ,plan_list)
+        context = {
+            'plan_list': week_plan_list,
+            'monday': self.monday,
+            'total_checkbox': total_checkbox,
+            'setting_plan_model': enumerate(setting_plan_model),
+            'setting_plan_model2': setting_plan_model
+        }
+        return context
+
 @login_required
 def calendar_dafault_func(request):
-    weekday_default_model = WeekdayDefaultModel.objects.all().order_by('time')
-    monday_plan_list = list(weekday_default_model.filter(weekday='monday'))
-    tuesday_plan_list = list(weekday_default_model.filter(weekday='tuesday'))
-    wednesday_plan_list = list(weekday_default_model.filter(weekday='wednesday'))
-    thursday_plan_list = list(weekday_default_model.filter(weekday='thursday'))
-    friday_plan_list = list(weekday_default_model.filter(weekday='friday'))
-    saturday_plan_list = list(weekday_default_model.filter(weekday='saturday'))
-    plan_list = [monday_plan_list, tuesday_plan_list, wednesday_plan_list, thursday_plan_list, friday_plan_list, saturday_plan_list]
-    #月曜日が非表示の時
-    monday = NoteModel.objects.get(num=0).monday
-    weekday_get_list = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-    if  monday == 0:
-        plan_list.pop(0)
-        weekday_get_list.pop(0)
-    #並び替え
-    new_plan_list = []
-    for item_list in plan_list:
-        if len(item_list) >= 2:
-            try:
-                plan = sorted(item_list, key = lambda x: x.time)
-            except:
-                pass
-            new_plan_list.append(plan)
-        else:
-            new_plan_list.append(item_list)
-    plan_list = new_plan_list.copy()
-    total_checkbox = len(plan_list)
-    plan_list = zip(weekday_get_list ,plan_list)
-    #予定入力設定
     setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
+    a = WEEKDAY_CALENDAR()
+    context = a.get_context_data(setting_plan_model)
+    #予定入力設定
     if request.method == "POST":
         #formの値の取得
         weekday_str = request.POST["select_days"]
@@ -126,14 +151,6 @@ def calendar_dafault_func(request):
             create_plan.max_book = max_book
             create_plan.save()
         return redirect('calendar_default')
-
-    context = {
-        'plan_list': plan_list,
-        'monday': monday,
-        'total_checkbox': total_checkbox,
-        'setting_plan_model': enumerate(setting_plan_model),
-        'setting_plan_model2': setting_plan_model
-    }
     return render(request, 'weekday_default.html', context)
     
     
