@@ -32,6 +32,15 @@ def users_detail(request):
     }
     return render(request, 'users.html', context)
 
+#usersのcsvの作成
+def make_users_csv():
+    model = User.objects.all()
+    columns = ['username', 'first_name', 'last_name', 'email']
+    df = read_frame(model, fieldnames=columns)
+    #csvファイルで吐き出し
+    # df.to_csv('/var/www/yogaproject/static/users.csv', encoding='utf_8_sig')
+    df.to_csv('static/users.csv', encoding='utf_8_sig')
+    return
 
 #登録者情報の編集
 @login_required
@@ -48,7 +57,7 @@ def users_update(request, username):
         object.first_name = new_firstname
         object.email = new_email
         object.save()
-####        make_users_csv()
+        make_users_csv()
         #ユーザー名が変更されるとき
         if username != new_username:
             user = BookModel.objects.get(user=username)
