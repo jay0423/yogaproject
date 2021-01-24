@@ -103,7 +103,7 @@ class ANALYSIS:
             self.data = request.POST['data']
             self.aggfunc = request.POST['aggfunc']
             self.columns = 'weekday' if self.columns2 == 'weekday2' else self.columns2
-        except:
+        except: #初めて選択するとき．
             pass
     
     #以降データ分析用の処理
@@ -169,6 +169,7 @@ class ANALYSIS:
         
     def make_pivot_table(self, df):
         #pivot_tableの作成
+        print(self.data, self.index, self.columns, self.aggfunc)
         pivot_table = df.pivot_table(self.data, index=self.index, columns=self.columns, aggfunc=self.aggfunc, margins=True)
         #順番の整理用
         if self.index == 'weekday':
@@ -278,7 +279,6 @@ def analysis_func(request):
         #         'to_month': '',
         #     }
         #     return render(request, 'analysis.html', context)
-        df = a.make_df()
         if a.error1 == "error": #エラー時
             context = {
                 'post': False,
@@ -290,6 +290,7 @@ def analysis_func(request):
             return render(request, 'analysis.html', context)
         try:
             context = a.get_context_data()
+            context["month_list"] = month_list
         except: #指定月にデータがないとき
             context = {
                 'post': False,
@@ -298,9 +299,6 @@ def analysis_func(request):
                 'from_month': '',
                 'to_month': '',
             }
-            return render(request, 'analysis.html', context)
-            
-        context["month_list"] = month_list
         return render(request, 'analysis.html', context)
     else:
         post = False
@@ -317,42 +315,41 @@ def analysis_func(request):
     return render(request, 'analysis.html', context)
         
 
+class TABLE(ANALYSIS):
+    
+    def get_context_data(self):
+        df = self.add_columns(self.make_df())
+        df_to_csv = self.make_df_to_csv(df)
+        context = {
+            'post': True,
+            'error1': self.error1,
+            'df': df,
+            'from_month': self.from_month,
+            'to_month': self.to_month
+        }
+        return context, df_to_csv
+        
 #テーブル
 @login_required
 def table_func(request):
-    #DataFrameの取得
-    from django_pandas.io import read_frame
-    plan_model = PlanModel.objects.all()
-    if list(plan_model) == []:
-        context = {
-            'post': False,
-            'error1': 'データがありません．',
-            'month_list': [],
-            'from_month': '',
-            'to_month': '',
-        }
-        return render(request, 'table.html', context)
-    columns = [item.name for item in PlanModel._meta.get_fields()]
-    df = read_frame(plan_model, fieldnames=columns)
-    df = df.sort_values(['date', 'time'])
-    df.reset_index(inplace=True)
-    df = df.drop('index', axis=1)
-    #日付の最小値と最大値の選定
-    from dateutil.relativedelta import relativedelta
-    min_month = df.iloc[0, :].month
-    max_month = df.iloc[-1, :].month
-    month_list = sorted(list(set(df.month)))
-    error1 = ''
-    
     #入力された時の処理
     if request.method == "POST": 
-        from_month = request.POST['from_month']
-        to_month = request.POST['to_month']
-
-        #dfの編集
-        from_month_num = list(df.query('month == "{}"'.format(from_month)).index)[0]
-        to_month_num = 1 + list(df.query('month == "{}"'.format(to_month)).index)[-1]
-        if from_month_num >= to_month_num:
+        post = True
+        a = TABLE(post)
+        a.get_post(request)
+        # try:
+        (first_month, last_month) = a.make_first_last_month()
+        month_list = a.make_month_list(first_month, last_month)
+        # except:
+        #     context = {
+        #         'post': False,
+        #         'error1': 'データがありません．',
+        #         'month_list': [],
+        #         'from_month': '',
+        #         'to_month': '',
+        #     }
+        #     return render(request, 'analysis.html', context)
+        if a.error1 == "error": #エラー時
             context = {
                 'post': False,
                 'error1': '期間が矛盾しています．',
@@ -361,60 +358,31 @@ def table_func(request):
                 'to_month': '',
             }
             return render(request, 'table.html', context)
-        df = df.iloc[from_month_num: to_month_num]
-        #曜日columnの追加
-        weekday_d = {0:'月', 1:'火', 2:'水', 3:'木', 4:'金', 5:'土', 6:'日'}
-        format = lambda x: weekday_d[x.weekday()]
-        df.loc[:, 'weekday'] = df.loc[:, 'date'].map(format)
-        #予約率columnの追加
-        format = lambda x: round(x['number_of_people'] / x['max_book'] * 100, 1)
-        df.loc[:, 'rate_of_book'] = df.apply(format, axis=1)
-        #料金columnの追加
-        setting_plan_model = SettingPlanModel.objects.all()
-        format = lambda x: setting_plan_model.get(name=x).price
-        df.loc[:, 'price'] = df.loc[:, 'plan'].map(format)
-        #売上columnの追加
-        format = lambda x: x['price'] * x['number_of_people']
-        df.loc[:, 'total_price'] = df.apply(format, axis=1)
-        df.reset_index(inplace=True)
-        df = df.drop('index', axis=1)
-        #名前を分割して行を追加する処理
-        df_to_csv = df.copy()
-        booked_people_list = df.loc[:, 'booked_people']
-        booked_people_name_list = df.loc[:, 'booked_people_name']
-        index_list = list(df.index)
-        for index, booked_people, booked_people_name in zip(index_list, booked_people_list, booked_people_name_list):
-            if len(booked_people.split()) > 1:
-                for people, people_name in zip(booked_people.split(), booked_people_name.split()):
-                    new_series = df.iloc[index, :]
-                    new_series.booked_people = people
-                    new_series.booked_people_name = people_name
-                    df_to_csv = df_to_csv.append(new_series)
-        df_to_csv = df_to_csv[df_to_csv.loc[:, 'booked_people'].map(lambda x: len(x.split())) <= 1]
-        df_to_csv = df_to_csv.sort_values(['date', 'time'])
-        df_to_csv.reset_index(inplace=True)
-        df_to_csv.drop('index', axis=1, inplace=True)
-        df_to_csv.insert(0, 'new_id', df_to_csv.loc[:, 'date'].map(str) + df_to_csv.loc[:, 'plan'] + df_to_csv.loc[:, 'time'] + df_to_csv.loc[:, 'booked_people_name'])
-        df_to_csv.loc[:, 'booked_people'] = df_to_csv.loc[:, 'booked_people'].map(lambda x: x.replace(' ', ''))
-        df_to_csv.loc[:, 'booked_people_name'] = df_to_csv.loc[:, 'booked_people_name'].map(lambda x: x.replace(' ', ''))
-        #csvファイルで吐き出し
-        # df_to_csv.to_csv('/var/www/yogaproject/static/table.csv', encoding='utf_8_sig')
-        df_to_csv.to_csv('static/table.csv', encoding='utf_8_sig')
+        try:
+            (context, df_to_csv) = a.get_context_data()
+            context["month_list"] = month_list
+            #csvファイルで吐き出し
+            # df_to_csv.to_csv('/var/www/yogaproject/static/table.csv', encoding='utf_8_sig')
+            df_to_csv.to_csv('static/table.csv', encoding='utf_8_sig')
+        except: #指定月にデータがないとき
+            context = {
+                'post': False,
+                'error1': '予約者が一人もいません．',
+                'month_list': month_list,
+                'from_month': '',
+                'to_month': '',
+            }
+        return render(request, 'table.html', context)
+    else:
+        post = False
+        a = ANALYSIS(post)
+        (first_month, last_month) = a.make_first_last_month()
+        month_list = a.make_month_list(first_month, last_month)
         context = {
-            'post': True,
-            'error1': error1,
-            'df': df,
-            'from_month': from_month,
-            'to_month': to_month,
+            'post': post,
+            'error1': '',
+            'from_month': '',
+            'to_month': '',
             'month_list': month_list,
         }
-        return render(request, 'table.html', context)
-    context = {
-        'post': False,
-        'error1': '',
-        'from_month': '',
-        'to_month': '',
-        'month_list': month_list,
-    }
     return render(request, 'table.html', context)
-    
