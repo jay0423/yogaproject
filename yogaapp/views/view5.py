@@ -73,8 +73,8 @@ def users_update(request, username):
 
 class Analysis:
         
-    def __init__(self, post):
-        self.post = post
+    def __init__(self):
+        self.post = False
         self.error1 = ""
         self.from_month = ""
         self.last_month = ""
@@ -249,7 +249,7 @@ class Analysis:
         df_to_csv = self.make_df_to_csv(df)
         (columns_list2, pivot_list) = self.make_rank_book(df_to_csv)
         context = {
-            'post': self.post,
+            'post': True,
             'error1': self.error1,
             'terms': terms,
             'from_month': self.from_month,
@@ -271,23 +271,22 @@ class Analysis:
 #売上やピボットテーブル
 @login_required
 def analysis_func(request):
-    #入力された時の処理
-    if request.method == "POST": 
-        post = True
-        a = Analysis(post)
-        a.get_post(request)
-        # try:
+    a = Analysis()
+    try:
         (first_month, last_month) = a.make_first_last_month()
         month_list = a.make_month_list(first_month, last_month)
-        # except:
-        #     context = {
-        #         'post': False,
-        #         'error1': 'データがありません．',
-        #         'month_list': [],
-        #         'from_month': '',
-        #         'to_month': '',
-        #     }
-        #     return render(request, 'analysis.html', context)
+    except:
+        context = {
+            'post': False,
+            'error1': 'データがありません．',
+            'month_list': [],
+            'from_month': '',
+            'to_month': '',
+        }
+        return render(request, 'analysis.html', context)
+    #入力された時の処理
+    if request.method == "POST": 
+        a.get_post(request)
         if a.error1 == "error": #エラー時
             context = {
                 'post': False,
@@ -310,10 +309,6 @@ def analysis_func(request):
             }
         return render(request, 'analysis.html', context)
     else:
-        post = False
-        a = Analysis(post)
-        (first_month, last_month) = a.make_first_last_month()
-        month_list = a.make_month_list(first_month, last_month)
         context = {
             'post': False,
             'error1': '',
@@ -341,23 +336,22 @@ class Table(Analysis):
 #テーブル
 @login_required
 def table_func(request):
-    #入力された時の処理
-    if request.method == "POST": 
-        post = True
-        a = Table(post)
-        a.get_post(request)
-        # try:
+    a = Table()
+    try:
         (first_month, last_month) = a.make_first_last_month()
         month_list = a.make_month_list(first_month, last_month)
-        # except:
-        #     context = {
-        #         'post': False,
-        #         'error1': 'データがありません．',
-        #         'month_list': [],
-        #         'from_month': '',
-        #         'to_month': '',
-        #     }
-        #     return render(request, 'analysis.html', context)
+    except:
+        context = {
+            'post': False,
+            'error1': 'データがありません．',
+            'month_list': [],
+            'from_month': '',
+            'to_month': '',
+        }
+        return render(request, 'table.html', context)
+    #入力された時の処理
+    if request.method == "POST": 
+        a.get_post(request)
         if a.error1 == "error": #エラー時
             context = {
                 'post': False,
@@ -383,12 +377,8 @@ def table_func(request):
             }
         return render(request, 'table.html', context)
     else:
-        post = False
-        a = Analysis(post)
-        (first_month, last_month) = a.make_first_last_month()
-        month_list = a.make_month_list(first_month, last_month)
         context = {
-            'post': post,
+            'post': False,
             'error1': '',
             'from_month': '',
             'to_month': '',
