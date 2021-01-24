@@ -1,5 +1,6 @@
 from django.test import TestCase
 from yogaapp.models import BookModel, PlanModel, SettingPlanModel, NoteModel, WeekdayDefaultModel
+from django.contrib.auth.models import User
 import datetime
  
 class ModelTests(TestCase):
@@ -78,16 +79,16 @@ class ModelTests(TestCase):
         note = NoteModel()
         memo, num, monday = "メモ", 1, 0
         note.memo = memo
-        note.memo = memo
-        note.time_of_cancel = time_of_cancel
+        note.num = num
+        note.monday = monday
         note.save()
 
-        saved_note = BookModel.objects.all()
-        actual_note = saved_book[0]
+        saved_note = NoteModel.objects.all()
+        actual_note = saved_note[0]
 
-        self.assertEqual(actual_note.user, user)
-        self.assertEqual(actual_note.plan, plan)
-        self.assertEqual(actual_note.time_of_cancel, time_of_cancel)
+        self.assertEqual(actual_note.memo, memo)
+        self.assertEqual(actual_note.num, num)
+        self.assertEqual(actual_note.monday, monday)
         
     def test_saving_and_retrieving_weekday_default_model(self):
         weekday_model = WeekdayDefaultModel()
@@ -95,17 +96,44 @@ class ModelTests(TestCase):
         s = ("sunday", "プラン", "09:00", "スタジオ", 10, 1)
         weekday, plan, time, location, max_book, plan_num = s
         weekday_model.weekday = weekday
+        weekday_model.plan = plan
         weekday_model.time = time
         weekday_model.location = location
         weekday_model.max_book = max_book
         weekday_model.plan_num = plan_num
         weekday_model.save()
 
-        saved_weekday = BookModel.objects.all()
-        actual_weekday = saved_book[0]
+        saved_weekday = WeekdayDefaultModel.objects.all()
+        actual_weekday = saved_weekday[0]
 
         self.assertEqual(actual_weekday.weekday, weekday)
+        self.assertEqual(actual_weekday.plan, plan)
         self.assertEqual(actual_weekday.time, time)
         self.assertEqual(actual_weekday.location, location)
         self.assertEqual(actual_weekday.max_book, max_book)
         self.assertEqual(actual_weekday.plan_num, plan_num)
+        
+        
+class ViewTests(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(username="test", password="password", email="test@test.com", is_active=True, first_name="太郎", last_name="テスト")
+        user.save()
+        #BookModelへのユーザーの登録
+        user_plan = BookModel.objects.create(user="test")
+        user_plan.save()
+        #NoteModelへの登録
+        note = NoteModel.objects.create(memo="", num=0, monday=0)
+        note.save()
+
+    def test_index(self):
+        client = self.client
+
+        #ログイン可否の確認
+        urls = ['/book/0/confirm/2020-01-01/', '/booked_list', '/access', '/info', '/book/0', '/book_admin/0', '/users', '/users/update/test', '/analysis/', '/table/', '/setting_plan/', '/create/', '/note/', '/calendar_default/']
+        for u in urls:
+            response = client.get(u) # まずはログインしていないユーザがアクセスした場合
+            self.assertEqual(response.status_code, 302) # ステータスコード：302が返却され画面にアクセスできない
+            client.login(username='test', password='password') # setUpで追加しておいたユーザでログインします
+            response = client.get(u) # ログインしているユーザがアクセスした場合
+            self.assertEqual(response.status_code, 200) # ステータスコード：200が返却され画面にアクセスできている
+            client.logout() #ログアウトする．

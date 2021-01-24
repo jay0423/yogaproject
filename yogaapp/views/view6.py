@@ -4,6 +4,7 @@
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from ..models import SettingPlanModel, NoteModel, WeekdayDefaultModel
 from django.views.generic import CreateView, DeleteView, UpdateView, ListView
 from django.urls import reverse_lazy, reverse
@@ -11,7 +12,7 @@ from ..forms import CreateSettingPlanForm
 
 ################プラン一覧設定######################
 #プラン一覧
-class SettingPlanList(ListView):
+class SettingPlanList(LoginRequiredMixin, ListView):
     template_name = 'setting_plan_detail.html'
     model = SettingPlanModel
 
@@ -19,14 +20,14 @@ class SettingPlanList(ListView):
         return super().get_queryset().order_by('plan_num')
 
 #プラン設定の編集
-class SettingPlanUpdate(UpdateView):
+class SettingPlanUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'setting_plan_update.html'
     model = SettingPlanModel
     fields = ('short_plan_name', 'price', 'location', 'max_book', 'memo', 'image')
     success_url = reverse_lazy('setting_plan')
 
 #新しいプランの生成
-class YogaCreate(CreateView):
+class YogaCreate(LoginRequiredMixin, CreateView):
     template_name = 'create.html'
     model = SettingPlanModel
     form_class = CreateSettingPlanForm
@@ -42,7 +43,7 @@ def yoga_create_plan_num(request):
     return redirect('setting_plan')
                     
 #プランの削除
-class YogaPlanDelete(DeleteView):
+class YogaPlanDelete(LoginRequiredMixin, DeleteView):
     template_name = 'yoga_plan_delete.html'
     model = SettingPlanModel
     success_url = reverse_lazy('setting_plan')
@@ -203,7 +204,7 @@ def weekday_update_func(request, weekday, pk):
 
 
 #曜日別プランの削除
-class WeekdayPlanDelete(DeleteView):
+class WeekdayPlanDelete(LoginRequiredMixin, DeleteView):
     template_name = 'weekday_delete.html'
     model = WeekdayDefaultModel
 
