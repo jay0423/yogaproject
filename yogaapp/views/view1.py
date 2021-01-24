@@ -8,7 +8,7 @@ from ..models import BookModel, NoteModel
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-class SIGNUP:
+class Signup:
     def __init__(self, request):
         self.username = request.POST['username'].replace('　', '').replace(' ', '')
         self.password = 'password'
@@ -47,7 +47,7 @@ class SIGNUP:
 #サインアップページ  
 def signupfunc(request):
     if request.method == "POST":
-        a = SIGNUP(request)
+        a = Signup(request)
         a.signup()
         a.make_users_csv()
         if a.success :
@@ -61,7 +61,7 @@ def signupfunc(request):
 @login_required
 def signup_admin_func(request):
     if request.method == "POST":
-        a = SIGNUP(request)
+        a = Signup(request)
         a.signup()
         a.make_users_csv()
         if a.success :

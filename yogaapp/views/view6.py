@@ -66,8 +66,8 @@ def notefunc(request):
 
 
 ################カレンダーの曜日別デフォルト日程設定######################
-# from .view2 import CALENDAR_ADMIN
-class WEEKDAY_CALENDAR:
+# from .view2 import CalendarAdmin
+class WeekdayCalendar:
         
     def __init__(self):
         self.monday = NoteModel.objects.get(num=0).monday
@@ -122,7 +122,7 @@ class WEEKDAY_CALENDAR:
 @login_required
 def calendar_dafault_func(request):
     setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
-    a = WEEKDAY_CALENDAR()
+    a = WeekdayCalendar()
     context = a.get_context_data(setting_plan_model)
     #予定入力設定
     if request.method == "POST":

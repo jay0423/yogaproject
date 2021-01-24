@@ -10,7 +10,7 @@ from django.views.generic import DeleteView
 from django.urls import reverse_lazy, reverse
 
 
-class DETAIL:
+class Detail:
     
     def __init__(self, request, month, date):
         self.username = request.user.get_username()
@@ -56,12 +56,12 @@ class DETAIL:
 #管理者用のプラン詳細確認
 @login_required
 def detail_admin_func(request, month, date):
-    a = DETAIL(request, month, date)
+    a = Detail(request, month, date)
     context = a.get_context_data()
     return render(request, 'detail_admin.html', context)
 
 
-class PLAN_UPDATE:
+class PlanUpdate:
         
     def __init__(self, request, month, date, pk):
         self.request = request
@@ -189,7 +189,7 @@ class PLAN_UPDATE:
 #プランの編集
 @login_required
 def plan_update(request, month, date, pk):
-    a = PLAN_UPDATE(request, month, date, pk)
+    a = PlanUpdate(request, month, date, pk)
     if request.method == "POST": #入力された時の処理
         a.get_post()
         return redirect('detail', month, a.item.date)

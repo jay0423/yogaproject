@@ -71,7 +71,7 @@ def users_update(request, username):
     return render(request, 'users_update.html', context)
 
 
-class ANALYSIS:
+class Analysis:
         
     def __init__(self, post):
         self.post = post
@@ -274,7 +274,7 @@ def analysis_func(request):
     #入力された時の処理
     if request.method == "POST": 
         post = True
-        a = ANALYSIS(post)
+        a = Analysis(post)
         a.get_post(request)
         # try:
         (first_month, last_month) = a.make_first_last_month()
@@ -311,7 +311,7 @@ def analysis_func(request):
         return render(request, 'analysis.html', context)
     else:
         post = False
-        a = ANALYSIS(post)
+        a = Analysis(post)
         (first_month, last_month) = a.make_first_last_month()
         month_list = a.make_month_list(first_month, last_month)
         context = {
@@ -324,7 +324,7 @@ def analysis_func(request):
     return render(request, 'analysis.html', context)
         
 
-class TABLE(ANALYSIS):
+class Table(Analysis):
     
     def get_context_data(self):
         df = self.add_columns(self.make_df())
@@ -344,7 +344,7 @@ def table_func(request):
     #入力された時の処理
     if request.method == "POST": 
         post = True
-        a = TABLE(post)
+        a = Table(post)
         a.get_post(request)
         # try:
         (first_month, last_month) = a.make_first_last_month()
@@ -384,7 +384,7 @@ def table_func(request):
         return render(request, 'table.html', context)
     else:
         post = False
-        a = ANALYSIS(post)
+        a = Analysis(post)
         (first_month, last_month) = a.make_first_last_month()
         month_list = a.make_month_list(first_month, last_month)
         context = {

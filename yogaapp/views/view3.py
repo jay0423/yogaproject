@@ -11,7 +11,7 @@ import datetime
 import calendar
 from ..models import PlanModel, SettingPlanModel, BookModel
 
-class CONFIRM:
+class Confirm:
     
     def __init__(self, request, month, date):
         self.username = request.user.get_username()
@@ -67,12 +67,12 @@ class CONFIRM:
 #プラン選択画面
 @login_required
 def confirmfunc(request, month, date):
-    a = CONFIRM(request, month, date)
+    a = Confirm(request, month, date)
     context = a.get_context_data()
     return render(request, 'confirm.html', context)
 
 
-class GET_CONFIRM:
+class GetConfirm:
     
     def __init__(self, request, month, date, pk):
         self.username = request.user.get_username()
@@ -110,7 +110,7 @@ class GET_CONFIRM:
 @login_required
 def get_confirm(request, month, date, pk):
     objects = PlanModel.objects.get(pk=pk)
-    a = GET_CONFIRM(request, month, date, pk)
+    a = GetConfirm(request, month, date, pk)
     if a.username in objects.booked_people.split(): #予約者の重複を無くすための処理
         return redirect('book', month)
     else:
@@ -119,7 +119,7 @@ def get_confirm(request, month, date, pk):
     return redirect('confirm', month, date)
 
 
-class CANCEL:
+class Cancel:
     
     def __init__(self, request, month, date, pk):
         self.username = request.user.get_username()
@@ -171,7 +171,7 @@ class CANCEL:
 @login_required
 def cancel_yoga_func(request, month, date, pk, mark):
     objects = PlanModel.objects.get(pk=pk)
-    a = CANCEL(request, month, date, pk)
+    a = Cancel(request, month, date, pk)
     booked_people_list = a.make_booked_people_list(objects)
     booked_people_name_list = a.make_booked_people_name_list(objects)
     a.save_planmodel(objects, booked_people_list, booked_people_name_list)
@@ -182,7 +182,7 @@ def cancel_yoga_func(request, month, date, pk, mark):
         return redirect('booked_list')
 
 
-class BOOKED_PLAN:
+class BookedPlan:
 
     today = datetime.datetime.today()
     today = datetime.datetime(today.year, today.month, today.day)
@@ -261,7 +261,7 @@ class BOOKED_PLAN:
 @login_required
 def booked_list_func(request):
     username = request.user.get_username()
-    a = BOOKED_PLAN(username)
+    a = BookedPlan(username)
     a.clean_plan()
     context = a.get_context_data()
     return render(request, 'booked_list.html', context)

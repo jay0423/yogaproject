@@ -10,7 +10,7 @@ import calendar
 from ..models import PlanModel, SettingPlanModel, BookModel, NoteModel, WeekdayDefaultModel
 
 
-class CALENDAR:
+class Calendar:
             
     def __init__(self, month):
         self.month_num = month # example)-100/0/100/200
@@ -200,12 +200,12 @@ class CALENDAR:
 #顧客用カレンダー画面
 @login_required
 def bookfunc(request, month):    
-    a = CALENDAR(month)
+    a = Calendar(month)
     context = a.get_context_data()
     return render(request, 'book.html', context)
     
 
-class CALENDAR_ADMIN(CALENDAR):
+class CalendarAdmin(Calendar):
 
     setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
     
@@ -360,7 +360,7 @@ class CALENDAR_ADMIN(CALENDAR):
 #管理者用カレンダー画面設定
 @login_required
 def book_adminfunc(request, month):
-    a = CALENDAR_ADMIN(month)
+    a = CalendarAdmin(month)
     context = a.get_context_data()
     #予定入力設定
     if request.method == "POST":
