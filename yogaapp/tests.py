@@ -1,8 +1,8 @@
 from django.test import TestCase
-from yogaapp.models import BookModel, PlanModel
+from yogaapp.models import BookModel, PlanModel, SettingPlanModel, NoteModel, WeekdayDefaultModel
 import datetime
  
-class PersonModelTests(TestCase):
+class ModelTests(TestCase):
     def test_saving_and_retrieving_book_model(self):
         book = BookModel()
         user, plan, time_of_cancel = "ゲスト", "プラン", 1
@@ -50,3 +50,62 @@ class PersonModelTests(TestCase):
         self.assertEqual(actual_plan.max_book, max_book)
         self.assertEqual(actual_plan.plan_num, plan_num)
     
+    def test_saving_and_retrieving_setting_plan_model(self):
+        plan_model = SettingPlanModel()
+        s = ("プラン", "プ", 1000, "スタジオ", 10, "メモ", 1)
+        name, short_plan_name, price, location, max_book, memo, plan_num = s
+        plan_model.name = name
+        plan_model.short_plan_name = short_plan_name
+        plan_model.price = price
+        plan_model.location = location
+        plan_model.max_book = max_book
+        plan_model.memo = memo
+        plan_model.plan_num = plan_num
+        plan_model.save()
+
+        saved_plan = SettingPlanModel.objects.all()
+        actual_plan = saved_plan[0]
+
+        self.assertEqual(actual_plan.name, name)
+        self.assertEqual(actual_plan.short_plan_name, short_plan_name)
+        self.assertEqual(actual_plan.price, price)
+        self.assertEqual(actual_plan.location, location)
+        self.assertEqual(actual_plan.max_book, max_book)
+        self.assertEqual(actual_plan.memo, memo)
+        self.assertEqual(actual_plan.plan_num, plan_num)
+        
+    def test_saving_and_retrieving_note_model(self):
+        note = NoteModel()
+        memo, num, monday = "メモ", 1, 0
+        note.memo = memo
+        note.memo = memo
+        note.time_of_cancel = time_of_cancel
+        note.save()
+
+        saved_note = BookModel.objects.all()
+        actual_note = saved_book[0]
+
+        self.assertEqual(actual_note.user, user)
+        self.assertEqual(actual_note.plan, plan)
+        self.assertEqual(actual_note.time_of_cancel, time_of_cancel)
+        
+    def test_saving_and_retrieving_weekday_default_model(self):
+        weekday_model = WeekdayDefaultModel()
+        
+        s = ("sunday", "プラン", "09:00", "スタジオ", 10, 1)
+        weekday, plan, time, location, max_book, plan_num = s
+        weekday_model.weekday = weekday
+        weekday_model.time = time
+        weekday_model.location = location
+        weekday_model.max_book = max_book
+        weekday_model.plan_num = plan_num
+        weekday_model.save()
+
+        saved_weekday = BookModel.objects.all()
+        actual_weekday = saved_book[0]
+
+        self.assertEqual(actual_weekday.weekday, weekday)
+        self.assertEqual(actual_weekday.time, time)
+        self.assertEqual(actual_weekday.location, location)
+        self.assertEqual(actual_weekday.max_book, max_book)
+        self.assertEqual(actual_weekday.plan_num, plan_num)
