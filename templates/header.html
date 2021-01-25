@@ -4,7 +4,7 @@
 
 <nav class="navbar navbar-light sticky-top"
     style="background-color: rgb(194, 243, 194); border-bottom: 1px solid #eee;">
-    <a class="navbar-brand"><img class="header_logo" src="{% static 'logo.png' %}">ヨガ予約サイト</a>
+    <a class="navbar-brand"><img class="header_logo" src="{% static 'logo.png' %}"></a><span class="site-name">ヨガ予約サイト</span>
     {% if user.first_name != "" %}
     <span style="color: #000;">{{ user.last_name }}{{ user.first_name }} 様</span>
     {% else %}
