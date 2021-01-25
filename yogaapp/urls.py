@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from .views.view1 import signupfunc,loginfunc, logoutfunc, signup_admin_func
 from .views.view2 import bookfunc, book_adminfunc
 from .views.view3 import confirmfunc, get_confirm, cancel_yoga_func, booked_list_func, access_func, info_func
@@ -7,6 +8,7 @@ from .views.view5 import users_detail, users_update, analysis_func, table_func
 from .views.view6 import YogaCreate, yoga_create_plan_num, SettingPlanList, SettingPlanUpdate, YogaPlanDelete, notefunc, calendar_dafault_func, weekday_detail_func, weekday_update_func, WeekdayPlanDelete
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='login')),
     #views1.py
     path('signup/', signupfunc, name='signup'),
     path('signup_admin/', signup_admin_func, name='signup_admin'),

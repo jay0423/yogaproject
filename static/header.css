@@ -37,7 +37,7 @@
     .site-name {
         font-size: 21px;
         font-weight: bolder;
-        margin-top: 3px;
+        margin-top: 1px;
     }
     .navbar-collapse {
         font-size: 16px;
@@ -51,6 +51,5 @@
     .site-name {
         font-size: 18px;
         font-weight: normal;
-        margin-top: 3px;
     }
 }
