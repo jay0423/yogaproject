@@ -7,11 +7,12 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="monayoga">404　ページが見つかりません．</h1>
+        <h1 class="monayoga">404 Not Found</h1>
+        <br>
+        <h1 class="monayoga" style="font-size:25px;">ページが見つかりません</h1>
     <br><br><br>
-    <a class="btn btn-md btn-primary disable" href="{% url 'login' %}" id="signup-button" style="width: 70%; text-align: center;">ログイン画面へ</a>
+    <a class="btn btn-md btn-primary disable" href="{% url 'login' %}" id="" style="display:block; width:fit-content; text-align: center; margin-left: auto; margin-right:auto;">ログイン画面へ</a>
 </div>
-<p class="mt-5 mb-3 text-muted">&copy; 2020/07 MonaYoga</p>
 {% endblock content %}
 
 {% block footer %}
