@@ -17,6 +17,7 @@ class Calendar:
         self.month = 1 #仮値，adjust_year_monthを必ず行う．
         self.year = 2021
         self.monday = NoteModel.objects.get(num=0).monday #monday=0：月曜日と日曜日は非表示, monday=1：日曜日は非表示, その他：全曜日を表示
+        self.setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
 
     def adjust_year_month2(self, year, month):
         #翌年以降の調整．
@@ -170,9 +171,8 @@ class Calendar:
         #客用カレンダー画面の下にプランの説明を表示するため
         #プランが存在しているプランのみ取得
         plan_exist_list = set(item.plan for item in object_list)
-        setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
         setting_plan_model_exist = []
-        for item in setting_plan_model:
+        for item in self.setting_plan_model:
             if item.name in plan_exist_list:
                 setting_plan_model_exist.append(item) 
         return setting_plan_model_exist
@@ -206,8 +206,6 @@ def bookfunc(request, month):
     
 
 class CalendarAdmin(Calendar):
-
-    setting_plan_model = SettingPlanModel.objects.all().order_by('plan_num')
     
     def sort_by_time(self, time_list, plan_list):
         #並び替えの処理
