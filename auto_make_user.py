@@ -16,7 +16,7 @@ class LOGIN:
     def setup(self):
         self.driver = webdriver.Chrome(executable_path = '.\\chromedriver_win32\\chromedriver.exe')
         self.driver.implicitly_wait(3)
-        url_login = "http://207.148.104.211/login/"
+        url_login = "http://jay-yoga.club/login/"
         self.driver.get(url_login)
         time.sleep(1)
         print("ログインページにアクセスしました")
