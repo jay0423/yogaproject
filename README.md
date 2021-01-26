@@ -9,6 +9,10 @@
 
 ---  
 
+## Demo
+以下のサイトで自由に試用してください．  
+https://jay-yoga.club/login/
+
 ## Features
   
 ### 顧客側の特徴・メリット
