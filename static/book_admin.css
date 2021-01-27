@@ -133,6 +133,7 @@ th {
     font-size: 16px;
     border-bottom: solid 1px #fff;
     overflow: hidden;
+    text-align: center;
 }
 
 .when_small {
@@ -143,6 +144,7 @@ th {
     color: #000;
     float: right;
     font-size: 14px;
+    display: none;
 }
 
 .max_book {
@@ -155,7 +157,7 @@ th {
     }
 }
 
-@media (max-width: 992px) {
+/* @media (max-width: 992px) {
     .hidden {
         display: none;
     }
@@ -163,7 +165,7 @@ th {
         text-align: center;
         padding: 2px 0px;
     }
-}
+} */
 
 @media (max-width: 768px) {
     .yoga_set {
