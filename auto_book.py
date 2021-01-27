@@ -108,7 +108,7 @@ class AutoBook:
                     self.max_tr = max_tr
                     self.click_date()
                     self.click_book()
-                self.logout()
+            self.logout()
 
 
 if __name__ == "__main__":
