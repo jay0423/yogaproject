@@ -132,6 +132,8 @@ th {
     transition: 0.5s;
     font-weight: normal;
     border-bottom: solid 1px #fff;
+    padding: 0;
+    font-size: 16px;
 }
 
 .when_small {
@@ -156,11 +158,11 @@ th {
     padding: 0 8px 0 8px;
 }
 
-@media (max-width: 992px) {
+/* @media (max-width: 992px) {
     .yoga_set {
         padding: 0;
     }
-}
+} */
 
 @media (max-width: 768px) {
     .yoga_set {

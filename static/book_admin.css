@@ -134,6 +134,8 @@ th {
     border-bottom: solid 1px #fff;
     overflow: hidden;
     text-align: center;
+    padding: 0;
+    font-size: 16px;
 }
 
 .when_small {
@@ -168,9 +170,9 @@ th {
 } */
 
 @media (max-width: 768px) {
-    .yoga_set {
+    /* .yoga_set {
         padding: 0;
-    }
+    } */
     .setting select, .setting input, .input-group-text {
         padding: 6px;
     }
