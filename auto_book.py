@@ -7,18 +7,19 @@ import random
 
 class AutoBook:
 
+    driver = webdriver.Chrome(executable_path = '.\\chromedriver_win32\\chromedriver.exe')
+    max_plan_list = [2,2,4,3,4] #曜日ごとのプランの最大数
+    max_tr = 5 #縦の最大長さ
     th = 1
 
     def __init__(self, make_user):
         self.make_user = make_user #自動的に作成するかどうか．
-        self.driver = ""
         self.month = 0
-        self.max_plan_list = [2,2,4,3,4]
-        self.max_tr = 5
         self.username_list = []
+        self.FROM_NUM = 32
+        self.TO_NUM = 33
     
     def setup(self):
-        self.driver = webdriver.Chrome(executable_path = '.\\chromedriver_win32\\chromedriver.exe')
         self.driver.implicitly_wait(2)
         url_login = "https://jay-yoga.club/login/"
         self.driver.get(url_login)
@@ -27,7 +28,7 @@ class AutoBook:
 
     def click(self, x_path):
         click_box = self.driver.find_element_by_xpath(x_path)
-        time.sleep(1)
+        # time.sleep(1)
         click_box.click()
         time.sleep(1)
 
@@ -42,7 +43,7 @@ class AutoBook:
     def access_calendar_month(self, month):
         url_login = "https://jay-yoga.club/book/{}".format(month)
         self.driver.get(url_login)
-        time.sleep(2)
+        time.sleep(1)
 
     def logout(self):
         self.access_calendar_month(self.month)
@@ -81,9 +82,7 @@ class AutoBook:
         return add_zero_num
 
     def get_list(self):
-        FROM_NUM = 32#31
-        TO_NUM = 33#50
-        self.username_list = ['guest' + self.add_zero(i+1) for i in range(FROM_NUM-1, TO_NUM)]
+        self.username_list = ['guest' + self.add_zero(i+1) for i in range(self.FROM_NUM-1, self.TO_NUM)]
 
 
     def main(self):
@@ -95,19 +94,31 @@ class AutoBook:
         if self.username_list == []:
             return
         else:
+            month_list = [0, 100]
+            max_tr_list = [5, 4]
             for username in self.username_list:
                 self.login(username)
-                self.month = 100
-                book_num = random.choice([1,2,3,4,5,6,7,8,9,10])
-                for i in range(book_num):
-                    self.access_calendar_month(self.month)
-                    self.max_tr = 4
-                    self.click_date()
-                    self.click_book()
-                self.logout()
+                for month, max_tr in zip(month_list, max_tr_list):
+                    self.month = month
+                    book_num = random.choice([1,2,3,4,5,6,7,8,9,10])
+                    print(book_num)
+                    for i in range(book_num):
+                        self.access_calendar_month(self.month)
+                        self.max_tr = max_tr
+                        self.click_date()
+                        self.click_book()
+                    self.logout()
+
+if __name__ == "__main__":
+    a = auto_book.AutoBook(True)
+    a.FROM_NUM = input("FROM_NUM")
+    a.TO_NUM = input("TO_NUM")
+    a.main()
 
 # import auto_book
 # import importlib
 # importlib.reload(auto_book)
-# a = auto_book.AutoBook(False)
+# a = auto_book.AutoBook(True)
+# a.FROM_NUM = 34
+# a.TO_NUM = 35
 # a.main()

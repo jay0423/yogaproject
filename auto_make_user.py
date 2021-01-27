@@ -3,18 +3,21 @@ import numpy as np
 from selenium import webdriver
 import time
 
-class LOGIN:
+class AutoMakeUser:
+
+    driver = webdriver.Chrome(executable_path = '.\\chromedriver_win32\\chromedriver.exe')
+
     def __init__(self, make_user):
         self.make_user = make_user #自動的に作成するかどうか．
         self.USER = "admin"
-        self.driver = ""
         self.username_list = []
         self.last_name_list = []
         self.first_name_list = []
         self.email_list = []
+        self.FROM_NUM = 51
+        self.TO_NUM = 90
     
     def setup(self):
-        self.driver = webdriver.Chrome(executable_path = '.\\chromedriver_win32\\chromedriver.exe')
         self.driver.implicitly_wait(3)
         url_login = "http://jay-yoga.club/login/"
         self.driver.get(url_login)
@@ -58,10 +61,10 @@ class LOGIN:
 
     def get_list(self):
         NUM = 50
-        self.username_list = ['guest' + self.add_zero(i+1) for i in range(NUM)]
-        self.last_name_list = ['ゲスト' + self.add_zero(i+1) for i in range(NUM)]
-        self.first_name_list = ['太郎'] * NUM
-        self.email_list = ['###'] * NUM
+        self.username_list = ['guest' + self.add_zero(i+1) for i in range(FROM_NUM-1, TO_NUM)]
+        self.last_name_list = ['ゲスト' + self.add_zero(i+1) for i in range(FROM_NUM-1, TO_NUM)]
+        self.first_name_list = ['太郎'] * (TO_NUM - FROM_NUM + 1)
+        self.email_list = ['###'] * (TO_NUM - FROM_NUM + 1)
 
     def main(self):
         self.setup()
