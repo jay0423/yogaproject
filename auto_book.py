@@ -16,6 +16,8 @@ class AutoBook:
         self.make_user = make_user #自動的に作成するかどうか．
         self.month = 0
         self.username_list = []
+        self.month_list = [0, 100]
+        self.max_tr_list = [5, 4]
         self.FROM_NUM = 32
         self.TO_NUM = 33
     
@@ -39,6 +41,7 @@ class AutoBook:
         element.clear()
         element.send_keys(USER)
         self.click('/html/body/form/div[3]/button[2]')
+        time.sleep(1)
 
     def access_calendar_month(self, month):
         url_login = "https://jay-yoga.club/book/{}".format(month)
@@ -72,7 +75,7 @@ class AutoBook:
                 break
             except:
                 self.access_calendar_month(self.month)
-                return
+                break
 
     def add_zero(self, num):
         if num < 10:
@@ -86,39 +89,42 @@ class AutoBook:
 
 
     def main(self):
-        self.setup() #セットアップ
 
         if self.make_user == True: #自動的にユーザー名を作成する．
             self.get_list()
         
         if self.username_list == []:
             return
-        else:
-            month_list = [0, 100]
-            max_tr_list = [5, 4]
-            for username in self.username_list:
-                self.login(username)
-                for month, max_tr in zip(month_list, max_tr_list):
-                    self.month = month
-                    book_num = random.choice([1,2,3,4,5,6,7,8,9,10])
-                    print(book_num)
-                    for i in range(book_num):
-                        self.access_calendar_month(self.month)
-                        self.max_tr = max_tr
-                        self.click_date()
-                        self.click_book()
-                    self.logout()
+        
+        self.setup() #セットアップ
+        for username in self.username_list:
+            self.login(username)
+            for month, max_tr in zip(self.month_list, self.max_tr_list):
+                self.month = month
+                book_num = random.choice([1,2,3,4,5,6,7,8,9,10])
+                print(book_num)
+                for i in range(book_num):
+                    self.access_calendar_month(self.month)
+                    self.max_tr = max_tr
+                    self.click_date()
+                    self.click_book()
+                self.logout()
+
 
 if __name__ == "__main__":
-    a = auto_book.AutoBook(True)
-    a.FROM_NUM = input("FROM_NUM")
-    a.TO_NUM = input("TO_NUM")
+    a = AutoBook(True)
+    a.month_list = list(map(int, input("month_list:").split()))
+    a.max_tr_list = list(map(int, input("max_tr_list:").split()))
+    a.FROM_NUM = int(input("FROM_NUM:"))
+    a.TO_NUM = int(input("TO_NUM:"))
     a.main()
 
 # import auto_book
 # import importlib
 # importlib.reload(auto_book)
 # a = auto_book.AutoBook(True)
+# a.month_list = [0, 100]
+# a.max_tr_list = [5, 4]
 # a.FROM_NUM = 34
 # a.TO_NUM = 35
 # a.main()
