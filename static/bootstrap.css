@@ -563,13 +563,13 @@ pre code {
 
 @media (min-width: 992px) {
   .container {
-    max-width: 960px;
+    max-width: 720px;
   }
 }
 
 @media (min-width: 1200px) {
   .container {
-    max-width: 960px;
+    max-width: 720px;
   }
 }
 
@@ -595,13 +595,13 @@ pre code {
 
 @media (min-width: 992px) {
   .container, .container-sm, .container-md, .container-lg {
-    max-width: 960px;
+    max-width: 720;
   }
 }
 
 @media (min-width: 1200px) {
   .container, .container-sm, .container-md, .container-lg, .container-xl {
-    max-width: 960px;
+    max-width: 720px;
   }
 }
 
@@ -6122,7 +6122,7 @@ a.close.disabled {
 
 @media (min-width: 1200px) {
   .modal-xl {
-    max-width: 960px;
+    max-width: 720px;
   }
 }
 
