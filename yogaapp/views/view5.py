@@ -9,6 +9,8 @@ from django.contrib.auth.decorators import login_required
 from ..models import PlanModel, SettingPlanModel, BookModel
 from django.urls import reverse_lazy, reverse
 from django_pandas.io import read_frame
+import pandas as pd
+import time
 
 #登録者情報
 @login_required
@@ -211,24 +213,30 @@ class Analysis:
         #名前を分割して行を追加する処理
         df.reset_index(inplace=True)
         df.drop('index', axis=1, inplace=True)
-        df_to_csv = df.copy()
-        booked_people_list = df.loc[:, 'booked_people']
-        booked_people_name_list = df.loc[:, 'booked_people_name']
-        index_list = list(df.index)
+        df_edit = df[df["number_of_people"]>=1]
+        df_edit.reset_index(inplace=True)
+        booked_people_list = df_edit.loc[:, 'booked_people']
+        booked_people_name_list = df_edit.loc[:, 'booked_people_name']
+        index_list = list(df_edit.index)
+        #dictにSeriesをまとめて後にdataframeに落とし込む
+        dict_tmp = {}
+        counter = 0
         for index2, booked_people, booked_people_name in zip(index_list, booked_people_list, booked_people_name_list):
-            if len(booked_people.split()) > 1:
-                for people, people_name in zip(booked_people.split(), booked_people_name.split()):
-                    new_series = df.iloc[index2, :]
-                    new_series.booked_people = people
-                    new_series.booked_people_name = people_name
-                    df_to_csv = df_to_csv.append(new_series)
-        df_to_csv = df_to_csv[df_to_csv.loc[:, 'booked_people'].map(lambda x: len(x.split())) <= 1]
+            for people, people_name in zip(booked_people.split(), booked_people_name.split()):
+                new_series = df_edit.iloc[index2, :]
+                new_series.booked_people = people
+                new_series.booked_people_name = people_name
+                dict_tmp[counter] = new_series
+                counter += 1
+        df_edit = pd.DataFrame.from_dict(dict_tmp, orient="index")
+        df_to_csv = df[df["number_of_people"]==0].append(df_edit)
         df_to_csv = df_to_csv.sort_values(['date', 'time'])
         df_to_csv.reset_index(inplace=True)
         df_to_csv.drop('index', axis=1, inplace=True)
         df_to_csv.insert(0, 'new_id', df_to_csv.loc[:, 'date'].map(str) + df_to_csv.loc[:, 'plan'] + df_to_csv.loc[:, 'time'] + df_to_csv.loc[:, 'booked_people_name'])
         df_to_csv.loc[:, 'booked_people'] = df_to_csv.loc[:, 'booked_people'].map(lambda x: x.replace(' ', ''))
         df_to_csv.loc[:, 'booked_people_name'] = df_to_csv.loc[:, 'booked_people_name'].map(lambda x: x.replace(' ', ''))
+        df_to_csv = df_to_csv.drop("level_0", axis=1)
         return df_to_csv
     
     def make_rank_book(self, df_to_csv):
