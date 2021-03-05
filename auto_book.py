@@ -113,10 +113,11 @@ class AutoBook:
 
 if __name__ == "__main__":
     a = AutoBook(True)
-    a.month_list = list(map(int, input("month_list:").split()))
-    a.max_tr_list = list(map(int, input("max_tr_list:").split()))
-    a.FROM_NUM = int(input("FROM_NUM:"))
-    a.TO_NUM = int(input("TO_NUM:"))
+    a.month_list = list(map(int, input("month_list (exp. 0 100 200):").split()))
+    a.max_tr_list = list(map(int, input("max_tr_list (exp. 5 4 5):").split()))
+    a.FROM_NUM = int(input("FROM_NUM (start guest user number):"))
+    a.TO_NUM = int(input("TO_NUM (lart guest user number):"))
+    print("month_list: {}\nmax_tr_list: {}\nFROM_NUM: {}\nTO_NUM: {}\n".format(a.month_list, a.max_tr_list, a.FROM_NUM, a.TO_NUM))
     a.main()
 
 # import auto_book
